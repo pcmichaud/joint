@@ -17,13 +17,17 @@ class sp:
             'icorr': 'T',
             'iunitary': 'F',
             'idiscount': 'F',
+            'ddiscount': 0.95,
             'idirect': 'F',
             'arf': 0.06,
             'drc': 0.08,
             'reprate': 0.6,
             'ishufheter': 'F',
             'ishufwages': 'F',
-            'iblockcomp': 'F'            
+            'iblockcomp': 'F',
+            'ifixcorr': 'F',
+            'dfixrho': 0.5,
+            'inoestim': 'F'            
         })   
         
         print('Default options: ')
@@ -60,6 +64,7 @@ class sp:
         par = [None] * npar
         se = [None] * npar
         for i,line in enumerate(buff[2:-1]): 
+            labels[i],par[i],se[i] = line.split()
             labels[i],par[i],se[i] = line.split()
         self.params = pd.DataFrame(data={'par': par,'se': se},index=labels)
         self.params['par'].astype('float',inplace=True)

@@ -1,0 +1,1757 @@
+----------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/michaudp/Dropbox (CEDIA)/Projets/joint/tex/tables/prepare.txt
+  log type:  text
+ opened on:  13 Jun 2018, 14:52:04
+
+. 
+. global scn "ref"
+
+. use raw/NET11_R.dta, clear
+
+. 
+.         foreach var of varlist * {
+  2.                 capture rename `var' `=lower("`var'")'
+  3.         }
+
+. 
+. 
+. * 705 respondents with non missing answer
+. di _N
+4590
+
+. keep if j003_11!=.
+(3,811 observations deleted)
+
+. di _N
+779
+
+. **** create hhidpn from hhid and pn
+. gen hhidpn = hhid + pn
+
+. gen shhidpn = hhidpn
+
+. destring hhidpn, replace
+hhidpn: all characters numeric; replaced as long
+
+. 
+. sort hhid
+
+. by hhid: gen nobs = _N
+
+. 
+. 
+. **** there are only 6 ratings with answers , (1 to 6)
+.         rename j003_11 rrate_scn1
+
+.         rename j007_11 rrate_scn2
+
+.         rename j011_11 rrate_scn3
+
+.         rename j015_11 rrate_scn4
+
+.         rename j019_11 rrate_scn5
+
+.         rename j023_11 rrate_scn6
+
+. 
+.         rename j004_11 srate_scn1
+
+.         rename j008_11 srate_scn2
+
+.         rename j012_11 srate_scn3
+
+.         rename j016_11 srate_scn4
+
+.         rename j020_11 srate_scn5
+
+.         rename j024_11 srate_scn6
+
+. 
+.         sum rrate_* srate_*
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+  rrate_scn1 |        779    13.01284    26.30721          1         99
+  rrate_scn2 |        779    13.20154    28.13435          1         99
+  rrate_scn3 |        779    14.09884    28.65609          1         99
+  rrate_scn4 |        779    15.16688    28.88877          1         99
+  rrate_scn5 |        779    14.97304    28.78161          1         99
+-------------+---------------------------------------------------------
+  rrate_scn6 |         11    6.454545    3.045115          1         10
+  srate_scn1 |        779    13.48652    27.84576          1         99
+  srate_scn2 |        779    13.76893    29.15089          1         99
+  srate_scn3 |        779    14.86264    29.57354          1         99
+  srate_scn4 |        779    15.46213    30.12655          1         99
+-------------+---------------------------------------------------------
+  srate_scn5 |        779    15.08858    29.12465          1         99
+  srate_scn6 |         11    5.909091     3.44832          1         10
+
+. 
+. **** choice question 2 was dropped, so we have 3 choice questions (1,3,4)
+. 
+.         * scn 1
+.         rename j028_11 rchoice_scn1_r
+
+.         rename j029_11 rchoice_scn1_s
+
+.         rename j030_11 rchoice_scn1_h
+
+. 
+.         * scn 3 (now 2 since skip 2)
+.         rename j038_11 rchoice_scn2_r
+
+.         rename j039_11 rchoice_scn2_s
+
+.         rename j040_11 rchoice_scn2_h
+
+. 
+.         * scn 4 (now 3 since skip 2)
+.         rename j043_11 rchoice_scn3_r
+
+.         rename j044_11 rchoice_scn3_s
+
+.         rename j045_11 rchoice_scn3_h
+
+. 
+. sum rchoice*
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+rchoice_~1_r |        779    2.577664    2.478196          1          9
+rchoice_~1_s |        779    2.614891    2.575958          1          9
+rchoice_~1_h |        779    2.634146    2.553472          1          9
+rchoice_~2_r |        779    2.562259    2.693353          1          9
+rchoice_~2_s |        779    2.577664    2.700579          1          9
+-------------+---------------------------------------------------------
+rchoice_~2_h |        779    2.540436    2.688516          1          9
+rchoice_~3_r |        779    2.671374    2.634035          1          9
+rchoice_~3_s |        779    2.772786    2.748401          1          9
+rchoice_~3_h |        779    2.713736     2.69608          1          9
+
+. 
+. **** data on age used in study
+.         rename ca_rs_age rage_mod
+
+.         rename ca_sp_age sage_mod
+
+.         rename da_11 dage_mod
+
+. sum ?age_mod
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+    rage_mod |        779    56.29653    4.742265         25         64
+    sage_mod |        779    56.89345    5.605973         36         80
+    dage_mod |        779   -.5969191    5.639722        -29         20
+
+. 
+. *** Hours data ****
+. 
+.         * current work hours
+.         rename a010_11 rwork
+
+.         rename a011_11 rhours
+
+.         rename a012_11 swork
+
+.         rename a013_11 shours
+
+.         replace rhours = min(rhours,80) if rhours!=.
+(1 real change made)
+
+.         replace shours = min(shours,80) if shours!=.
+(0 real changes made)
+
+.         sum ?hours
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+      rhours |        779    38.84339    12.82966          1         80
+      shours |        779     38.5199    12.57116          1         80
+
+. 
+. 
+.         * hours in rating scenarios (they all work)
+. 
+.                 * scn 1
+.                 * r works until 65, then retires
+.                 gen rh_scn1_a62 = rhours
+
+.                 gen rh_scn1_a65 = 0
+
+.                 gen rh_scn1_a68 = 0
+
+. 
+.                 * s works until 68, then retires (unless 68+)
+.                 gen sh_scn1_a62 = shours if da62<68
+(121 missing values generated)
+
+.                 replace sh_scn1_a62 = 0 if da62>=68
+(121 real changes made)
+
+. 
+.                 gen sh_scn1_a65 = shours if da65<68
+(236 missing values generated)
+
+.                 replace sh_scn1_a65 = 0 if da65>=68
+(236 real changes made)
+
+. 
+.                 gen sh_scn1_a68 = shours if da68<62
+(708 missing values generated)
+
+.                 replace sh_scn1_a68 = 0 if da68>=62
+(708 real changes made)
+
+. 
+.                 * scn 2
+.                 * r retires at 62, then retires
+.                 gen rh_scn2_a62 = 0
+
+.                 gen rh_scn2_a65 = 0
+
+.                 gen rh_scn2_a68 = 0
+
+. 
+.                 * s works until 68, then retires (unless 68+)
+.                 gen sh_scn2_a62 = shours if da62<62
+(460 missing values generated)
+
+.                 replace sh_scn2_a62 = 0 if da62>=62
+(460 real changes made)
+
+. 
+.                 gen sh_scn2_a65 = shours if da65<62
+(632 missing values generated)
+
+.                 replace sh_scn2_a65 = 0 if da65>=62
+(632 real changes made)
+
+. 
+.                 gen sh_scn2_a68 = shours if da68<62
+(708 missing values generated)
+
+.                 replace sh_scn2_a68 = 0 if da68>=62
+(708 real changes made)
+
+. 
+.                 * scn 3
+.                 * r works until 68, then retires
+.                 gen rh_scn3_a62 = rhours
+
+.                 gen rh_scn3_a65 = rhours
+
+.                 gen rh_scn3_a68 = 0
+
+. 
+.                 * s works until 68, then retires (unless 68+)
+.                 gen sh_scn3_a62 = shours if da62<65
+(236 missing values generated)
+
+.                 replace sh_scn3_a62 = 0 if da62>=65
+(236 real changes made)
+
+. 
+.                 gen sh_scn3_a65 = shours if da65<65
+(460 missing values generated)
+
+.                 replace sh_scn3_a65 = 0 if da65>=65
+(460 real changes made)
+
+. 
+.                 gen sh_scn3_a68 = shours if da68<62
+(708 missing values generated)
+
+.                 replace sh_scn3_a68 = 0 if da68>=62
+(708 real changes made)
+
+. 
+.                 * scn 4
+.                 * r gradually retires at 62 and fully retires at 65
+.                 gen rh_scn4_a62 = rhours if rhours<=35
+(573 missing values generated)
+
+.                 replace rh_scn4_a62 = 0.6*rhours if rhours>35
+(573 real changes made)
+
+.                 gen rh_scn4_a65 = 0
+
+.                 gen rh_scn4_a68 = 0
+
+. 
+.                 * s works until 65, then retires
+.                 gen sh_scn4_a62 = shours if da62<62
+(460 missing values generated)
+
+.                 replace sh_scn4_a62 = 0 if da62>=62
+(460 real changes made)
+
+. 
+.                 gen sh_scn4_a65 = shours if da65<62
+(632 missing values generated)
+
+.                 replace sh_scn4_a65 = 0 if da65>=62
+(632 real changes made)
+
+. 
+.                 gen sh_scn4_a68 = shours if da68<62
+(708 missing values generated)
+
+.                 replace sh_scn4_a68 = 0 if da68>=62
+(708 real changes made)
+
+. 
+.                 * scn 5
+.                 * r works until 68, then retires
+.                 gen rh_scn5_a62 = rhours
+
+.                 gen rh_scn5_a65 = rhours
+
+.                 gen rh_scn5_a68 = 0
+
+. 
+.                 * s works until 65, then retires
+.                 gen sh_scn5_a62 = shours if da62<65
+(236 missing values generated)
+
+.                 replace sh_scn5_a62 = 0.6*shours if da62>=65&da62<=67&shours>=35
+(92 real changes made)
+
+.                 replace sh_scn5_a62 = shours if da62>=65&da62<=67&shours<35
+(23 real changes made)
+
+.                 replace sh_scn5_a62 = 0 if sh_scn5_a62==.
+(121 real changes made)
+
+. 
+.                 gen sh_scn5_a65 = shours if da65<65
+(460 missing values generated)
+
+.                 replace sh_scn5_a65 = 0.6*shours if da65>=65&da65<=67&shours>=35
+(174 real changes made)
+
+.                 replace sh_scn5_a65 = shours if da65>=65&da65<=67&shours<35
+(50 real changes made)
+
+.                 replace sh_scn5_a65 = 0 if sh_scn5_a65==.
+(236 real changes made)
+
+. 
+.                 gen sh_scn5_a68 = shours if da68<62
+(708 missing values generated)
+
+.                 replace sh_scn5_a68 = 0 if da68>=62
+(708 real changes made)
+
+. 
+. 
+.                 * scn 6
+.                 gen rh_scn6_a62 = rhours
+
+.                 gen rh_scn6_a65 = 0
+
+.                 gen rh_scn6_a68 = 0
+
+. 
+.                 gen sh_scn6_a62 = shours if da62<65
+(236 missing values generated)
+
+.                 replace sh_scn6_a62 = 0 if da62>=65
+(236 real changes made)
+
+. 
+.                 gen sh_scn6_a65 = shours if da65<65
+(460 missing values generated)
+
+.                 replace sh_scn6_a65 = 0 if da65>=65
+(460 real changes made)
+
+. 
+.                 gen sh_scn6_a68 = shours if da68<62
+(708 missing values generated)
+
+.                 replace sh_scn6_a68 = 0 if da68>=62
+(708 real changes made)
+
+. 
+. 
+.             * hours in choice scenarios
+. 
+.                 * choice 1, scn 2 against 4
+.                 gen rh_scn6a_a62 = rh_scn2_a62
+
+.                 gen rh_scn6a_a65 = rh_scn2_a65
+
+.                 gen rh_scn6a_a68 = rh_scn2_a68
+
+. 
+.                 gen sh_scn6a_a62 = sh_scn2_a62
+
+.                 gen sh_scn6a_a65 = sh_scn2_a65
+
+.                 gen sh_scn6a_a68 = sh_scn2_a68
+
+. 
+.                 gen rh_scn6b_a62 = rh_scn4_a62
+
+.                 gen rh_scn6b_a65 = rh_scn4_a65
+
+.                 gen rh_scn6b_a68 = rh_scn4_a68
+
+. 
+.                 gen sh_scn6b_a62 = sh_scn4_a62
+
+.                 gen sh_scn6b_a65 = sh_scn4_a65
+
+.                 gen sh_scn6b_a68 = sh_scn4_a68
+
+. 
+. 
+.                 * choice 3, scn 5 against 2
+.                 gen rh_scn7a_a62 = rh_scn5_a62
+
+.                 gen rh_scn7a_a65 = rh_scn5_a65
+
+.                 gen rh_scn7a_a68 = rh_scn5_a68
+
+. 
+.                 gen sh_scn7a_a62 = sh_scn5_a62
+
+.                 gen sh_scn7a_a65 = sh_scn5_a65
+
+.                 gen sh_scn7a_a68 = sh_scn5_a68
+
+. 
+.                 gen rh_scn7b_a62 = rh_scn2_a62
+
+.                 gen rh_scn7b_a65 = rh_scn2_a65
+
+.                 gen rh_scn7b_a68 = rh_scn2_a68
+
+. 
+.                 gen sh_scn7b_a62 = sh_scn2_a62
+
+.                 gen sh_scn7b_a65 = sh_scn2_a65
+
+.                 gen sh_scn7b_a68 = sh_scn2_a68
+
+. 
+. 
+.                 * choice 4, scn 3 against 6
+.                 gen rh_scn8a_a62 = rh_scn3_a62
+
+.                 gen rh_scn8a_a65 = rh_scn3_a65
+
+.                 gen rh_scn8a_a68 = rh_scn3_a68
+
+. 
+.                 gen sh_scn8a_a62 = sh_scn3_a62
+
+.                 gen sh_scn8a_a65 = sh_scn3_a65
+
+.                 gen sh_scn8a_a68 = sh_scn3_a68
+
+. 
+.                 gen rh_scn8b_a62 = rh_scn6_a62
+
+.                 gen rh_scn8b_a65 = rh_scn6_a65
+
+.                 gen rh_scn8b_a68 = rh_scn6_a68
+
+. 
+.                 gen sh_scn8b_a62 = sh_scn6_a62
+
+.                 gen sh_scn8b_a65 = sh_scn6_a65
+
+.                 gen sh_scn8b_a68 = sh_scn6_a68
+
+. 
+. sum rh_scn* sh_scn*
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+ rh_scn1_a62 |        779    38.84339    12.82966          1         80
+ rh_scn1_a65 |        779           0           0          0          0
+ rh_scn1_a68 |        779           0           0          0          0
+ rh_scn2_a62 |        779           0           0          0          0
+ rh_scn2_a65 |        779           0           0          0          0
+-------------+---------------------------------------------------------
+ rh_scn2_a68 |        779           0           0          0          0
+ rh_scn3_a62 |        779    38.84339    12.82966          1         80
+ rh_scn3_a65 |        779    38.84339    12.82966          1         80
+ rh_scn3_a68 |        779           0           0          0          0
+ rh_scn4_a62 |        779    25.66804    6.585404          1         48
+-------------+---------------------------------------------------------
+ rh_scn4_a65 |        779           0           0          0          0
+ rh_scn4_a68 |        779           0           0          0          0
+ rh_scn5_a62 |        779    38.84339    12.82966          1         80
+ rh_scn5_a65 |        779    38.84339    12.82966          1         80
+ rh_scn5_a68 |        779           0           0          0          0
+-------------+---------------------------------------------------------
+ rh_scn6_a62 |        779    38.84339    12.82966          1         80
+ rh_scn6_a65 |        779           0           0          0          0
+ rh_scn6_a68 |        779           0           0          0          0
+rh_scn6a_a62 |        779           0           0          0          0
+rh_scn6a_a65 |        779           0           0          0          0
+-------------+---------------------------------------------------------
+rh_scn6a_a68 |        779           0           0          0          0
+rh_scn6b_a62 |        779    25.66804    6.585404          1         48
+rh_scn6b_a65 |        779           0           0          0          0
+rh_scn6b_a68 |        779           0           0          0          0
+rh_scn7a_a62 |        779    38.84339    12.82966          1         80
+-------------+---------------------------------------------------------
+rh_scn7a_a65 |        779    38.84339    12.82966          1         80
+rh_scn7a_a68 |        779           0           0          0          0
+rh_scn7b_a62 |        779           0           0          0          0
+rh_scn7b_a65 |        779           0           0          0          0
+rh_scn7b_a68 |        779           0           0          0          0
+-------------+---------------------------------------------------------
+rh_scn8a_a62 |        779    38.84339    12.82966          1         80
+rh_scn8a_a65 |        779    38.84339    12.82966          1         80
+rh_scn8a_a68 |        779           0           0          0          0
+rh_scn8b_a62 |        779    38.84339    12.82966          1         80
+rh_scn8b_a65 |        779           0           0          0          0
+-------------+---------------------------------------------------------
+rh_scn8b_a68 |        779           0           0          0          0
+ sh_scn1_a62 |        779      32.543    17.97475          0         80
+ sh_scn1_a65 |        779    26.72015    20.34115          0         80
+ sh_scn1_a68 |        779    3.557125    11.70504          0         80
+ sh_scn2_a62 |        779    15.65597    20.14867          0         80
+-------------+---------------------------------------------------------
+ sh_scn2_a65 |        779    7.218228    15.70572          0         80
+ sh_scn2_a68 |        779    3.557125    11.70504          0         80
+ sh_scn3_a62 |        779    26.72015    20.34115          0         80
+ sh_scn3_a65 |        779    15.65597    20.14867          0         80
+ sh_scn3_a68 |        779    3.557125    11.70504          0         80
+-------------+---------------------------------------------------------
+ sh_scn4_a62 |        779    15.65597    20.14867          0         80
+ sh_scn4_a65 |        779    7.218228    15.70572          0         80
+ sh_scn4_a68 |        779    3.557125    11.70504          0         80
+ sh_scn5_a62 |        779    30.43363    17.34019          0         80
+ sh_scn5_a65 |        779    22.76534    17.92888          0         80
+-------------+---------------------------------------------------------
+ sh_scn5_a68 |        779    3.557125    11.70504          0         80
+ sh_scn6_a62 |        779    26.72015    20.34115          0         80
+ sh_scn6_a65 |        779    15.65597    20.14867          0         80
+ sh_scn6_a68 |        779    3.557125    11.70504          0         80
+sh_scn6a_a62 |        779    15.65597    20.14867          0         80
+-------------+---------------------------------------------------------
+sh_scn6a_a65 |        779    7.218228    15.70572          0         80
+sh_scn6a_a68 |        779    3.557125    11.70504          0         80
+sh_scn6b_a62 |        779    15.65597    20.14867          0         80
+sh_scn6b_a65 |        779    7.218228    15.70572          0         80
+sh_scn6b_a68 |        779    3.557125    11.70504          0         80
+-------------+---------------------------------------------------------
+sh_scn7a_a62 |        779    30.43363    17.34019          0         80
+sh_scn7a_a65 |        779    22.76534    17.92888          0         80
+sh_scn7a_a68 |        779    3.557125    11.70504          0         80
+sh_scn7b_a62 |        779    15.65597    20.14867          0         80
+sh_scn7b_a65 |        779    7.218228    15.70572          0         80
+-------------+---------------------------------------------------------
+sh_scn7b_a68 |        779    3.557125    11.70504          0         80
+sh_scn8a_a62 |        779    26.72015    20.34115          0         80
+sh_scn8a_a65 |        779    15.65597    20.14867          0         80
+sh_scn8a_a68 |        779    3.557125    11.70504          0         80
+sh_scn8b_a62 |        779    26.72015    20.34115          0         80
+-------------+---------------------------------------------------------
+sh_scn8b_a65 |        779    15.65597    20.14867          0         80
+sh_scn8b_a68 |        779    3.557125    11.70504          0         80
+
+. 
+. *** Income data ***
+. 
+.         * income in rating scenario (replacement rate)
+. 
+.                 * scn 1
+.                 * r works until 65, then retires
+.                 gen ri_scn1_a62 = 100
+
+.                 gen ri_scn1_a65 = 50 + 5*(pr_randomyou1-1)
+
+.                 gen ri_scn1_a68 = 50 + 5*(pr_randomyou1-1)
+
+. 
+.                 * s works until 68, then retires (unless 68+)
+.                 gen si_scn1_a62 = 100 if da62<68
+(121 missing values generated)
+
+.                 replace si_scn1_a62 = 60 + 5*(pr_randomspp1-1) if da62>=68
+(121 real changes made)
+
+. 
+.                 gen si_scn1_a65 =100 if da65<68
+(236 missing values generated)
+
+.                 replace si_scn1_a65 = 60 + 5*(pr_randomspp1-1) if da65>=68
+(236 real changes made)
+
+. 
+.                 gen si_scn1_a68 = 100 if da68<62
+(708 missing values generated)
+
+.                 replace si_scn1_a68 = 40 + 5*(pr_randomspp1-1) if da68>=62 & da6
+> 8<=64
+(76 real changes made)
+
+.                 replace si_scn1_a68 = 50 + 5*(pr_randomspp1-1) if da68>=65 & da6
+> 8<=67
+(172 real changes made)
+
+.                 replace si_scn1_a68 = 60 + 5*(pr_randomspp1-1) if da68>=68
+(460 real changes made)
+
+. 
+.                 * scn 2
+.                 * r retires at 62, then retires
+.                 gen ri_scn2_a62 = 40 + 5*(pr_randomyou2-1)
+
+.                 gen ri_scn2_a65 = 40 + 5*(pr_randomyou2-1)
+
+.                 gen ri_scn2_a68 = 40 + 5*(pr_randomyou2-1)
+
+. 
+.                 * s works until 68, then retires (unless 68+)
+.                 gen si_scn2_a62 = 100 if da62<62
+(460 missing values generated)
+
+.                 replace si_scn2_a62 = 40 + 5*(pr_randomspp2-1) if da62>=62
+(460 real changes made)
+
+. 
+.                 gen si_scn2_a65 = 100 if da65<62
+(632 missing values generated)
+
+.                 replace si_scn2_a65 = 40 + 5*(pr_randomspp2-1) if da65>=62
+(632 real changes made)
+
+. 
+.                 gen si_scn2_a68 = 100 if da68<62
+(708 missing values generated)
+
+.                 replace si_scn2_a68 = 40 + 5*(pr_randomspp2-1) if da68>=62
+(708 real changes made)
+
+. 
+.                 * scn 3
+.                 * r works until 68, then retires
+.                 gen ri_scn3_a62 = 100
+
+.                 gen ri_scn3_a65 = 100
+
+.                 gen ri_scn3_a68 = 60 + 5*(pr_randomyou3-1)
+
+. 
+.                 * s works until 68, then retires (unless 68+)
+.                 gen si_scn3_a62 = 100 if da62<65
+(236 missing values generated)
+
+.                 replace si_scn3_a62 = 50 + 5*(pr_randomspp3-1) if da62>=65
+(236 real changes made)
+
+. 
+.                 gen si_scn3_a65 = 100 if da65<65
+(460 missing values generated)
+
+.                 replace si_scn3_a65 = 50 + 5*(pr_randomspp3-1) if da65>=65
+(460 real changes made)
+
+. 
+.                 gen si_scn3_a68 = 100 if da68<62
+(708 missing values generated)
+
+.                 replace si_scn3_a68 = 40 + 5*(pr_randomspp3-1) if da68>=62 & da6
+> 8<=64
+(76 real changes made)
+
+.                 replace si_scn3_a68 = 50 + 5*(pr_randomspp3-1) if da68>=65
+(632 real changes made)
+
+. 
+.                 * scn 4
+.                 * r gradually retires at 62 and fully retires at 65
+.                 gen ri_scn4_a62 = 100 if rhours<=35
+(573 missing values generated)
+
+.                 replace ri_scn4_a62 = 100 if rhours>35
+(573 real changes made)
+
+.                 gen ri_scn4_a65 = 50 + 5*(pr_randomyou4-1)
+
+.                 gen ri_scn4_a68 = 50 + 5*(pr_randomyou4-1)
+
+. 
+.                 * s works until 65, then retires
+.                 gen si_scn4_a62 = 100 if da62<62
+(460 missing values generated)
+
+.                 replace si_scn4_a62 = 40 + 5*(pr_randomspp4-1) if da62>=62
+(460 real changes made)
+
+. 
+.                 gen si_scn4_a65 = 100 if da65<62
+(632 missing values generated)
+
+.                 replace si_scn4_a65 = 40 + 5*(pr_randomspp4-1) if da65>=62
+(632 real changes made)
+
+. 
+.                 gen si_scn4_a68 = 100 if da68<62
+(708 missing values generated)
+
+.                 replace si_scn4_a68 = 40 + 5*(pr_randomspp4-1) if da68>=62
+(708 real changes made)
+
+. 
+.                 * scn 5
+.                 * r works until 68, then retires
+.                 gen ri_scn5_a62 = 100
+
+.                 gen ri_scn5_a65 = 100
+
+.                 gen ri_scn5_a68 = 70 + 5*(pr_randomyou5-1)
+
+. 
+.                 * s works until 65, then retires
+.                 gen si_scn5_a62 = 100 if da62<65
+(236 missing values generated)
+
+.                 replace si_scn5_a62 = 100 if da62>=65&da62<=67&shours>=35
+(92 real changes made)
+
+.                 replace si_scn5_a62 = 100 if da62>=65&da62<=67&shours<35
+(23 real changes made)
+
+.                 replace si_scn5_a62 = 60 + 5*(pr_randomspp5-1) if si_scn5_a62==.
+(121 real changes made)
+
+. 
+.                 gen si_scn5_a65 = 100 if da65<65
+(460 missing values generated)
+
+.                 replace si_scn5_a65 = 100 if da65>=65&da65<=67&shours>=35
+(174 real changes made)
+
+.                 replace si_scn5_a65 = 100 if da65>=65&da65<=67&shours<35
+(50 real changes made)
+
+.                 replace si_scn5_a65 = 60 + 5*(pr_randomspp5-1) if si_scn5_a65==.
+(236 real changes made)
+
+. 
+.                 gen si_scn5_a68 = 100 if da68<62
+(708 missing values generated)
+
+.                 replace si_scn5_a68 = 40 + 5*(pr_randomspp5-1) if da68>=62&da68<
+> =64
+(76 real changes made)
+
+.                 replace si_scn5_a68 = 50 + 5*(pr_randomspp5-1) if da68>=65&da68<
+> =67
+(172 real changes made)
+
+.                 replace si_scn5_a68 = 60 + 5*(pr_randomspp5-1) if da68>=68
+(460 real changes made)
+
+. 
+. 
+.                 * scn 6
+.                 gen ri_scn6_a62 = 100
+
+.                 gen ri_scn6_a65 = 50 + 5*(pr_randomyou6-1)
+
+.                 gen ri_scn6_a68 = 50 + 5*(pr_randomyou6-1)
+
+. 
+.                 * s works until 68, then retires (unless 68+)
+.                 gen si_scn6_a62 = 100 if da62<65
+(236 missing values generated)
+
+.                 replace si_scn6_a62 = 50 + 5*(pr_randomspp6-1) if da62>=65
+(236 real changes made)
+
+. 
+.                 gen si_scn6_a65 =100 if da65<65
+(460 missing values generated)
+
+.                 replace si_scn6_a65 = 50 + 5*(pr_randomspp6-1) if da65>=65
+(460 real changes made)
+
+. 
+.                 gen si_scn6_a68 = 100 if da68<62
+(708 missing values generated)
+
+.                 replace si_scn6_a68 = 40 + 5*(pr_randomspp6-1) if da68>=62 & da6
+> 8<=64
+(76 real changes made)
+
+.                 replace si_scn6_a68 = 50 + 5*(pr_randomspp6-1) if da68>=65
+(632 real changes made)
+
+. 
+. 
+.         * income in choice scenarios
+.                 * choice 1, scn 2 against 4
+.                 gen ri_scn61_a62 = ri_scn2_a62
+
+.                 gen ri_scn61_a65 = ri_scn2_a65
+
+.                 gen ri_scn61_a68 = ri_scn2_a68
+
+. 
+.                 gen si_scn61_a62 = si_scn2_a62
+
+.                 gen si_scn61_a65 = si_scn2_a65
+
+.                 gen si_scn61_a68 = si_scn2_a68
+
+. 
+.                 gen ri_scn62_a62 = ri_scn4_a62
+
+.                 gen ri_scn62_a65 = ri_scn4_a65
+
+.                 gen ri_scn62_a68 = ri_scn4_a68
+
+. 
+.                 gen si_scn62_a62 = si_scn4_a62
+
+.                 gen si_scn62_a65 = si_scn4_a65
+
+.                 gen si_scn62_a68 = si_scn4_a68
+
+. 
+. 
+.                 * choice 3, scn 5 against 2
+.                 gen ri_scn71_a62 = ri_scn5_a62
+
+.                 gen ri_scn71_a65 = ri_scn5_a65
+
+.                 gen ri_scn71_a68 = ri_scn5_a68
+
+. 
+.                 gen si_scn71_a62 = si_scn5_a62
+
+.                 gen si_scn71_a65 = si_scn5_a65
+
+.                 gen si_scn71_a68 = si_scn5_a68
+
+. 
+.                 gen ri_scn72_a62 = ri_scn2_a62
+
+.                 gen ri_scn72_a65 = ri_scn2_a65
+
+.                 gen ri_scn72_a68 = ri_scn2_a68
+
+. 
+.                 gen si_scn72_a62 = si_scn2_a62
+
+.                 gen si_scn72_a65 = si_scn2_a65
+
+.                 gen si_scn72_a68 = si_scn2_a68
+
+. 
+. 
+.                 * choice 4, scn 3 against 6
+.                 gen ri_scn81_a62 = ri_scn3_a62
+
+.                 gen ri_scn81_a65 = ri_scn3_a65
+
+.                 gen ri_scn81_a68 = ri_scn3_a68
+
+. 
+.                 gen si_scn81_a62 = si_scn3_a62
+
+.                 gen si_scn81_a65 = si_scn3_a65
+
+.                 gen si_scn81_a68 = si_scn3_a68
+
+. 
+.                 gen ri_scn82_a62 = ri_scn6_a62
+
+.                 gen ri_scn82_a65 = ri_scn6_a65
+
+.                 gen ri_scn82_a68 = ri_scn6_a68
+
+. 
+.                 gen si_scn82_a62 = si_scn6_a62
+
+.                 gen si_scn82_a65 = si_scn6_a65
+
+.                 gen si_scn82_a68 = si_scn6_a68
+
+. 
+. 
+. sum ri_scn* si_scn*
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+ ri_scn1_a62 |        779         100           0        100        100
+ ri_scn1_a65 |        779    60.15404    6.908465         50         70
+ ri_scn1_a68 |        779    60.15404    6.908465         50         70
+ ri_scn2_a62 |        779     49.8267    7.157034         40         60
+ ri_scn2_a65 |        779     49.8267    7.157034         40         60
+-------------+---------------------------------------------------------
+ ri_scn2_a68 |        779     49.8267    7.157034         40         60
+ ri_scn3_a62 |        779         100           0        100        100
+ ri_scn3_a65 |        779         100           0        100        100
+ ri_scn3_a68 |        779    69.76252    7.037456         60         80
+ ri_scn4_a62 |        779         100           0        100        100
+-------------+---------------------------------------------------------
+ ri_scn4_a65 |        779    59.88447    7.065576         50         70
+ ri_scn4_a68 |        779    59.88447    7.065576         50         70
+ ri_scn5_a62 |        779         100           0        100        100
+ ri_scn5_a65 |        779         100           0        100        100
+ ri_scn5_a68 |        779    80.01926    6.949571         70         90
+-------------+---------------------------------------------------------
+ ri_scn6_a62 |        779         100           0        100        100
+ ri_scn6_a65 |        779    60.30809    7.217344         50         70
+ ri_scn6_a68 |        779    60.30809    7.217344         50         70
+ri_scn61_a62 |        779     49.8267    7.157034         40         60
+ri_scn61_a65 |        779     49.8267    7.157034         40         60
+-------------+---------------------------------------------------------
+ri_scn61_a68 |        779     49.8267    7.157034         40         60
+ri_scn62_a62 |        779         100           0        100        100
+ri_scn62_a65 |        779    59.88447    7.065576         50         70
+ri_scn62_a68 |        779    59.88447    7.065576         50         70
+ri_scn71_a62 |        779         100           0        100        100
+-------------+---------------------------------------------------------
+ri_scn71_a65 |        779         100           0        100        100
+ri_scn71_a68 |        779    80.01926    6.949571         70         90
+ri_scn72_a62 |        779     49.8267    7.157034         40         60
+ri_scn72_a65 |        779     49.8267    7.157034         40         60
+ri_scn72_a68 |        779     49.8267    7.157034         40         60
+-------------+---------------------------------------------------------
+ri_scn81_a62 |        779         100           0        100        100
+ri_scn81_a65 |        779         100           0        100        100
+ri_scn81_a68 |        779    69.76252    7.037456         60         80
+ri_scn82_a62 |        779         100           0        100        100
+ri_scn82_a65 |        779    60.30809    7.217344         50         70
+-------------+---------------------------------------------------------
+ri_scn82_a68 |        779    60.30809    7.217344         50         70
+ si_scn1_a62 |        779    95.23107    11.43937         60        100
+ si_scn1_a65 |        779    90.80873    14.46965         60        100
+ si_scn1_a68 |        779    68.41463    13.54878         40        100
+ si_scn2_a62 |        779    70.05135    25.51646         40        100
+-------------+---------------------------------------------------------
+ si_scn2_a65 |        779    59.03081    20.73499         40        100
+ si_scn2_a68 |        779    54.25546    15.91745         40        100
+ si_scn3_a62 |        779    88.01669    18.60877         50        100
+ si_scn3_a65 |        779    76.54044    20.31252         50        100
+ si_scn3_a68 |        779    62.88832    13.95924         40        100
+-------------+---------------------------------------------------------
+ si_scn4_a62 |        779    70.78306    24.91818         40        100
+ si_scn4_a65 |        779    59.76893    20.38695         40        100
+ si_scn4_a68 |        779    54.89089    15.72236         40        100
+ si_scn5_a62 |        779    95.28241    11.36494         60        100
+ si_scn5_a65 |        779    90.97561    14.22634         60        100
+-------------+---------------------------------------------------------
+ si_scn5_a68 |        779    68.58151    13.76247         40        100
+ si_scn6_a62 |        779    87.68293    19.10574         50        100
+ si_scn6_a65 |        779    75.98845    20.73951         50        100
+ si_scn6_a68 |        779    62.25931    14.03373         40        100
+si_scn61_a62 |        779    70.05135    25.51646         40        100
+-------------+---------------------------------------------------------
+si_scn61_a65 |        779    59.03081    20.73499         40        100
+si_scn61_a68 |        779    54.25546    15.91745         40        100
+si_scn62_a62 |        779    70.78306    24.91818         40        100
+si_scn62_a65 |        779    59.76893    20.38695         40        100
+si_scn62_a68 |        779    54.89089    15.72236         40        100
+-------------+---------------------------------------------------------
+si_scn71_a62 |        779    95.28241    11.36494         60        100
+si_scn71_a65 |        779    90.97561    14.22634         60        100
+si_scn71_a68 |        779    68.58151    13.76247         40        100
+si_scn72_a62 |        779    70.05135    25.51646         40        100
+si_scn72_a65 |        779    59.03081    20.73499         40        100
+-------------+---------------------------------------------------------
+si_scn72_a68 |        779    54.25546    15.91745         40        100
+si_scn81_a62 |        779    88.01669    18.60877         50        100
+si_scn81_a65 |        779    76.54044    20.31252         50        100
+si_scn81_a68 |        779    62.88832    13.95924         40        100
+si_scn82_a62 |        779    87.68293    19.10574         50        100
+-------------+---------------------------------------------------------
+si_scn82_a65 |        779    75.98845    20.73951         50        100
+si_scn82_a68 |        779    62.25931    14.03373         40        100
+
+. 
+. 
+. **** other questions from internet survey ***
+. 
+.         * job satisfaction
+.         rename j046_11 rjobsat
+
+.         rename j047_11 sjobsat
+
+. 
+. 
+. **** merge to RAND HRS 2010 (interviews for half the new respondents in 2010) **
+> **
+.         merge hhidpn using raw/rndhrs_n.dta, nokeep sort
+(note: you are using old merge syntax; see [D] merge for new syntax)
+
+. 
+.         foreach var of varlist * {
+  2.                 capture rename `var' `=lower("`var'")'
+  3.         }
+
+. 
+.         tab _merge
+
+     _merge |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          3 |        779      100.00      100.00
+------------+-----------------------------------
+      Total |        779      100.00
+
+. 
+. 
+. 
+.         * get wage and earnings of both spouses
+.         egen rearn = rowmean(r7iearn r8iearn r9iearn r10iearn)
+
+.         egen searn = rowmean(r7iearn r8iearn r9iearn r10iearn)
+
+. 
+.         * get wages from various waves
+.         egen rwage = rowmean(r7wgihr r8wgihr r9wgihr r10wgihr)
+(30 missing values generated)
+
+.         egen swage = rowmean(s7wgihr s8wgihr s9wgihr s10wgihr)
+(48 missing values generated)
+
+. 
+. 
+. *       keep if r10work==1 & s10work==1
+. 
+.         * sex
+.         recode ragender (1=1) (2=0), gen(rsex)
+(434 differences between ragender and rsex)
+
+.         gen hwho = rsex==1
+
+. 
+.         * get education status
+.         rename raeduc reduc
+
+.         gen rcollege = reduc==5 
+
+.         rename s10educ seduc
+
+.         gen scollege = seduc==5 
+
+. 
+. * j045 j046 job satisfaction (1 to 5, 5 very  disatisfied)
+.         recode rjobsat (1/2=1) (else=0), gen(rlikejob)
+(450 differences between rjobsat and rlikejob)
+
+.         recode sjobsat (1/2=1) (else=0), gen(slikejob)
+(547 differences between sjobsat and slikejob)
+
+. 
+. * J052 J053 health limits work after 62
+.         recode j052_11 (999=.), gen(rhlth62)
+(28 differences between j052_11 and rhlth62)
+
+.         recode j054_11 (999=.), gen(shlth62)
+(7 differences between j054_11 and shlth62)
+
+.         replace rhlth62 = rhlth62/100.0
+variable rhlth62 was int now float
+(668 real changes made)
+
+.         replace shlth62 = shlth62/100.0
+variable shlth62 was int now float
+(631 real changes made)
+
+. 
+.         rename r10hlthlm rlim
+
+.         rename s10hlthlm slim 
+
+. 
+.         * get their current health status
+.         rename r10shlt rshlt
+
+.         gen rbad = inlist(rshlt,4,5) 
+
+.         rename s10shlt sshlt
+
+.         gen sbad = inlist(sshlt,4,5)
+
+.         * get their current wealth (non housing), (not used right now)
+.         rename h10atotn hwealth
+
+. 
+.         * get their other income (not used right now)
+.         rename h10itot otherinc
+
+.         replace otherinc = otherinc - rearn - searn
+(730 real changes made)
+
+. 
+.         * get retirement expectations
+.         rename  r10rplnya  rexpret
+
+.         rename  s10rplnya  sexpret
+
+.         gen hexpret = rexpret - sexpret
+(588 missing values generated)
+
+.         recode hexpret (min/-5=-5) (-4/-2=-3) (-1/1=0) (2/4=3) (5/max=5), gen(he
+> xpret_g)
+(146 differences between hexpret and hexpret_g)
+
+.         replace hexpret_g = .n if rexpret==.n | sexpret==.n
+(479 real changes made, 479 to missing)
+
+. 
+.         reg rwage rage_mod rcollege rbad rearn h10atota
+
+      Source |       SS           df       MS      Number of obs   =       749
+-------------+----------------------------------   F(5, 743)       =     15.40
+       Model |   133289.67         5  26657.9341   Prob > F        =    0.0000
+    Residual |  1286249.91       743  1731.15735   R-squared       =    0.0939
+-------------+----------------------------------   Adj R-squared   =    0.0878
+       Total |  1419539.59       748  1897.78019   Root MSE        =    41.607
+
+------------------------------------------------------------------------------
+       rwage |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+    rage_mod |   .2479752   .3218954     0.77   0.441    -.3839576     .879908
+    rcollege |   14.20197   3.141131     4.52   0.000      8.03542    20.36852
+        rbad |   8.452882   5.208244     1.62   0.105    -1.771745    18.67751
+       rearn |   .0001316   .0000301     4.38   0.000     .0000726    .0001906
+    h10atota |   2.96e-06   1.17e-06     2.52   0.012     6.52e-07    5.26e-06
+       _cons |  -.5181214   18.23955    -0.03   0.977    -36.32532    35.28907
+------------------------------------------------------------------------------
+
+.         predict prwage
+(option xb assumed; fitted values)
+
+.         replace rwage = prwage if missing(rwage)
+(30 real changes made)
+
+.         drop prwage
+
+.         reg swage sage_mod scollege sbad searn h10atota
+
+      Source |       SS           df       MS      Number of obs   =       731
+-------------+----------------------------------   F(5, 725)       =      8.17
+       Model |  81942.3379         5  16388.4676   Prob > F        =    0.0000
+    Residual |  1454760.81       725  2006.56663   R-squared       =    0.0533
+-------------+----------------------------------   Adj R-squared   =    0.0468
+       Total |  1536703.15       730  2105.07281   Root MSE        =    44.795
+
+------------------------------------------------------------------------------
+       swage |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+    sage_mod |   .2624615   .3007794     0.87   0.383    -.3280412    .8529641
+    scollege |   16.90484   3.430265     4.93   0.000      10.1704    23.63928
+        sbad |   7.264115   5.661418     1.28   0.200    -3.850615    18.37884
+       searn |   1.71e-06    .000032     0.05   0.957     -.000061    .0000645
+    h10atota |   3.48e-06   1.27e-06     2.73   0.006     9.78e-07    5.98e-06
+       _cons |   4.191105    17.3645     0.24   0.809    -29.89961    38.28182
+------------------------------------------------------------------------------
+
+.         predict pswage
+(option xb assumed; fitted values)
+
+.         replace swage = pswage if missing(swage)
+(48 real changes made)
+
+.         drop pswage
+
+.         drop if missing(rwage)
+(0 observations deleted)
+
+.         drop if missing(swage)
+(0 observations deleted)
+
+.         sum rwage swage, d
+
+                            rwage
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%     5.021368              0
+ 5%          8.5              0
+10%        10.42        .127551       Obs                 779
+25%     14.29167            2.4       Sum of Wgt.         779
+
+50%     21.55271                      Mean           29.15579
+                        Largest       Std. Dev.      42.78007
+75%     33.23077       249.2225
+90%     46.49081       320.5128       Variance       1830.134
+95%     59.80769            365       Skewness       13.26294
+99%          150       916.6667       Kurtosis       249.2689
+
+                            swage
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%     5.021368              0
+ 5%         8.75              0
+10%         10.5              0       Obs                 779
+25%     14.74359              0       Sum of Wgt.         779
+
+50%     21.85995                      Mean           28.99428
+                        Largest       Std. Dev.      44.50291
+75%     32.77164       245.7265
+90%     46.34921            365       Variance       1980.509
+95%     61.47295       591.6667       Skewness       13.70937
+99%      135.649       916.6667       Kurtosis         242.14
+
+.         gen wageratio = log(max((min(rwage/swage,5)),0.1))
+
+. 
+. * j048, j050 survival 75
+.         rename r10liv75r rliv75r
+
+.         rename s10liv75r sliv75r
+
+.         foreach var of varlist rliv75r sliv75r {
+  2.                 qui sum `var' if `var'>0
+  3.                 replace `var' = r(p1) if `var'==0
+  4.                 reg `var' rage_mod sage_mod rbad sbad rcollege scollege if mi
+> ssing(`var')==0
+  5.                 predict p`var' 
+  6.                 replace `var' = p`var' if missing(`var')==1
+  7.                 drop if missing(`var')==1
+  8.         }
+(7 real changes made, 7 to missing)
+
+      Source |       SS           df       MS      Number of obs   =       760
+-------------+----------------------------------   F(6, 753)       =      9.90
+       Model |  4.59850042         6  .766416736   Prob > F        =    0.0000
+    Residual |  58.2744388       753  .077389693   R-squared       =    0.0731
+-------------+----------------------------------   Adj R-squared   =    0.0658
+       Total |  62.8729392       759  .082836547   Root MSE        =    .27819
+
+------------------------------------------------------------------------------
+     rliv75r |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+    rage_mod |  -.0014443   .0023719    -0.61   0.543    -.0061007     .003212
+    sage_mod |  -.0048627    .002009    -2.42   0.016    -.0088067   -.0009188
+        rbad |  -.1365735   .0352277    -3.88   0.000    -.2057297   -.0674173
+        sbad |  -.1443996    .034735    -4.16   0.000    -.2125885   -.0762108
+    rcollege |   .0602563   .0223299     2.70   0.007     .0164201    .1040925
+    scollege |   .0209059   .0225238     0.93   0.354    -.0233111    .0651229
+       _cons |   1.287976   .1338935     9.62   0.000     1.025127    1.550824
+------------------------------------------------------------------------------
+(option xb assumed; fitted values)
+(19 real changes made)
+(0 observations deleted)
+(7 real changes made, 7 to missing)
+
+      Source |       SS           df       MS      Number of obs   =       667
+-------------+----------------------------------   F(6, 660)       =      4.18
+       Model |  1.98314073         6  .330523455   Prob > F        =    0.0004
+    Residual |  52.1963483       660  .079085376   R-squared       =    0.0366
+-------------+----------------------------------   Adj R-squared   =    0.0278
+       Total |   54.179489       666  .081350584   Root MSE        =    .28122
+
+------------------------------------------------------------------------------
+     sliv75r |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+    rage_mod |  -.0048456   .0025316    -1.91   0.056    -.0098166    .0001254
+    sage_mod |   -.001541    .002518    -0.61   0.541    -.0064853    .0034033
+        rbad |   -.059804   .0381392    -1.57   0.117    -.1346928    .0150847
+        sbad |  -.0854913   .0383608    -2.23   0.026    -.1608151   -.0101674
+    rcollege |   .0508519   .0241672     2.10   0.036      .003398    .0983057
+    scollege |   .0324896   .0244067     1.33   0.184    -.0154345    .0804137
+       _cons |   1.280043   .1544111     8.29   0.000     .9768463    1.583239
+------------------------------------------------------------------------------
+(option xb assumed; fitted values)
+(112 real changes made)
+(0 observations deleted)
+
+. 
+. 
+. 
+. *** create groups of variables
+. drop if rage_mod>62
+(63 observations deleted)
+
+. drop if sage_mod>62
+(65 observations deleted)
+
+. gen rage = 0
+
+. gen sage = 0
+
+. gen hwho_m = 1-hwho
+
+. gen hwho_f = hwho
+
+. format hhidpn %12.0f
+
+. global id "hhidpn"
+
+. global taste_m "rage rlim  rcollege  hwho_m rlikejob"
+
+. global taste_f "sage slim  scollege hwho_f slikejob"
+
+. global weight "wageratio"
+
+. global ratings "rrate_scn1 srate_scn1 rrate_scn2 srate_scn2 rrate_scn3 srate_scn
+> 3 rrate_scn4 srate_scn4 rrate_scn5 srate_scn5 rrate_scn6 srate_scn6"
+
+. renpfix rchoice hchoice
+
+. global choice  "hchoice_scn1_? hchoice_scn2_? hchoice_scn3_?"
+
+. global age "rage_mod sage_mod"
+
+. global who "hwho"
+
+. global hours_m "rh_scn?_a6* rh_scn6a_a6* rh_scn6b_a6* rh_scn7a_a6* rh_scn7b_a6* 
+> rh_scn8*_a6*"
+
+. global hours_f "sh_scn?_a6* sh_scn6a_a6* sh_scn6b_a6* sh_scn7a_a6* sh_scn7b_a6* 
+> sh_scn8*_a6*"
+
+. global income_m "ri_scn?_a6* ri_scn61_a6* ri_scn62_a6* ri_scn7*_a6* ri_scn8*_a6*
+> "
+
+. global income_f "si_scn?_a6* si_scn61_a6* si_scn62_a6* si_scn7*_a6* si_scn8*_a6*
+> "
+
+. global expect "rexpret sexpret"
+
+. global leavebehind "rwage swage rhours shours "
+
+. global prob "rhlth62 shlth62 rliv75r sliv75r"
+
+. **** rescale the income vars for scenarios (can add other income and wealth late
+> r)
+. replace rrate_scn6 = 0
+(651 real changes made)
+
+. replace srate_scn6 = 0
+(651 real changes made)
+
+. 
+. foreach var of varlist ri_* {
+  2.         qui replace `var' = rwage*rhours*`var'/100
+  3. }
+
+. foreach var of varlist si_* {
+  2.         qui replace `var' = swage*shours*`var'/100
+  3. }
+
+. 
+. di _N
+651
+
+. 
+. foreach j of numlist 1/6 61 62 71 72 81 82 {
+  2.         foreach a of numlist 62 65 68 {
+  3.                 gen hi_scn`j'_a`a' = ri_scn`j'_a`a' + si_scn`j'_a`a'
+  4.                 drop if hi_scn`j'_a`a'<1
+  5.                 label var hi_scn`j'_a`a' "household income in scenario `j' wh
+> en r is `a'"
+  6.         }
+  7. }
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+
+. 
+. global income_h "hi_scn1_a62-hi_scn6_a68 hi_scn61_a62-hi_scn82_a68"
+
+. 
+. di _N
+651
+
+. 
+. keep $id $taste_m $taste_f $weight $ratings $choice $age $who $hours_m $hours_f 
+> $income_h rsex $leavebehind $prob $expect
+
+. order $id $taste_m $taste_f $weight $ratings $choice $age $who $hours_m $hours_f
+>  $income_h rsex $leavebehind $prob $expect
+
+. 
+. foreach var of varlist $id $taste_m $taste_f $weight $ratings $choice $age $who 
+> $hours_m $hours_f $income_h $prob $leavebehind  {
+  2.         drop if missing(`var')
+  3. }
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(21 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(23 observations deleted)
+(3 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+(0 observations deleted)
+
+. 
+. *drop if rage_mod > 61
+. 
+. *drop if rage_mod < 40
+. 
+. 
+. save temp/hrs_unordered.dta, replace
+(note: file temp/hrs_unordered.dta not found)
+file temp/hrs_unordered.dta saved
+
+. 
+. di _N
+604
+
+. 
+. * reorder so r is always husband and s always wife
+. 
+. * map r to husband, s to wife
+. keep if rsex==1
+(324 observations deleted)
+
+. gen ssex=0
+
+. sort $id
+
+. order $id $taste_m $taste_f $weight $ratings $choice $age $who $hours_m $hours_f
+>  $income_h rsex ssex $prob $leavebehind $expect
+
+. save "temp/hrs_husband.dta", replace
+(note: file temp/hrs_husband.dta not found)
+file temp/hrs_husband.dta saved
+
+. 
+. use "temp/hrs_unordered.dta", clear
+
+. keep if rsex==0
+(280 observations deleted)
+
+. gen ssex=1
+
+. renpfix s k
+
+. renpfix r s
+
+. renpfix k r
+
+. sort $id
+
+. order $id $taste_m $taste_f $weight $ratings $choice $age $who $hours_m $hours_f
+>  $income_h rsex ssex $prob $leavebehind $expect
+
+. save "temp/hrs_wives.dta", replace
+(note: file temp/hrs_wives.dta not found)
+file temp/hrs_wives.dta saved
+
+. 
+. capture drop _merge
+
+. append using "temp/hrs_husband.dta"
+(note: variable sage_mod was byte, now int to accommodate using data's values)
+(note: variable ssex was byte, now float to accommodate using data's values)
+(note: variable rhours was byte, now int to accommodate using data's values)
+(label YESNOW already defined)
+
+. save "temp/hrs_ordered.dta", replace
+(note: file temp/hrs_ordered.dta not found)
+file temp/hrs_ordered.dta saved
+
+. 
+. di _N
+604
+
+. 
+. drop rsex ssex
+
+. label var hhidpn "unique id of record"
+
+. label var rcol "husband has college education (binary)"
+
+. label var scol "wife has college education (binary)"
+
+. label var wageratio "ratio of husband's wage to wife's wage, min(w,5)"
+
+. label var rage_mod "age of husband in years from module"
+
+. label var sage_mod "age of wife in years from module"
+
+. label var hwho "who answered question 1=husband, 0=wife"
+
+. label var rhours "hours worked husband"
+
+. label var shours "hours worked wife"
+
+. label var rwage "wage husband"
+
+. label var swage "wage wife"
+
+. label var rliv75r "relative survival to age 75 (husband)"
+
+. label var sliv75r "relative survival to age 75 (wife)"
+
+. label var rhlth62 "probability health limits work after age 62 (husband)"
+
+. label var shlth62 "probability health limits work after age 62 (wife)"
+
+. label var rlim "health limits work of husband"
+
+. label var slim "health limits work of wife"
+
+. forvalues j = 1/3 {
+  2.         gen  same_`j' = (hchoice_scn`j'_r==hchoice_scn`j'_s&hchoice_scn`j'_s=
+> =hchoice_scn`j'_h)
+  3. }
+
+. egen countsame = anycount(same_*), values(1)
+
+. *drop if countsame==3
+. drop same_* countsame*
+
+. 
+. * drop rating 6
+. drop *scn6_* rrate_scn6 srate_scn6
+
+. replace hhidpn = _n
+(604 real changes made)
+
+. 
+. save "data/hrs_final_$scn.dta", replace
+file data/hrs_final_ref.dta saved
+
+. 
+. drop $expect
+
+. 
+. * dimensions for fortran
+. 
+. global nobs _N
+
+. global nquestions 8
+
+. global nratings 5
+
+. global nchoice 3
+
+. global k_taste_m = wordcount("$taste_m")
+
+. global k_taste_f = wordcount("$taste_f")
+
+. global k_weight = wordcount("$weight")
+
+. global nvar c(k)
+
+. 
+. 
+. capture file close info
+
+. file open info using "data/info_$scn.dat", write text replace
+
+. file write info "Information on sp HRS dataset produced $S_DATE $S_TIME for scen
+> ario $scn" _n
+
+. file write info ($nquestions) " " ($nratings) " " ($nchoice) " " ($nobs) " " ($k
+> _taste_m) "     " ($k_taste_f) " " ($k_weight) " " ($nvar) _n
+
+. file close info
+
+. 
+. 
+. global vars "age hlim college male job"  
+
+. 
+. file open vars using "data/varlist_$scn.dat", write text replace
+
+. file write vars  "List of variables used in model $S_DATE $S_TIME for scenario $
+> scn" _n
+
+. foreach var in $vars {
+  2.     file write vars ("`var'")  _n
+  3. }
+
+. file close vars
+
+. 
+. * same file for output
+. outsheet using "data/hrs_final_$scn.csv", comma replace  nolabel nonames
+
+. 
+. capture erase temp/hrs_ordered.dta
+
+. capture erase temp/hrs_unordered.dta
+
+. capture erase temp/hrs_husband.dta
+
+. capture erase temp/hrs_wives.dta
+
+. 
+. capture log close

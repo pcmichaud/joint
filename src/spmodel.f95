@@ -31,7 +31,7 @@ integer nfreepar ! number of free parameters
 
 ! estimation path
 character(len=50) estpath
-		
+
 ! DATA declared as global (dimensions allocated in inidata once info read)
 integer, allocatable :: Id(:)				! id of respondent (n)
 double precision, allocatable :: Xm(:,:)			! taste shifters husband (n,nxm)
@@ -41,7 +41,7 @@ integer, allocatable :: R(:,:,:)					! ratings (n,nr,2)
 integer, allocatable :: C(:,:,:)					! choices (n,nc,3)
 integer, allocatable :: age(:,:)					! age of respondents (n,2)
 integer, allocatable ::	Who(:)						! who answered question (n)
-double precision, allocatable :: Hm(:,:,:,:)		! hours of husbands in scenarios (n,nj,2,3) 
+double precision, allocatable :: Hm(:,:,:,:)		! hours of husbands in scenarios (n,nj,2,3)
 double precision, allocatable :: Hf(:,:,:,:)		! hours of wives in scenarios (n,nj,2,3)
 double precision, allocatable :: Y(:,:,:,:)			! household income in scenarios  (n,nj,2,3)
 double precision, allocatable :: D(:, :, :)			! for uniform draws (n,nd,2)
@@ -57,18 +57,23 @@ double precision, allocatable :: value(:,:,:)			! expected utility for simulatio
 double precision, allocatable :: cprob(:,:,:)
 ! scenarios and settings
 character*50 scenario
-logical isurvival, iload, includeratings, icorr, iestimate, ihetero, icomplement, iunitary, idiscount, idirect
+logical isurvival, iload, includeratings, icorr, iestimate, ihetero, icomplement, iunitary, idiscount,idirect
 character*50 initfile, data, info, survival
 double precision arf, drc, reprate
 logical ishufheter, ishufwages, iblockcomp
+
+!!!! Luc !!!!!
+logical :: ifixcorr, inoestim
+double precision :: dfixrho, ddiscount
+integer iloccorr
 
 ! life table survival probabilities (age 1 to 100)
 
 ! INTERMEDIATE ARRAYS for parameters
 double precision, allocatable :: freepar(:)	, allpar(:) 	! array to store free parameter values
 double precision fixpar(nparmax)
-character(len=25) labpar(nparmax)	
-character(len=25), allocatable :: labfreepar(:)						
+character(len=25) labpar(nparmax)
+character(len=25), allocatable :: labfreepar(:)
 													! array to fix parameters (unbounded = 999.0d0)
 ! list of subroutines
 contains
@@ -88,6 +93,7 @@ contains
 		read(1,*) buffer, icorr
 		read(1,*) buffer, iunitary
 		read(1,*) buffer, idiscount
+		read(1,*) buffer, ddiscount
 		read(1,*) buffer, idirect
 		read(1,*) buffer, arf
 		read(1,*) buffer, drc
@@ -95,13 +101,16 @@ contains
 		read(1,*) buffer, ishufheter
 		read(1,*) buffer, ishufwages
 		read(1,*) buffer, iblockcomp
+		read(1,*) buffer, ifixcorr
+		read(1,*) buffer, dfixrho
+		read(1,*) buffer, inoestim
 		close(1)
 
 		if (.not. ihetero) then
 			nd = 1
 		else
 			nd = 50
-		end if 
+		end if
 
 	end subroutine initsettings
 
@@ -120,14 +129,14 @@ contains
 
 	! LOAD DATA
 	subroutine initdata
-		double precision, allocatable :: buf(:)						
+		double precision, allocatable :: buf(:)
 		double precision draw
 		double precision alpha, beta, pm, pf
 		integer pos, s, u, t, i, iid
 		! Load info file to get sizes
 		write(*,*) '+ read information'
-		open(1,file='../data/'//adjustl(trim(info)))	
-				read(1,*) 
+		open(1,file='../data/'//adjustl(trim(info)))
+				read(1,*)
                         read(1,*) nj,nr,nc,n,nxm,nxf,nz,nvar
                 close(1)
 
@@ -140,9 +149,9 @@ contains
                 shifters(1) = 'constant'
                 do i = 2, nxm, 1
                    read(2,*) shifters(i)
-                end do   
+                end do
                 close(2)
-                		
+
 		! Report on dataset
 		write(*,*) '-------------------------------------'
 		write(*,*) 'Information of dataset to load'
@@ -155,7 +164,7 @@ contains
 		write(*,'(A,I4)') 'number of distr. factors (incl const) = ', nz
 		write(*,'(A,I4)') 'number of vars dataset = ', nvar
 		write(*,*) '-------------------------------------'
-				
+
 		! Allocate global arrays using info on sizes
 		allocate(buf(nvar-1))
 		allocate(Id(n))
@@ -171,7 +180,7 @@ contains
 		allocate(Y(n,nj,2,3))
 		allocate(D(n,nd,2))
 		allocate(pHL(n,4))
-		allocate(sHL(n,4))		
+		allocate(sHL(n,4))
 		allocate(p75r(n,2))
 		allocate(wages(n,2))
 		allocate(hours(n,2))
@@ -179,7 +188,7 @@ contains
 		! Load data
 
 		open(2,file='../data/'//adjustl(trim(data)))
-        
+
         do i= 1, n, 1
            pos = 1
            ! read entire record
@@ -201,7 +210,7 @@ contains
 		   		R(i,s,:) = nint(buf(pos:pos + 1))
 		   		pos = pos + 2
 		   	end do
-		    ! choices 	
+		    ! choices
 		   	do s = 1, nc, 1
 		   		C(i,s,:) = nint(buf(pos:pos + 2))
 		   		pos = pos + 3
@@ -218,7 +227,7 @@ contains
 					Hm(i,s,1,:) = buf(pos:pos+2)
 					!write(*,*) Hm(i,s,1,:)
 					pos = pos + 3
-				else 
+				else
 					Hm(i,s,1,:) = buf(pos:pos+2)
 					pos = pos + 3
 					Hm(i,s,2,:) = buf(pos:pos+2)
@@ -230,7 +239,7 @@ contains
 				if (s.le.nr) then
 					Hf(i,s,1,:) = buf(pos:pos+2)
 					pos = pos + 3
-				else 
+				else
 					Hf(i,s,1,:) = buf(pos:pos+2)
 					pos = pos + 3
 					Hf(i,s,2,:) = buf(pos:pos+2)
@@ -242,13 +251,13 @@ contains
 				if (s.le.nr) then
 					Y(i,s,1,:) = buf(pos:pos+2)
 					pos = pos + 3
-				else 
+				else
 					Y(i,s,1,:) = buf(pos:pos+2)
 					pos = pos + 3
 					Y(i,s,2,:) = buf(pos:pos+2)
 					pos = pos + 3
 				end if
-			end do	
+			end do
 			! reading health limit work probabilities
 			pm = buf(pos)
 			pos = pos + 1
@@ -295,8 +304,8 @@ contains
 					end if
 					if (nd.eq.1) then
 						D(i,u,1) = 0.0d0
-					end if	
-					call random_number(draw)	
+					end if
+					call random_number(draw)
 					D(i,u,2) = quann(draw)
 					if (D(i,u,2).lt.-10.0d0) then
 						D(i,u,2) = -10.0d0
@@ -305,13 +314,13 @@ contains
 					end if
 					if (nd.eq.1) then
 						D(i,u,2) = 0.0d0
-					end if	
+					end if
 	!			  print *, i, u,  D(i,u,:)
-				end do	
+				end do
 			end do
 		else
 			D(:,:,:) = 0.0d0
-		end if	
+		end if
 		! load life tables
 		open(3,file='../params/gompertz_ref.csv')
 			read(3,*) gomp(1,:)
@@ -325,7 +334,7 @@ contains
 					beta = gomp(1,s)
 					alpha = p75r(i,s)*alpha
 					do t = 1, Time, 1
-						L(s,i,t) = dexp(-alpha/beta *(dexp(beta*dble(t))-1.0d0))							
+						L(s,i,t) = dexp(-alpha/beta *(dexp(beta*dble(t))-1.0d0))
 					end do
 				end do
 			end do
@@ -333,8 +342,8 @@ contains
 			L(:,:,:) = 1.0d0
 		end if
 	end subroutine initdata
-	
-	
+
+
 	! INITIALIZE PARAMETERS
 	! allpar is npar by 1, freepar is nfreepar by 1
 	! fixpar is what controls the parameters that are being fixed
@@ -403,16 +412,16 @@ contains
 			labpar(pos) = 'alpha_lf'
 			if (.not. idirect) then
 				fixpar(pos) = ipar(pos)
-			end if	
+			end if
 			pos = pos + 1
 			! husband wife's leisure complementarity
 			ipar(pos) = 0.0d0
 			labpar(pos) = 'alpha_lm_lf'
 			if (.not. icomplement) then
 				fixpar(pos) = ipar(pos)
-			end if	
+			end if
 			!fixpar(pos) = ipar(pos)
-			pos = pos + 1		
+			pos = pos + 1
 
 
 			! WIFE UTILITY
@@ -437,15 +446,15 @@ contains
 			labpar(pos) = 'beta_lm'
 			if (.not. idirect) then
 				fixpar(pos) = ipar(pos)
-			end if	
+			end if
 			pos = pos + 1
 			! wife husband's leisure complementarity
 			ipar(pos) = 0.0d0
 			labpar(pos) = 'beta_lm_lf'
 			if (.not. icomplement) then
 				fixpar(pos) = ipar(pos)
-			end if	
-			pos = pos + 1	
+			end if
+			pos = pos + 1
 			! WEIGHT
 				ipar(pos) = 0.0d0
 				labpar(pos) = 'mu'
@@ -456,16 +465,17 @@ contains
 				labpar(pos) = 'wageratio'
 				if (iunitary) then
 					fixpar(pos) = ipar(pos)
-				end if	
+				end if
 				pos = pos + 1
 			end do
-			! DISCOUNT FACTORS 
-			ipar(pos)   = dlog(0.95d0)
+			! DISCOUNT FACTORS
+			ipar(pos)   = dlog(ddiscount)
 			labpar(pos) = 'log_rho_m'
 			if (.not. idiscount) then
 				fixpar(pos) = ipar(pos)
-			end if	
-			ipar(pos+1) = dlog(0.95d0)
+			end if
+			ipar(pos+1) = dlog(ddiscount)
+
 			labpar(pos+1) = 'log_rho_f'
 			if (.not. idiscount) then
 				fixpar(pos+1) = ipar(pos+1)
@@ -512,7 +522,7 @@ contains
 			! EXCESS VARIANCE RATINGS HUSBAND (sig = exp(sig*))
 			ipar(pos) = dlog(1.0d0)
 			labpar(pos) = 'log_sig_m'
-			
+
 			if(.not. includeratings) then
                   fixpar(pos) = ipar(pos)
             end if
@@ -520,7 +530,7 @@ contains
 			! EXCESS VARIANCE RATINGS WIFE (sig = exp(sig*))
 			ipar(pos) = dlog(1.0d0)
 			labpar(pos) = 'log_sig_f'
-			
+
 			if(.not. includeratings) then
                   fixpar(pos) = ipar(pos)
             end if
@@ -530,22 +540,32 @@ contains
 			labpar(pos) = 'L_nm_nm'
 			if (.not. ihetero) then
 				fixpar(pos) = 0.0d0
-			end if	
+			end if
 			ipar(pos+1) = 0.0d0 	! L(nf,nm)
 			labpar(pos+1) = 'L_nf_nm'
 			if (.not. ihetero) then
 				fixpar(pos+1) = ipar(pos+1)
-			end if	
+			end if
 			if (.not. icorr) then
 				fixpar(pos+1) = ipar(pos+1)
-			end if	
+			end if
+
+			!!!! LUC : Manual and inconsistent fix !!!!
+			if (ifixcorr) then
+          ipar(pos+1)   = dfixrho
+					fixpar(pos+1) = ipar(pos+1)
+					iloccorr      = pos + 1
+			end if
+
+
+
 			ipar(pos+2) = 1.0d0	! L(nf,nf)
 			labpar(pos+2) = 'L_nf_nf'
 			if (.not. ihetero) then
 				fixpar(pos+2) = 0.0d0
-			end if	
+			end if
 			pos = pos + 3
-			
+
 			! Scale for the utility function
             ipar(pos) = 1.0d0
             labpar(pos) = 'scale_m'
@@ -564,15 +584,15 @@ contains
 
 			! total number of parameters
 			npar = pos-1
-				
-			! count number of free parameters	
+
+			! count number of free parameters
 			nfreepar = 0
 			do i = 1, npar, 1
 				if (fixpar(i) .eq. 999.0d0) then
 					nfreepar = nfreepar + 1
-				end if	
+				end if
 			end do
-			! now transfer ipar() to freepar(), allocate memory for freepar()	
+			! now transfer ipar() to freepar(), allocate memory for freepar()
 			allocate(freepar(nfreepar))
 			allocate(labfreepar(nfreepar))
 			j = 1
@@ -582,17 +602,17 @@ contains
 						freepar(j) = epar(i)
 					else
 						freepar(j) = ipar(i)
-					end if	
+					end if
 					labfreepar(j) = labpar(i)
 					j = j+1
-				end if	
+				end if
 			end do
-			
+
 			write(*,*) 'initial values of parameters'
 			do i=1,nfreepar,1
 				write(*,'(I4, A, F9.3)') i, labfreepar(i),freepar(i)
 			end do
-			
+
 	end subroutine initpar
 	! GET ALL PARAMETERS FROM FREEPARS
 	! function to get all parameters from freepar, plugs in fixed values
@@ -609,11 +629,11 @@ contains
 			end if
 		end do
 	end subroutine
-	
+
 	! MAPPING PARAMETER VECTOR TO INDIVIDUAL PARAMETERS
 	! parsing the parameter vector into useful parameter arrays for computations
 	subroutine maptopar(par,bm,bf,bz, rho, cutm, cutf, sigm, sigf, Lo, utilscale)
-		double precision par(npar), bm(4,nxm), bf(4,nxf), bz(nz) 
+		double precision par(npar), bm(4,nxm), bf(4,nxf), bz(nz)
 		double precision rho(2), cutm(nm+1), cutf(nm+1), sigm, sigf, Lo(2,2), utilscale(3)
 		integer pos, i, m
 		pos = 1
@@ -633,7 +653,7 @@ contains
 			! husband wife's leisure complementarity
 			bm(4,1) = par(pos)
 			pos = pos + 1
-			
+
 			! WIFE UTILITY
 			! wife consumption
 			bf(1,1) = par(pos)
@@ -649,13 +669,13 @@ contains
 			! wife husband's leisure complementarity
 			bf(4,1) = par(pos)
 			pos = pos + 1
-			
+
 			! WEIGHT
 			do i = 1, nz, 1
 				bz(i) = par(pos)
 				pos = pos + 1
 			end do
-			
+
 			! DISCOUNT FACTORS
 			rho(1) = dexp(par(pos))
 			rho(2) = dexp(par(pos+1))
@@ -667,7 +687,7 @@ contains
 			do m = 3, nm, 1
 				cutm(m) = cutm(m-1) + dexp(par(pos))
 				pos = pos + 1
-			end do			
+			end do
 			cutm(nm+1) = 1.0d6
 			! THRESHOLDS WIFE (pad with -.Inf and +.Inf, here =1.0d6)
 			cutf(1) = -1.0d6
@@ -676,7 +696,7 @@ contains
 			do m = 3, nm, 1
 				cutf(m) = cutf(m-1) + dexp(par(pos))
 				pos = pos + 1
-			end do		
+			end do
 			cutf(nm+1) = 1.0d6
 			! EXCESS VARIANCE RATINGS HUSBAND
 			sigm = dexp(par(pos))
@@ -697,11 +717,11 @@ contains
 			utilscale(3) = par(pos+2)
 			pos = pos+2
 
-			if (pos .ne. npar) then 
+			if (pos .ne. npar) then
 				write(*,*) 'warning, not all parameters have been assigned!',pos, npar
-			end if			
+			end if
 	end subroutine maptopar
-	
+
 	! COMPUTING DISCOUNT FACTORS FOR 3 SUB-PERIODS
 	! here assuming only individual survival maters to each spouse
 	subroutine factor(i, am, af, who, rho, fm, ff, agem, agef)
@@ -717,13 +737,13 @@ contains
 						refa = a + (af-am)
 					end if
 					if (refa.ge.62 .and. refa.lt.65) then
-						fm(1) = fm(1) + (L(1,i,a)/L(1,i,am))*(rho(1)**(a-am)) 
+						fm(1) = fm(1) + (L(1,i,a)/L(1,i,am))*(rho(1)**(a-am))
 					else if (refa.ge.65 .and. refa.lt.68) then
-						fm(2) = fm(2) + (L(1,i,a)/L(1,i,am))*(rho(1)**(a-am)) 
+						fm(2) = fm(2) + (L(1,i,a)/L(1,i,am))*(rho(1)**(a-am))
 					else if (refa.ge.68) then
 						fm(3) = fm(3) + (L(1,i,a)/L(1,i,am))*(rho(1)**(a-am))
 					end if
-					
+
 			end do
 			! wife
 			ff(1) = 0.0d0
@@ -736,37 +756,37 @@ contains
 						refa = a + (am-af)
 					end if
 					if (refa.ge.62 .and. refa.lt.65) then
-						ff(1) = ff(1) + (L(2,i,a)/L(2,i,af))*(rho(2)**(a-af)) 
+						ff(1) = ff(1) + (L(2,i,a)/L(2,i,af))*(rho(2)**(a-af))
 					else if (refa.ge.65 .and. refa.lt.68) then
-						ff(2) = ff(2) + (L(2,i,a)/L(2,i,af))*(rho(2)**(a-af)) 
+						ff(2) = ff(2) + (L(2,i,a)/L(2,i,af))*(rho(2)**(a-af))
 					else if (refa.ge.68) then
 						ff(3) = ff(3) + (L(2,i,a)/L(2,i,af))*(rho(2)**(a-af))
 					end if
 			end do
-			
-			
+
+
 			if (who.eq.0) then
 			    agef(1) = 62
 			    agef(2) = 65
 			    agef(3) = 68
-			    
+
 			    agem(1) = 62 + (am - af)
 			    agem(2) = 65 + (am - af)
 			    agem(3) = 68 + (am - af)
-			    
+
 			else
 			    agem(1) = 62
 			    agem(2) = 65
 			    agem(3) = 68
-			    
+
 			    agef(1) = 62 + (af - am)
 			    agef(2) = 65 + (af - am)
-			    agef(3) = 68 + (af - am)			    
+			    agef(3) = 68 + (af - am)
 			end if
-			
-		
+
+
 	end subroutine factor
-	
+
 	pure subroutine getutility(cons, lown, lsp, parc,parown, parsp, parlmlf, eta, utility)
         double precision, intent(in)  ::lown, lsp, cons, parc, parown, parsp, parlmlf,  eta
         double precision, intent(out) ::utility
@@ -775,19 +795,19 @@ contains
             + parlmlf*dlog(lsp)*dlog(lown)
 
 	end subroutine getutility
-	
-	
+
+
 	! to compute ordered probit probabilities
 	subroutine getp_order(choice, v, cut, nanswers, sig, prob)
 			integer nanswers, choice
 			double precision v, cut(nanswers+1), prob, sig, high, low
-			
+
 			high = probl((cut(choice+1) - v)/dsqrt(sig))
 			low =  probl((cut(choice) - v)/dsqrt(sig))
 			prob = high - low
 			!write(*,*) v, high , low, choice, cut(choice+1), cut(choice)
 	end subroutine getp_order
-	
+
 	! computing array of probabilities p for n respondents
 	subroutine getprob(freebeta, prob)
 		double precision freebeta(nfreepar), beta(npar), prob(n)
@@ -799,8 +819,6 @@ contains
 		! arrays for parameters
 		double precision bm(4,nxm), bf(4,nxf), bz(nz), bum, buf, buma, bufa
 		double precision rho(2),cutm(nm+1), cutf(nm+1), sigm, sigf, Lo(2,2), uscale(3)
-	
-
 
 		! get all parameters from freebeta array and fixpar array
 		call getpar(freebeta, beta)
@@ -808,10 +826,10 @@ contains
 		call maptopar(beta, bm, bf, bz, rho, cutm, cutf, sigm, sigf, Lo, uscale)
 		! start loop over respondents
 
-		do i = 1, n, 1	
+		do i = 1, n, 1
 			! compute discount factors (same across questions)
 			call factor(i,age(i,1), age(i,2) , who(i), rho, fm, ff, agem, agef)
-		
+
 			! compute weight (same across questions)
 			! initialize weight
 			w = 0.0d0
@@ -822,39 +840,48 @@ contains
 				w = 1.0d0
 			else if (w .le. -5.0d0) then
 				w = 0.0d0
-			else 	
+			else
 				w = dexp(w)/(1.0d0+dexp(w))
 			end if
-	
-			
+
+
 			! reduce marginal utility of leisure into bum and buf
 			bum = bm(2,1)
 			do j = 2, nxm, 1
 				bum = bum + Xm(i,j)*bm(2,j)
-			end do	
+			end do
 			buf = bf(2,1)
 			do j = 2, nxf, 1
 				buf = buf + Xf(i,j)*bf(2,j)
-			end do	
-			
+			end do
+
 			! initialize probability for respondent i
 			pi = 0.0d0
 			! start looping over draws for UH
 			do u = 1, nd, 1
+				!LUC: if the coefficient is fixed. The cst computation should be opt. away
+				if(ifixcorr) then
+					Lo(2,1) = (dfixrho/dsqrt(1-dfixrho**2))*Lo(2,2)
+					!!! This is bad. Overwritting the fix par...)
+					fixpar(iloccorr) = Lo(2,1)
+				end if
+
 				! update draws for UH
-				um = Lo(1,1)*D(i,u,1) 
+				um = Lo(1,1)*D(i,u,1)
 				uf = Lo(2,1)*D(i,u,1) + Lo(2,2)*D(i,u,2)
+
+
 				! initialize probability p(i,u)
 				pu = 1.0d0
 				! start looping over questions, first nr are ratings, remaining choices
 				do j = 1, nj, 1
 
 					! change nr here if you want to consider only subset of questions
-			
+
 					if (j.le.nr) then			! RATINGS QUESTIONS
 						if (includeratings) then
 							! there are two responses for each rating, husband and wife
-							
+
 							! HUSBAND
 							! initialize husband's expected utility
 							vm = 0.0d0
@@ -876,7 +903,7 @@ contains
 							! get probability of rating husband
 							if (R(i,j,1) .lt. 99) then
 								call getp_order(R(i,j,1), vm, cutm, nm, sigm, pm)
-							else 
+							else
 								pm = 1.0d0
 							end if
 							! WIFE
@@ -885,7 +912,7 @@ contains
 							! loop over three time intervals in scenario
 							do s = 1, 3, 1
 							    ! add current age to marginal utility
-							    bufa = buf + bf(2,2)*(dble(agef(s)-62)-Xf(i,2)) 
+							    bufa = buf + bf(2,2)*(dble(agef(s)-62)-Xf(i,2))
 								! compute log own leisure
 								lf = Lmax - Hf(i,j,1,s)
 								! compute other spouse leisure (normalized between 0 and 1)
@@ -894,7 +921,7 @@ contains
 								cons = Y(i,j,1,s)
 								! compute utility for this period
 								call getutility(cons, lf, lm, bf(1,1), bufa, bf(3,1), bf(4,1), uf, v)
-								
+
 								! discount and add
 								vf = vf + ff(s)*v
 							end do
@@ -903,12 +930,12 @@ contains
 								call getp_order(R(i,j,2), vf, cutf, nm, sigf, pf)
 							else
 								pf = 1.0d0
-							end if	
+							end if
 							! compute product over j for given draw u and individual i
 							pu = pu*pm*pf
 						end if
 					else  							! CHOICE QUESTIONS
-						
+
 						! index of choice question
 						k = j - nr
 						! there are three responses per choice question (husband, wife, household)
@@ -925,7 +952,7 @@ contains
 
 							! HUSBAND
 							! expected utility option 1
-							
+
 							do s = 1, 3, 1
 							    ! add current age to marginal utility
 
@@ -939,12 +966,12 @@ contains
 								vm1 = vm1 + pHL(i,hh)*fm(s)*v
 							end do
 							! expected utility option 2
-							
+
 							do s = 1, 3, 1
 							     ! add current age to marginal utility
-							    buma = bum + bm(2,2)*(dble(agem(s)-62)-Xm(i,2)) 
+							    buma = bum + bm(2,2)*(dble(agem(s)-62)-Xm(i,2))
 							    ! make change for health limitations
-							    buma = buma + bm(2,3)*(sHL(hh,1) - Xm(i,3))							    
+							    buma = buma + bm(2,3)*(sHL(hh,1) - Xm(i,3))
 								lm = Lmax - Hm(i,j,2,s)
 								lf = Lmax - Hf(i,j,2,s)
 								cons = Y(i,j,2,s)
@@ -954,12 +981,12 @@ contains
 
 							! WIFE
 							! expected utility option 1
-							
+
 							do s = 1, 3, 1
 							    ! add current age to marginal utility
-							    bufa = buf + bf(2,2)*(dble(agef(s)-62)-Xf(i,2)) 
+							    bufa = buf + bf(2,2)*(dble(agef(s)-62)-Xf(i,2))
 							    ! make change for health limitations
-							    bufa = bufa + bf(2,3)*(sHL(hh,2) - Xf(i,3))							    
+							    bufa = bufa + bf(2,3)*(sHL(hh,2) - Xf(i,3))
 								lf = Lmax - Hf(i,j,1,s)
 								lm = Lmax - Hm(i,j,1,s)
 								cons = Y(i,j,1,s)
@@ -967,21 +994,21 @@ contains
 								vf1 = vf1 + pHL(i,hh)*ff(s)*v
 							end do
 							! expected utility option 2
-							
+
 							do s = 1, 3, 1
 							    ! add current age to marginal utility
-							    bufa = buf + bf(2,2)*(dble(agef(s)-62)-Xf(i,2)) 
+							    bufa = buf + bf(2,2)*(dble(agef(s)-62)-Xf(i,2))
 							    ! make change for health limitations
-							    bufa = bufa + bf(2,3)*(sHL(hh,2) - Xf(i,3))							    
+							    bufa = bufa + bf(2,3)*(sHL(hh,2) - Xf(i,3))
 								lf = Lmax - Hf(i,j,2,s)
 								lm = Lmax - Hm(i,j,2,s)
 								cons = Y(i,j,2,s)
 								call getutility(cons, lf, lm, bf(1,1), bufa, bf(3,1), bf(4,1), uf, v)
 								vf2 = vf2 + pHL(i,hh)*ff(s)*v
-							end do		
+							end do
 
 						end do
-						
+
 						! HOUSEHOLD
 						! expected utility household option 1
 						vh1 = w*vm1 + (1.0d0-w)*vf1
@@ -994,8 +1021,8 @@ contains
 							pm =  probl((vm1 - vm2)/uscale(1))
 						else if (C(i,k,1) .eq. 2) then
 							pm = probl((vm2 - vm1)/uscale(1))
-						else 
-						    pm = 1.0d0	
+						else
+						    pm = 1.0d0
 						end if
 
 						! probability observing choice
@@ -1004,37 +1031,37 @@ contains
 						else if (C(i,k,2) .eq. 2) then
 							pf = probl((vf2-vf1)/uscale(2))
 						else
-						    pf = 1.0d0	
+						    pf = 1.0d0
 						end if
-	
-						! probability observing choice option 
+
+						! probability observing choice option
 						if (C(i,k,3).eq.1) then
 							ph = probl((vh1-vh2)/uscale(3))
 						else if (C(i,k,3) .eq. 2) then
 							ph = probl((vh2-vh1)/uscale(3))
-						else 
-						    ph = 1.0d0	
+						else
+						    ph = 1.0d0
 						end if
-						
-						! product over j for given u						
-						pu = pu*pm*pf*ph	
+
+						! product over j for given u
+						pu = pu*pm*pf*ph
 						end if
 					end if ! end if statement over question type
 
 				end do ! end loop questions over questions
 			! sum over draws for respondent i
 			pi = pi + pu
-			end do ! end loop over draws	
+			end do ! end loop over draws
 			! probability of respondent i (average over p(i,u))
 			prob(i) = pi/dble(nd)
 			if (prob(i) .lt. 1.0d-35) then
 				prob(i) = 1.0d-35
-			end if	
+			end if
 			!write(*,*) prob
-		end do ! end loop respondents	
-		
+		end do ! end loop respondents
+
 	end subroutine getprob
-	
+
 	! PERFORM ESTIMATION
 	subroutine doestimation
 		implicit none
@@ -1042,7 +1069,7 @@ contains
 		double precision epsrf, prob(n), freebeta(nfreepar), func
 		double precision gradient(nfreepar), hessian(nfreepar,nfreepar), invhessian(nfreepar,nfreepar)
 		double precision beta_up(nfreepar), step, beta(npar)
-		double precision prob_up(n), dprob(n,nfreepar) 
+		double precision prob_up(n), dprob(n,nfreepar)
 		logical converged, feasible
 
         ! Jumping to neiboring values to check robustness.
@@ -1068,11 +1095,11 @@ contains
 		iter = 0
 
 
-		if (iestimate) then	
+		if (iestimate) then
 			do while ((.not. converged))
-				
+
 				! get probabilities (i=1,...,n) at current value of parameters
-				call getprob(freebeta,prob)	
+				call getprob(freebeta,prob)
 				do i = 1, n, 1
 				!	write(*,*) prob(i)
 				end do
@@ -1086,7 +1113,7 @@ contains
 				end do
 
 				! get numerical derivatives of probabilities (n by npar)
-		
+
 				do j = 1,nfreepar,1
 					! forward evaluation
 					beta_up = freebeta
@@ -1107,10 +1134,10 @@ contains
 						do m = 1, nfreepar, 1
 							hessian(j,m) = hessian(j,m) + (dprob(i,j)/prob(i))*(dprob(i,m)/prob(i))
 						end do
-					end do		
+					end do
 				end do
 
-				! update parameter values using BHHH formula	
+				! update parameter values using BHHH formula
 				call update_parms(gradient, hessian, invhessian, freebeta, func, step, converged, feasible)
 				! print iteration and function value
 	           !
@@ -1145,7 +1172,7 @@ contains
 					end if
 				else
 					write(*,*) 'iter = ', iter, 'func = ', func, 'step = ', step
-				end if	
+				end if
 				! optional: write parameter, gradient and hessian values
 				do i = 1, nfreepar, 1
 				!	write(*,*) freebeta(i),gradient(i),hessian(i,i)
@@ -1160,15 +1187,15 @@ contains
 				write(*,*) 'converged,  loglikelihood =  ', func
 			else
 				write(*,*) 'no convergence, loglikelihood', func
-			end if	
+			end if
 			do i = 1, nfreepar, 1
 				write(*,'(I2,A1,A12,3F10.3)') i,' ',labfreepar(i),freebeta(i),sqrt(invhessian(i,i)), &
 					freebeta(i)/sqrt(invhessian(i,i))
 			end do
-			
+
 			! get whole parameter vector
 			call getpar(freebeta, beta)
-			
+
 			! now save to file
 			open(4, file='../params/parms_'//adjustl(trim(scenario))//'.csv')
 			write(4,*) func
@@ -1180,15 +1207,15 @@ contains
 					ii = ii + 1
 				else
 					write(4,*) labpar(i),beta(i), 0.0d0
-				end if	
-			end do	
+				end if
+			end do
 			close(4)
-			
+
 			!This allows to get the parameters back in the code
 			freepar = freebeta
-		end if	
+		end if
 	end subroutine doestimation
-	
+
 	! BHHH updating formula for parameters
 	subroutine update_parms(gradient, hessian,invhessian, parms, func, lambda, converged, feasible)
 		! inputs (gradient, hessian and free parameters)
@@ -1196,10 +1223,10 @@ contains
 		double precision func, newparms(nfreepar), probnew(n), oldparms(nfreepar)
 		! converged is true if convergence achieved
 		logical converged
-		! intermediate arrays 
-		double precision invhessian(nfreepar,nfreepar), work(nfreepar,nfreepar) 
+		! intermediate arrays
+		double precision invhessian(nfreepar,nfreepar), work(nfreepar,nfreepar)
 		! Q*g where Q is inverse hessian and g is gradient
-		double precision direction(nfreepar)					
+		double precision direction(nfreepar)
 		double precision condition, tolerance, lambda, step_up, step_down
 		! function value at new direction
 		double precision funcnew, funcold
@@ -1229,10 +1256,10 @@ contains
 			do t= 1,nfreepar, 1
 				invhessian(j,t) = invhessian(j,t)
 				direction(j) = direction(j) + invhessian(j,t)*gradient(t)
-			end do	
-			newparms(j) = parms(j) + lambda*direction(j)		
-		end do	
-		
+			end do
+			newparms(j) = parms(j) + lambda*direction(j)
+		end do
+
 		improved = .false.
 		count = 0
 
@@ -1256,20 +1283,20 @@ contains
 			newparms = parms
 		else
 			expand = .true.
-		end if	
-	
+		end if
+
 		! now expand until there is no improvement
 		if (expand) then
 			do while (.not. improved)
 				! save current function and parms
 				funcold = funcnew
-				oldparms = newparms				
+				oldparms = newparms
 				! step up lambda
 					lambda = lambda * step_up
 				! compute new parameters
 				do j = 1, nfreepar, 1
 					newparms(j) = parms(j) + lambda*direction(j)
-				end do	
+				end do
 				! evaluate function
 				call getprob(newparms,probnew)
 
@@ -1286,7 +1313,7 @@ contains
 					newparms = oldparms
 					funcnew = funcold
 					exit
-				end if	
+				end if
 			end do
 		end if
 		count = 0
@@ -1301,7 +1328,7 @@ contains
 				! compute new parameters
 				do j = 1, nfreepar, 1
 					newparms(j) = parms(j) + lambda*direction(j)
-				end do	
+				end do
 				! evaluate function
 				call getprob(newparms,probnew)
 				funcnew = 0.0d0
@@ -1318,34 +1345,34 @@ contains
 					funcnew = func
 					newparms = parms
 					exit
-				else 
+				else
 					continue
 				end if
 			end do
-		end if	
-	
+		end if
+
 		!write(*,*) 'feasible = ', feasible, 'improved = ', improved
-			
+
 		! check for convergence using distance function
 		if (feasible) then
 			condition = 0.0d0
 			do j=1,nfreepar
 				condition = condition + (newparms(j)- parms(j))**2
-			end do	
+			end do
 			if (condition.le.tolerance) then
 				converged = .true.
 			end if
-			
+
 			! update parameters and function
 			func = funcnew
 			parms = newparms
 		else
 			converged = .false.
 		end if
-		
-		
+
+
 	end subroutine update_parms
-		
+
 	subroutine postestimation
 	! Used to show implications of results
         double precision:: beta(npar), rr
@@ -1369,26 +1396,28 @@ contains
 	    !Manipulating the choleski to get bac variance covariance
 	    print *, ' '
 	    print *, 'Variance/covariance of heterogeneity'
-	    VarCovType = matmul(Lo, transpose(Lo))
-	    do i = 1,2
-	       write(*, '(3F10.3,3F10.3)') VarCovType(i,:)
-	    end do
-	    print *, ' '
+
+			VarCovType = matmul(Lo, transpose(Lo))
+
+			do i = 1,2
+				 write(*, '(3F10.3,3F10.3)') VarCovType(i,:)
+			end do
+			print *, ' '
 	    print *, 'Correlation across leisure heterogeneity'
 	    print *, VarCovType(2,1)/(sqrt(VarCovType(1,1))*sqrt(VarCovType(2,2)))
 	    print *, ' '
-	    
+
 	    ! stats on unobserved heterogeneity term
-	    print *, 'Fraction with positive marginal utility of leisure (at L(s)=Lmax, age 65)'			
+	    print *, 'Fraction with positive marginal utility of leisure (at L(s)=Lmax, age 65)'
 			nposm = 0
 			do i = 1, n
 				bum(i) = bm(2,1)
 				do j = 2, nxm, 1
 					bum(i) = bum(i) + Xm(i,j)*bm(2,j)
-				end do	
+				end do
 				if ((bum(i) + 3.0d0*bm(2,2) + bm(4,1)*dlog(Lmax)) .ge. 0.0d0) then
 					nposm = nposm + 1
-				end if	
+				end if
 			end do
 	    print *, 'Male:', dble(nposm)/dble(n)
 	    	nposf = 0
@@ -1396,10 +1425,10 @@ contains
 				buf(i) = bf(2,1)
 				do j = 2, nxf, 1
 					buf(i) = buf(i) + Xf(i,j)*bf(2,j)
-				end do	
+				end do
 				if ((buf(i) + 3.0d0*bf(2,2) + bf(4,1)*dlog(Lmax)) .ge. 0.0d0) then
 					nposf = nposf + 1
-				end if	
+				end if
 			end do
 	    print *, 'Female:', dble(nposf)/dble(n)
 
@@ -1419,9 +1448,9 @@ contains
 	    	if (buf(i) + 3.0d0*bf(2,2) + bf(4,1)*dlog(Lmax) .gt. 0.0d0) then
 	    		nposf = nposf + 1
 	    	end if
-	    		
+
 	    end do
-	    print *, 'Fraction with positive marginal utility of leisure (with posterior, age 65)'			
+	    print *, 'Fraction with positive marginal utility of leisure (with posterior, age 65)'
 	    print *, 'Male:', dble(nposm)/dble(n)
 	    print *, 'Female:', dble(nposf)/dble(n)
 
@@ -1469,19 +1498,19 @@ contains
 	    		if (age(i,2) .le. 62) then
 	    			if (abs(agedif(i)).lt.6) then
 	    				mask(i) = .true.
-	    			end if 
+	    			end if
 	    		endif
 	    	endif
-	    end do	
-		
+	    end do
+
 		allocate(Hm_sim(n,nages,nages,nper))
 		allocate(Hf_sim(n,nages,nages,nper))
 		allocate(Y_sim(n,nages,nages,nper))
 		allocate(value(n,nages,nages))
 		allocate(cprob(n,nages,nages))
-	
+
 	    ! construct expected utilities (joint)
-	    do i = 1, n, 1    	
+	    do i = 1, n, 1
 	    	if (mask(i)) then
 				w = 0.0d0
 				do j = 1, nz, 1
@@ -1491,10 +1520,10 @@ contains
 					w = 1.0d0
 				else if (w .le. -5.0d0) then
 					w = 0.0d0
-				else 	
+				else
 					w = dexp(w)/(1.0d0+dexp(w))
 					!write(*,*) 'w = ', w
-				end if	    		
+				end if
 
 		    	do m = 1, nages, 1
 		    		ageretm = agemin + m - 1
@@ -1507,11 +1536,11 @@ contains
 		    					old = 1
 		    					aam = age(i,1)
 		    					aaf = age(i,2)
-		    				else 
+		    				else
 		    					old = 2
 		    					aam = age(i,1)
 		    					aaf = age(i,2)
-		    				end if	
+		    				end if
 		    				value(i,m,f) = 0.0d0
 		    				Lbase(1) = L(1,i,aam)
 		    				Lbase(2) = L(2,i,aaf)
@@ -1529,9 +1558,9 @@ contains
 				    						rr = rr*dexp(arf*dble(ageretm - 66))
 				    					else
 				    						rr = rr*dexp(drc*dble(ageretm - 66))
-				    					end if	
+				    					end if
 				    					Y_sim(i,m,f,j) = Y_sim(i,m,f,j) + wages(i,1)*hours(i,1)*rr
-				    				end if	
+				    				end if
 				    				if (aaf .lt. ageretf) then
 				    					Hf_sim(i,m,f,j) = hours(i,2)
 				    					Y_sim(i,m,f,j) = Y_sim(i,m,f,j) + wages(i,2)*hours(i,2)
@@ -1544,10 +1573,10 @@ contains
 				    					else
 				    						rr = rr*dexp(drc*dble(ageretf - 66))
 
-				    					end if	
+				    					end if
 				    					Y_sim(i,m,f,j) = Y_sim(i,m,f,j) + wages(i,2)*hours(i,2)*rr
-				    				end if	
-				    			
+				    				end if
+
 				    				! evaluate utility of husband
 				    				vm = 0.0d0
 									surv(1) = L(1,i,aam)/Lbase(1)
@@ -1558,16 +1587,16 @@ contains
 									    	buma = bum(i) + bm(2,2)*dble(aam - 62)
 									    else
 									    	buma = bum(i) + bm(2,2)*dble(agemax - 62)
-									    end if	
+									    end if
 									    ! make change for health limitations
 									    if (aam .ge. 62) then
 									    	buma = buma + bm(2,3)*(sHL(hh,1) - Xm(i,3))
-										end if	
+										end if
 										lm = Lmax - Hm_sim(i,m,f,j)
 										lf = Lmax - Hf_sim(i,m,f,j)
 										if (iblockcomp) then
 											lf = Lmax - sum(Hf_sim(:,m,f,j))/dble(n)
-										end if	
+										end if
 										cons = Y_sim(i,m,f,j)
 										call getutility(cons, lm, lf, bm(1,1), buma, bm(3,1), bm(4,1), 0.0d0, v)
 										vm = vm + pHL(i,hh)*(rho(1)**(aam-age(i,1)))*surv(1)*v
@@ -1588,12 +1617,12 @@ contains
 										lm = Lmax - Hm_sim(i,m,f,j)
 										if (iblockcomp) then
 											lm = Lmax - sum(Hm_sim(:,m,f,j))/dble(n)
-										end if	
+										end if
 										lf = Lmax - Hf_sim(i,m,f,j)
 										cons = Y_sim(i,m,f,j)
 										call getutility(cons, lf, lm, bf(1,1), bufa, bf(3,1), bf(4,1), 0.0d0, v)
 										vf = vf + pHL(i,hh)*(rho(2)**(aaf-age(i,2)))*surv(2)*v
-				    				end do			    				
+				    				end do
 				    				! discount, weight and add to cumulative sum
 				    				value(i,m,f) = value(i,m,f) + (w*vm + (1.0d0 - w)*vf)
 				    				!write(*,*) agedif(i),aam, aaf, ageretm, ageretf, vm, vf
@@ -1609,22 +1638,22 @@ contains
 		    		end do
 		    	end do
 
-		
+
 		    	! find a base
 		    	enough = .true.
 		    	do m = 1, nages, 1
 		    		do f = 1, nages, 1
 		    			if (value(i,m,f) .ne. -999.0d0 .and. enough) then
-		    				base  = value(i,m,f) 
+		    				base  = value(i,m,f)
 		    				enough = .false.
-		    			end if	
-		    		end do 
-		    	end do	
-		    	
+		    			end if
+		    		end do
+		    	end do
+
 		    	do m = 1, nages, 1
 		    		do f = 1, nages, 1
 		    			if (value(i,m,f) .gt. -999.0d0) then
-		    				value(i,m,f) = value(i,m,f) - base	
+		    				value(i,m,f) = value(i,m,f) - base
 		    			end if
 		    		end do
 		    	end do
@@ -1643,7 +1672,7 @@ contains
 			    			cprob(i,m,f) = dexp(value(i,m,f))/totcprob
 			    		else
 			    			cprob(i,m,f) = 0.0d0
-			    		end if	
+			    		end if
 			    	end do
 			    end do
 
@@ -1663,7 +1692,7 @@ contains
 				    			expret(i,1) = dble(ageretm)
 				    			expret(i,2) = dble(ageretf)
 				    			maxp = cprob(i,m,f)
-				    		end if	
+				    		end if
 			    		end if
 			    	end do
 			    end do
@@ -1672,13 +1701,13 @@ contains
 			    jointret(i) = 0.0d0
 			    if ((expret(i,1) - expret(i,2)) .eq. agedif(i)) then
 			    	jointret(i) = 1.0d0
-			    end if	
+			    end if
 			    !if ((expret(i,1) - expret(i,2)) .eq. agedif(i)-1.0d0) then
 			    !	jointret(i) = 1.0d0
-			    !end if	
+			    !end if
 			    !if ((expret(i,1) - expret(i,2)) .eq. agedif(i)+1.0d0) then
 			    !	jointret(i) = 1.0d0
-			    !end if	
+			    !end if
 
 			    !do m = 1, nages, 1
 			    !	ageretm = agemin + m - 1
@@ -1686,10 +1715,10 @@ contains
 			    !		ageretf = agemin + f - 1
 			    !		if ((ageretm - ageretf) .eq. agedif(i)) then
 			    !			jointret(i) = jointret(i) + cprob(i,m,f)
-			    !		end if	
+			    !		end if
 			    !	end do
 			    !end do
-			 
+
 			   ! write(*,*) 'probability of joint retirement: ', jointret(i)
 	    	end if
 	    end do
@@ -1702,9 +1731,9 @@ contains
 				else
 					write(2,*) id(i),0,-999,-999,-999,posterior(i,:)
 				end if
-			end do   
+			end do
    		close(2)
-	   
+
 
 	end subroutine postestimation
 
@@ -1718,7 +1747,6 @@ contains
 		! arrays for parameters
 		double precision bm(4,nxm), bf(4,nxf), bz(nz), bum, buf, buma, bufa
 		double precision rho(2),cutm(nm+1), cutf(nm+1), sigm, sigf, Lo(2,2), uscale(3)
-	
 
 		! get choice probabilities
 		call getprob(freebeta, prob)
@@ -1728,10 +1756,10 @@ contains
 		call maptopar(beta, bm, bf, bz, rho, cutm, cutf, sigm, sigf, Lo, uscale)
 		! start loop over respondents
 
-		do i = 1, n, 1	
+		do i = 1, n, 1
 			! compute discount factors (same across questions)
 			call factor(i,age(i,1), age(i,2) , who(i), rho, fm, ff, agem, agef)
-		
+
 			! compute weight (same across questions)
 			! initialize weight
 			w = 0.0d0
@@ -1742,38 +1770,39 @@ contains
 				w = 1.0d0
 			else if (w .le. -5.0d0) then
 				w = 0.0d0
-			else 	
+			else
 				w = dexp(w)/(1.0d0+dexp(w))
 			end if
-	
-			
+
+
 			! reduce marginal utility of leisure into bum and buf
 			bum = bm(2,1)
 			do j = 2, nxm, 1
 				bum = bum + Xm(i,j)*bm(2,j)
-			end do	
+			end do
 			buf = bf(2,1)
 			do j = 2, nxf, 1
 				buf = buf + Xf(i,j)*bf(2,j)
-			end do	
-			
+			end do
+
 			! initialize posterior
 			pim = 0.0d0
 			pif = 0.0d0
 			! start looping over draws for UH
 			do u = 1, nd, 1
 				! update draws for UH
-				um = Lo(1,1)*D(i,u,1) 
+				um = Lo(1,1)*D(i,u,1)
 				uf = Lo(2,1)*D(i,u,1) + Lo(2,2)*D(i,u,2)
+
 				! initialize probability p(i,u)
 				pu = 1.0d0
 				! start looping over questions, first nr are ratings, remaining choices
 				do j = 1, nj, 1
-			
+
 					if (j.le.nr) then			! RATINGS QUESTIONS
 						if (includeratings) then
 							! there are two responses for each rating, husband and wife
-							
+
 							! HUSBAND
 							! initialize husband's expected utility
 							vm = 0.0d0
@@ -1795,7 +1824,7 @@ contains
 							! get probability of rating husband
 							if (R(i,j,1) .lt. 99) then
 								call getp_order(R(i,j,1), vm, cutm, nm, sigm, pm)
-							else 
+							else
 								pm = 1.0d0
 							end if
 							! WIFE
@@ -1804,7 +1833,7 @@ contains
 							! loop over three time intervals in scenario
 							do s = 1, 3, 1
 							    ! add current age to marginal utility
-							    bufa = buf + bf(2,2)*(dble(agef(s)-62)-Xf(i,2) ) 
+							    bufa = buf + bf(2,2)*(dble(agef(s)-62)-Xf(i,2) )
 								! compute log own leisure
 								lf = Lmax - Hf(i,j,1,s)
 								! compute other spouse leisure (normalized between 0 and 1)
@@ -1813,7 +1842,7 @@ contains
 								cons = Y(i,j,1,s)
 								! compute utility for this period
 								call getutility(cons, lf, lm, bf(1,1), bufa, bf(3,1), bf(4,1), uf, v)
-								
+
 								! discount and add
 								vf = vf + ff(s)*v
 							end do
@@ -1822,12 +1851,12 @@ contains
 								call getp_order(R(i,j,2), vf, cutf, nm, sigf, pf)
 							else
 								pf = 1.0d0
-							end if	
+							end if
 							! compute product over j for given draw u and individual i
 							pu = pu*pm*pf
 						end if
 					else  							! CHOICE QUESTIONS
-						
+
 						! index of choice question
 						k = j - nr
 						! there are three responses per choice question (husband, wife, household)
@@ -1844,7 +1873,7 @@ contains
 
 							! HUSBAND
 							! expected utility option 1
-							
+
 							do s = 1, 3, 1
 							    ! add current age to marginal utility
 							    buma = bum + bm(2,2)*(dble(agem(s)-62)-Xm(i,2))
@@ -1857,12 +1886,12 @@ contains
 								vm1 = vm1 + pHL(i,hh)*fm(s)*v
 							end do
 							! expected utility option 2
-							
+
 							do s = 1, 3, 1
 							     ! add current age to marginal utility
-							    buma = bum + bm(2,2)*(dble(agem(s)-62)-Xm(i,2)) 
+							    buma = bum + bm(2,2)*(dble(agem(s)-62)-Xm(i,2))
 							    ! make change for health limitations
-							    buma = buma + bm(2,3)*(sHL(hh,1) - Xm(i,3))							    
+							    buma = buma + bm(2,3)*(sHL(hh,1) - Xm(i,3))
 								lm = Lmax - Hm(i,j,2,s)
 								lf = Lmax - Hf(i,j,2,s)
 								cons = Y(i,j,2,s)
@@ -1872,12 +1901,12 @@ contains
 
 							! WIFE
 							! expected utility option 1
-							
+
 							do s = 1, 3, 1
 							    ! add current age to marginal utility
-							    bufa = buf + bf(2,2)*(dble(agef(s)-62)-Xf(i,2)) 
+							    bufa = buf + bf(2,2)*(dble(agef(s)-62)-Xf(i,2))
 							    ! make change for health limitations
-							    bufa = bufa + bf(2,3)*(sHL(hh,2) - Xf(i,3))							    
+							    bufa = bufa + bf(2,3)*(sHL(hh,2) - Xf(i,3))
 								lf = Lmax - Hf(i,j,1,s)
 								lm = Lmax - Hm(i,j,1,s)
 								cons = Y(i,j,1,s)
@@ -1885,21 +1914,21 @@ contains
 								vf1 = vf1 + pHL(i,hh)*ff(s)*v
 							end do
 							! expected utility option 2
-							
+
 							do s = 1, 3, 1
 							    ! add current age to marginal utility
-							    bufa = buf + bf(2,2)*(dble(agef(s)-62)-Xf(i,2)) 
+							    bufa = buf + bf(2,2)*(dble(agef(s)-62)-Xf(i,2))
 							    ! make change for health limitations
-							    bufa = bufa + bf(2,3)*(sHL(hh,2) - Xf(i,3))							    
+							    bufa = bufa + bf(2,3)*(sHL(hh,2) - Xf(i,3))
 								lf = Lmax - Hf(i,j,2,s)
 								lm = Lmax - Hm(i,j,2,s)
 								cons = Y(i,j,2,s)
 								call getutility(cons, lf, lm, bf(1,1), bufa, bf(3,1), bf(4,1), uf, v)
 								vf2 = vf2 + pHL(i,hh)*ff(s)*v
-							end do		
+							end do
 
 						end do
-						
+
 						! HOUSEHOLD
 						! expected utility household option 1
 						vh1 = w*vm1 + (1.0d0-w)*vf1
@@ -1912,8 +1941,8 @@ contains
 							pm =  probl((vm1 - vm2)/uscale(1))
 						else if (C(i,k,1) .eq. 2) then
 							pm = probl((vm2 - vm1)/uscale(1))
-						else 
-						    pm = 1.0d0	
+						else
+						    pm = 1.0d0
 						end if
 
 						! probability observing choice
@@ -1922,20 +1951,20 @@ contains
 						else if (C(i,k,2) .eq. 2) then
 							pf = probl((vf2-vf1)/uscale(2))
 						else
-						    pf = 1.0d0	
+						    pf = 1.0d0
 						end if
-	
-						! probability observing choice option 
+
+						! probability observing choice option
 						if (C(i,k,3).eq.1) then
 							ph = probl((vh1-vh2)/uscale(3))
 						else if (C(i,k,3) .eq. 2) then
 							ph = probl((vh2-vh1)/uscale(3))
-						else 
-						    ph = 1.0d0	
+						else
+						    ph = 1.0d0
 						end if
-						
-						! product over j for given u						
-						pu = pu*pm*pf*ph	
+
+						! product over j for given u
+						pu = pu*pm*pf*ph
 						end if
 					end if ! end if statement over question type
 
@@ -1945,7 +1974,7 @@ contains
 			pif = pif + pu/prob(i)*uf
 
 
-			end do ! end loop over draws	
+			end do ! end loop over draws
 			! probability of respondent i (average over p(i,u))
 			posterior(i,1) = pim/dble(nd)
 			posterior(i,2) = pif/dble(nd)
@@ -1953,8 +1982,8 @@ contains
 			!write(*,*) pro
 
 
-		end do ! end loop respondents	
-		
+		end do ! end loop respondents
+
 	end subroutine getposterior
 
 	double precision function probn(value)
@@ -1964,7 +1993,7 @@ contains
 			value = 6.0d0
 		else if (value.le. -6.0d0) then
 			value = -6.0d0
-		end if	
+		end if
 		call cdfnor(1,probn,q, value, 0.0d0, 1.0d0, status, bound)
 	end function
 
@@ -1975,7 +2004,7 @@ contains
 			value = 6.0d0
 		else if (value.le. -6.0d0) then
 			value = -6.0d0
-		end if	
+		end if
 		probl = dexp(value)/(1.0d0 + dexp(value))
 
 	end function
@@ -1986,4 +2015,4 @@ contains
 		call cdfnor(2,prob,1.0d0-prob, quann, 0.0d0, 1.0d0, status, bound)
 	end function
 
-end module sp 
+end module sp

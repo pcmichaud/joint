@@ -9,6 +9,7 @@ ihetero, T, 50
 icorr, T
 iunitary, F
 idiscount, F
+ddiscount, 0.95 
 idirect, F
 arf, 0.06d0
 drc, 0.08d0
@@ -16,3 +17,5 @@ reprate, 0.6d0
 ishufheter, F
 ishufwages, F
 iblockcomp,F
+ifixcorr, F 
+dfixrho, 0.5 
