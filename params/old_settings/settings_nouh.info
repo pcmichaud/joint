@@ -1,0 +1,16 @@
+isurvival, T, survival.csv
+iload, T, parms_discount.csv
+iestimate, T	
+data, hrs_final_ref.csv
+info, info_ref.dat
+includeratings, F
+icomplement, T
+ihetero, F, 50
+icorr, F
+iunitary, F
+idiscount, T
+idirect, F
+arf, 0.06d0
+drc, 0.09d0
+reprate, 0.5d0
+

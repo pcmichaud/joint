@@ -1,0 +1,1756 @@
+
+% Default to the notebook output style
+
+    
+
+
+% Inherit from the specified cell style.
+
+
+
+
+    
+\documentclass[11pt]{article}
+
+    
+    
+    \usepackage[T1]{fontenc}
+    % Nicer default font (+ math font) than Computer Modern for most use cases
+    \usepackage{mathpazo}
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % We will generate all images so they have a width \maxwidth. This means
+    % that they will get their normal width if they fit onto the page, but
+    % are scaled down if they would overflow the margins.
+    \makeatletter
+    \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth
+    \else\Gin@nat@width\fi}
+    \makeatother
+    \let\Oldincludegraphics\includegraphics
+    % Set max figure width to be 80% of text width, for now hardcoded.
+    \renewcommand{\includegraphics}[1]{\Oldincludegraphics[width=.8\maxwidth]{#1}}
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionLabelFormat{nolabel}{}
+    \captionsetup{labelformat=nolabel}
+
+    \usepackage{adjustbox} % Used to constrain images to a maximum size 
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+    \usepackage[mathletters]{ucs} % Extended unicode (utf-8) support
+    \usepackage[utf8x]{inputenc} % Allow utf-8 characters in the tex document
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics 
+                         % to support a larger range 
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    
+
+    
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+    
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    
+    
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatability definitions
+    \def\gt{>}
+    \def\lt{<}
+    % Document parameters
+    \title{Results}
+    
+    
+    
+
+    % Pygments definitions
+    
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\expandafter\def\csname PY@tok@w\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\expandafter\def\csname PY@tok@c\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.74,0.48,0.00}{##1}}}
+\expandafter\def\csname PY@tok@k\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kt\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\expandafter\def\csname PY@tok@o\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@ow\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\expandafter\def\csname PY@tok@nb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nf\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@nc\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@nn\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@ne\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.82,0.25,0.23}{##1}}}
+\expandafter\def\csname PY@tok@nv\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@no\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nl\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.63,0.63,0.00}{##1}}}
+\expandafter\def\csname PY@tok@ni\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.60,0.60,0.60}{##1}}}
+\expandafter\def\csname PY@tok@na\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.49,0.56,0.16}{##1}}}
+\expandafter\def\csname PY@tok@nt\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nd\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\expandafter\def\csname PY@tok@s\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sd\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@si\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\expandafter\def\csname PY@tok@se\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sr\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\expandafter\def\csname PY@tok@ss\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@sx\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@m\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@gh\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@gu\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@gd\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.63,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gr\endcsname{\def\PY@tc##1{\textcolor[rgb]{1.00,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@ge\endcsname{\let\PY@it=\textit}
+\expandafter\def\csname PY@tok@gs\endcsname{\let\PY@bf=\textbf}
+\expandafter\def\csname PY@tok@gp\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@go\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.53,0.53,0.53}{##1}}}
+\expandafter\def\csname PY@tok@gt\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\expandafter\def\csname PY@tok@err\endcsname{\def\PY@bc##1{\setlength{\fboxsep}{0pt}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}
+\expandafter\def\csname PY@tok@kc\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kd\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kn\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kr\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@bp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@fm\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@vc\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@vg\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@vi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@vm\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@sa\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sc\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@dl\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@s2\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sh\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@s1\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@mb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mf\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mh\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@il\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mo\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@ch\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cm\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cpf\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@c1\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cs\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % Exact colors from NB
+    \definecolor{incolor}{rgb}{0.0, 0.0, 0.5}
+    \definecolor{outcolor}{rgb}{0.545, 0.0, 0.0}
+
+
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy 
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+    \begin{document}
+    
+    
+    \maketitle
+    
+    
+
+    
+    \section{Obtaining Estimation and Simulation
+Results}\label{obtaining-estimation-and-simulation-results}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}1}]:} \PY{k+kn}{import} \PY{n+nn}{os}
+        \PY{k+kn}{from} \PY{n+nn}{matplotlib} \PY{k}{import} \PY{n}{pyplot} \PY{k}{as} \PY{n}{plt}
+        \PY{k+kn}{from} \PY{n+nn}{tools} \PY{k}{import} \PY{n}{models}
+\end{Verbatim}
+
+
+    We now create a base instance of the model (constant discount rates).
+This is useful for starting other specifications
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}2}]:} \PY{n}{sp} \PY{o}{=} \PY{n}{models}\PY{o}{.}\PY{n}{sp}
+        \PY{n}{base} \PY{o}{=} \PY{n}{sp}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ref}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+        \PY{n}{base}\PY{o}{.}\PY{n}{chgoption}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{iload}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{T}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Default options: 
+isurvival  =  T
+iload  =  F
+iestimate  =  T
+data  =  hrs\_final\_ref.csv
+info  =  info\_ref.dat
+includeratings  =  F
+icomplement  =  T
+ihetero  =  T
+icorr  =  T
+iunitary  =  F
+idiscount  =  F
+idirect  =  F
+arf  =  0.06
+drc  =  0.08
+reprate  =  0.6
+ishufheter  =  F
+ishufwages  =  F
+iblockcomp  =  F
+changed item  iload  with value F  to  T  {\ldots}
+
+    \end{Verbatim}
+
+    We estimate parameters and simulate data post estimation
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}3}]:} \PY{n}{base}\PY{o}{.}\PY{n}{estimate}\PY{p}{(}\PY{p}{)}
+        \PY{n}{base}\PY{o}{.}\PY{n}{loglike}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}3}]:} -2846.719602855049
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}4}]:} \PY{n}{base}\PY{o}{.}\PY{n}{params}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}4}]:}                                        par                       se
+        alpha\_c                0.66633373417180419  5.6122670691351358E-002
+        alpha\_lm\_cons          -3.0011251508001253      0.90449244271695561
+        alpha\_lm\_age           0.69651389820926191      0.11056314226474352
+        alpha\_lm\_hlim           2.9463469185950322       1.0225535662574339
+        alpha\_lm\_college       0.35886169711893634      0.55527179177383701
+        alpha\_lm\_male          0.44031879426277948      0.68699947514119597
+        alpha\_lm\_job           0.20787813231521524      0.68948447312626215
+        alpha\_lf                0.0000000000000000       0.0000000000000000
+        alpha\_lm\_lf            0.30981760501449634  3.8083770834153111E-002
+        beta\_c                 0.42943333470586809  4.2108751479773922E-002
+        beta\_lf\_cons           -1.0268780702287061      0.69129338175150190
+        beta\_lf\_age            0.90656799405118504      0.12554348079751254
+        beta\_lf\_hlim            2.5284402973200382      0.94499320947253129
+        beta\_lf\_college       -0.44275407423888347      0.46670677513903536
+        beta\_lf\_male            1.7532283661526034      0.64109115481058654
+        beta\_lf\_job           -0.61245625259324421      0.51096473475580906
+        beta\_lm                 0.0000000000000000       0.0000000000000000
+        beta\_lm\_lf             0.16779176648036098  3.3464716365136843E-002
+        mu                 6.2343344910625103E-003      0.32768342063301836
+        wageratio              0.52072685658633933      0.29421109815920543
+        log\_rho\_m         -5.1293294387550578E-002       0.0000000000000000
+        log\_rho\_f         -5.1293294387550578E-002       0.0000000000000000
+        tau\_m\_0                -3.0000000000000000       0.0000000000000000
+        log\_tau\_m               1.0000000000000000       0.0000000000000000
+        log\_tau\_m               1.0000000000000000       0.0000000000000000
+        log\_tau\_m               1.0000000000000000       0.0000000000000000
+        log\_tau\_m               1.0000000000000000       0.0000000000000000
+        log\_tau\_m               1.0000000000000000       0.0000000000000000
+        log\_tau\_m               1.0000000000000000       0.0000000000000000
+        log\_tau\_m               1.0000000000000000       0.0000000000000000
+        log\_tau\_m               1.0000000000000000       0.0000000000000000
+        tau\_f\_0                -3.0000000000000000       0.0000000000000000
+        log\_tau\_f               1.0000000000000000       0.0000000000000000
+        log\_tau\_f               1.0000000000000000       0.0000000000000000
+        log\_tau\_f               1.0000000000000000       0.0000000000000000
+        log\_tau\_f               1.0000000000000000       0.0000000000000000
+        log\_tau\_f               1.0000000000000000       0.0000000000000000
+        log\_tau\_f               1.0000000000000000       0.0000000000000000
+        log\_tau\_f               1.0000000000000000       0.0000000000000000
+        log\_tau\_f               1.0000000000000000       0.0000000000000000
+        log\_sig\_m               0.0000000000000000       0.0000000000000000
+        log\_sig\_f               0.0000000000000000       0.0000000000000000
+        L\_nm\_nm                 5.1786890765854103      0.45632695764220993
+        L\_nf\_nm                 3.7585532220113662      0.34959386488950961
+        L\_nf\_nf                0.18930154935525897      0.80190150709707797
+        scale\_m                 1.0000000000000000       0.0000000000000000
+        scale\_f                 1.0000000000000000       0.0000000000000000
+        scale\_h                 1.0000000000000000       0.0000000000000000
+\end{Verbatim}
+            
+    Here are some stats on the simulations:
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}5}]:} \PY{n}{base}\PY{o}{.}\PY{n}{sim}\PY{o}{.}\PY{n}{describe}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}5}]:}            hhidpn  insim       jprob  rexpret\_sim  sexpret\_sim   leisure\_m  \textbackslash{}
+        count  464.000000  464.0  464.000000   464.000000   464.000000  464.000000   
+        mean   303.915948    1.0    0.084052    65.974138    63.661638    0.094745   
+        std    174.229335    0.0    0.277765     4.989771     3.134796    4.308279   
+        min      1.000000    1.0    0.000000    54.000000    54.000000   -9.093125   
+        25\%    155.750000    1.0    0.000000    62.000000    62.000000   -3.401245   
+        50\%    300.500000    1.0    0.000000    67.000000    64.000000   -0.072925   
+        75\%    454.250000    1.0    0.000000    70.000000    66.000000    3.325566   
+        max    604.000000    1.0    1.000000    80.000000    78.000000   15.364392   
+        
+                leisure\_f   rage    rcollege      hwho\_m     {\ldots}          rhlth62  \textbackslash{}
+        count  464.000000  464.0  464.000000  464.000000     {\ldots}       464.000000   
+        mean     0.070270    0.0    0.441810    0.538793     {\ldots}         0.400431   
+        std      3.133871    0.0    0.497139    0.499031     {\ldots}         0.277485   
+        min     -6.581606    0.0    0.000000    0.000000     {\ldots}         0.000000   
+        25\%     -2.461458    0.0    0.000000    0.000000     {\ldots}         0.200000   
+        50\%     -0.024315    0.0    0.000000    1.000000     {\ldots}         0.400000   
+        75\%      2.391943    0.0    1.000000    1.000000     {\ldots}         0.500000   
+        max     11.174369    0.0    1.000000    1.000000     {\ldots}         1.000000   
+        
+                  shlth62     rliv75r     sliv75r       rwage       swage      rhours  \textbackslash{}
+        count  464.000000  464.000000  464.000000  464.000000  464.000000  464.000000   
+        mean     0.395948    0.962090    0.912592   32.615540   25.620789   42.728448   
+        std      0.265845    0.322436    0.245628   35.582619   60.577724   10.666330   
+        min      0.000000    0.137999    0.062038    0.000000    0.000000    2.000000   
+        25\%      0.200000    0.720568    0.744456   16.347501   12.967500   40.000000   
+        50\%      0.400000    1.012476    0.968663   25.092495   18.000000   40.000000   
+        75\%      0.500000    1.175370    1.065559   36.758401   27.415630   50.000000   
+        max      1.000000    1.491040    1.291550  365.000000  916.666687   80.000000   
+        
+                   shours      rexpret      sexpret  
+        count  464.000000   200.000000   257.000000  
+        mean    35.831897  2019.150000  2019.669261  
+        std     12.125414     5.325345     5.157249  
+        min      1.000000  2010.000000  2010.000000  
+        25\%     30.000000  2015.000000  2016.000000  
+        50\%     40.000000  2019.000000  2019.000000  
+        75\%     40.000000  2022.000000  2023.000000  
+        max     75.000000  2040.000000  2034.000000  
+        
+        [8 rows x 147 columns]
+\end{Verbatim}
+            
+    We will now create a model that estimates discount rates
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}6}]:} \PY{n}{disc} \PY{o}{=} \PY{n}{sp}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{discount}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+        
+            
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Default options: 
+isurvival  =  T
+iload  =  F
+iestimate  =  T
+data  =  hrs\_final\_ref.csv
+info  =  info\_ref.dat
+includeratings  =  F
+icomplement  =  T
+ihetero  =  T
+icorr  =  T
+iunitary  =  F
+idiscount  =  F
+idirect  =  F
+arf  =  0.06
+drc  =  0.08
+reprate  =  0.6
+ishufheter  =  F
+ishufwages  =  F
+iblockcomp  =  F
+
+    \end{Verbatim}
+
+    We need to flag that we want to estimate discount rates
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}7}]:} \PY{n}{disc}\PY{o}{.}\PY{n}{chgoption}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{idiscount}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{T}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+        \PY{n}{disc}\PY{o}{.}\PY{n}{chgoption}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{iload}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{T}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+changed item  idiscount  with value F  to  T  {\ldots}
+changed item  iload  with value F  to  T  {\ldots}
+
+    \end{Verbatim}
+
+    We now estimate parameters
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}8}]:} \PY{n}{disc}\PY{o}{.}\PY{n}{estimate}\PY{p}{(}\PY{p}{)}
+        \PY{n}{disc}\PY{o}{.}\PY{n}{loglike}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}8}]:} -2818.3448708879732
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}9}]:} \PY{n}{disc}\PY{o}{.}\PY{n}{params}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}9}]:}                                       par                       se
+        alpha\_c               0.15381251390660106  3.6869215116319499E-002
+        alpha\_lm\_cons         -1.6856245225335307      0.47626887892585534
+        alpha\_lm\_age          0.43392941685436398  6.4713050539400324E-002
+        alpha\_lm\_hlim          1.6092484441292974      0.58108601683515682
+        alpha\_lm\_college      0.16824997567175534      0.29412243048848907
+        alpha\_lm\_male         0.18781045293783144      0.35008985490206834
+        alpha\_lm\_job      9.4708005159917244E-002      0.34833985097243253
+        alpha\_lf               0.0000000000000000       0.0000000000000000
+        alpha\_lm\_lf           0.13429416621238721  2.2565647993691720E-002
+        beta\_c                0.11485127235506647  3.6719465085222336E-002
+        beta\_lf\_cons         -0.73837181779287142      0.35302862062213530
+        beta\_lf\_age           0.47235191825346212  8.4960703057416681E-002
+        beta\_lf\_hlim           1.4110382629231570      0.50161809249363210
+        beta\_lf\_college      -0.19834138811438137      0.23843295986957000
+        beta\_lf\_male          0.98612606625759591      0.35689987927312755
+        beta\_lf\_job          -0.20854353827235886      0.25751032640971322
+        beta\_lm                0.0000000000000000       0.0000000000000000
+        beta\_lm\_lf        8.0452567730378247E-002  2.1847676823783656E-002
+        mu                1.4218698111350370E-002      0.33004677361013668
+        wageratio             0.51733841891843568      0.30799050211924672
+        log\_rho\_m         2.9898035462288353E-002  9.8538846325579230E-003
+        log\_rho\_f         1.8250032086581467E-002  1.2313067799274637E-002
+        tau\_m\_0               -3.0000000000000000       0.0000000000000000
+        log\_tau\_m              1.0000000000000000       0.0000000000000000
+        log\_tau\_m              1.0000000000000000       0.0000000000000000
+        log\_tau\_m              1.0000000000000000       0.0000000000000000
+        log\_tau\_m              1.0000000000000000       0.0000000000000000
+        log\_tau\_m              1.0000000000000000       0.0000000000000000
+        log\_tau\_m              1.0000000000000000       0.0000000000000000
+        log\_tau\_m              1.0000000000000000       0.0000000000000000
+        log\_tau\_m              1.0000000000000000       0.0000000000000000
+        tau\_f\_0               -3.0000000000000000       0.0000000000000000
+        log\_tau\_f              1.0000000000000000       0.0000000000000000
+        log\_tau\_f              1.0000000000000000       0.0000000000000000
+        log\_tau\_f              1.0000000000000000       0.0000000000000000
+        log\_tau\_f              1.0000000000000000       0.0000000000000000
+        log\_tau\_f              1.0000000000000000       0.0000000000000000
+        log\_tau\_f              1.0000000000000000       0.0000000000000000
+        log\_tau\_f              1.0000000000000000       0.0000000000000000
+        log\_tau\_f              1.0000000000000000       0.0000000000000000
+        log\_sig\_m              0.0000000000000000       0.0000000000000000
+        log\_sig\_f              0.0000000000000000       0.0000000000000000
+        L\_nm\_nm                2.8009577500976697      0.33090153486995239
+        L\_nf\_nm                1.9209082908103476      0.29135905373494486
+        L\_nf\_nf               0.19384219823655499      0.38542195318519701
+        scale\_m                1.0000000000000000       0.0000000000000000
+        scale\_f                1.0000000000000000       0.0000000000000000
+        scale\_h                1.0000000000000000       0.0000000000000000
+\end{Verbatim}
+            
+    Some stats again on types
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}10}]:} \PY{n}{disc}\PY{o}{.}\PY{n}{sim}\PY{o}{.}\PY{n}{describe}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}10}]:}            hhidpn  insim       jprob  rexpret\_sim  sexpret\_sim   leisure\_m  \textbackslash{}
+         count  464.000000  464.0  464.000000   464.000000   464.000000  464.000000   
+         mean   303.915948    1.0    0.101293    65.728448    63.829741    0.002458   
+         std    174.229335    0.0    0.302042     4.670523     3.130547    2.323502   
+         min      1.000000    1.0    0.000000    55.000000    54.000000   -4.755283   
+         25\%    155.750000    1.0    0.000000    62.000000    62.000000   -1.981291   
+         50\%    300.500000    1.0    0.000000    65.000000    64.000000   -0.072990   
+         75\%    454.250000    1.0    0.000000    69.000000    66.000000    1.905043   
+         max    604.000000    1.0    1.000000    80.000000    80.000000    7.262594   
+         
+                 leisure\_f   rage    rcollege      hwho\_m     {\ldots}          rhlth62  \textbackslash{}
+         count  464.000000  464.0  464.000000  464.000000     {\ldots}       464.000000   
+         mean     0.003629    0.0    0.441810    0.538793     {\ldots}         0.400431   
+         std      1.603933    0.0    0.497139    0.499031     {\ldots}         0.277485   
+         min     -3.287411    0.0    0.000000    0.000000     {\ldots}         0.000000   
+         25\%     -1.329474    0.0    0.000000    0.000000     {\ldots}         0.200000   
+         50\%     -0.036837    0.0    0.000000    1.000000     {\ldots}         0.400000   
+         75\%      1.306682    0.0    1.000000    1.000000     {\ldots}         0.500000   
+         max      5.025972    0.0    1.000000    1.000000     {\ldots}         1.000000   
+         
+                   shlth62     rliv75r     sliv75r       rwage       swage      rhours  \textbackslash{}
+         count  464.000000  464.000000  464.000000  464.000000  464.000000  464.000000   
+         mean     0.395948    0.962090    0.912592   32.615540   25.620789   42.728448   
+         std      0.265845    0.322436    0.245628   35.582619   60.577724   10.666330   
+         min      0.000000    0.137999    0.062038    0.000000    0.000000    2.000000   
+         25\%      0.200000    0.720568    0.744456   16.347501   12.967500   40.000000   
+         50\%      0.400000    1.012476    0.968663   25.092495   18.000000   40.000000   
+         75\%      0.500000    1.175370    1.065559   36.758401   27.415630   50.000000   
+         max      1.000000    1.491040    1.291550  365.000000  916.666687   80.000000   
+         
+                    shours      rexpret      sexpret  
+         count  464.000000   200.000000   257.000000  
+         mean    35.831897  2019.150000  2019.669261  
+         std     12.125414     5.325345     5.157249  
+         min      1.000000  2010.000000  2010.000000  
+         25\%     30.000000  2015.000000  2016.000000  
+         50\%     40.000000  2019.000000  2019.000000  
+         75\%     40.000000  2022.000000  2023.000000  
+         max     75.000000  2040.000000  2034.000000  
+         
+         [8 rows x 147 columns]
+\end{Verbatim}
+            
+    \subsection{Robustness of
+Specification}\label{robustness-of-specification}
+
+    We will collect a few loglikelihoods to do LR tests (Table in main
+text). We will also present some results in the appendix for these
+alternative models.
+
+    \subsubsection{Model with uncorrelated
+types}\label{model-with-uncorrelated-types}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}11}]:} \PY{n}{uncor} \PY{o}{=} \PY{n}{sp}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{nocorr}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Default options: 
+isurvival  =  T
+iload  =  F
+iestimate  =  T
+data  =  hrs\_final\_ref.csv
+info  =  info\_ref.dat
+includeratings  =  F
+icomplement  =  T
+ihetero  =  T
+icorr  =  T
+iunitary  =  F
+idiscount  =  F
+idirect  =  F
+arf  =  0.06
+drc  =  0.08
+reprate  =  0.6
+ishufheter  =  F
+ishufwages  =  F
+iblockcomp  =  F
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}12}]:} \PY{n}{uncor}\PY{o}{.}\PY{n}{chgoption}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{icorr}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{F}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{uncor}\PY{o}{.}\PY{n}{chgoption}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{idiscount}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{T}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{uncor}\PY{o}{.}\PY{n}{chgoption}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{iload}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{T}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+changed item  icorr  with value T  to  F  {\ldots}
+changed item  idiscount  with value F  to  T  {\ldots}
+changed item  iload  with value F  to  T  {\ldots}
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}13}]:} \PY{n}{uncor}\PY{o}{.}\PY{n}{estimate}\PY{p}{(}\PY{p}{)}
+         \PY{n}{uncor}\PY{o}{.}\PY{n}{loglike}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}13}]:} -2899.3527710927633
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}14}]:} \PY{n}{uncor}\PY{o}{.}\PY{n}{params}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}14}]:}                                        par                       se
+         alpha\_c                0.12731889866088533  3.0793642209440010E-002
+         alpha\_lm\_cons          -1.5340243266839209      0.47945605981721146
+         alpha\_lm\_age           0.39959661401166141  5.8654178709795030E-002
+         alpha\_lm\_hlim           1.4796758136882329      0.60728068532669932
+         alpha\_lm\_college       0.21884688256894691      0.29863194186991587
+         alpha\_lm\_male          0.22277046305399947      0.35158817513263235
+         alpha\_lm\_job           0.12915273291347937      0.34171748043423017
+         alpha\_lf                0.0000000000000000       0.0000000000000000
+         alpha\_lm\_lf            0.11893090796036433  2.1113741139981653E-002
+         beta\_c             9.4144062988514118E-002  3.1454041356208925E-002
+         beta\_lf\_cons          -0.84182049609971144      0.37781248924237981
+         beta\_lf\_age            0.44524137818253967  8.1350730522594977E-002
+         beta\_lf\_hlim            1.2684062614991500      0.49471347401235893
+         beta\_lf\_college   -7.5722918536815828E-002      0.22820658644093911
+         beta\_lf\_male           0.80703656001555546      0.33902077474246961
+         beta\_lf\_job           -0.22046245986825083      0.26158173418095548
+         beta\_lm                 0.0000000000000000       0.0000000000000000
+         beta\_lm\_lf         7.5134992166190268E-002  2.0575888540385206E-002
+         mu                 9.1925408253605317E-002      0.33514908430768803
+         wageratio              0.39074813730495450      0.29067227658565292
+         log\_rho\_m          3.7794156247160038E-002  9.3437135167809913E-003
+         log\_rho\_f          2.5829822321673510E-002  1.2149064440757213E-002
+         tau\_m\_0                -3.0000000000000000       0.0000000000000000
+         log\_tau\_m               1.0000000000000000       0.0000000000000000
+         log\_tau\_m               1.0000000000000000       0.0000000000000000
+         log\_tau\_m               1.0000000000000000       0.0000000000000000
+         log\_tau\_m               1.0000000000000000       0.0000000000000000
+         log\_tau\_m               1.0000000000000000       0.0000000000000000
+         log\_tau\_m               1.0000000000000000       0.0000000000000000
+         log\_tau\_m               1.0000000000000000       0.0000000000000000
+         log\_tau\_m               1.0000000000000000       0.0000000000000000
+         tau\_f\_0                -3.0000000000000000       0.0000000000000000
+         log\_tau\_f               1.0000000000000000       0.0000000000000000
+         log\_tau\_f               1.0000000000000000       0.0000000000000000
+         log\_tau\_f               1.0000000000000000       0.0000000000000000
+         log\_tau\_f               1.0000000000000000       0.0000000000000000
+         log\_tau\_f               1.0000000000000000       0.0000000000000000
+         log\_tau\_f               1.0000000000000000       0.0000000000000000
+         log\_tau\_f               1.0000000000000000       0.0000000000000000
+         log\_tau\_f               1.0000000000000000       0.0000000000000000
+         log\_sig\_m               0.0000000000000000       0.0000000000000000
+         log\_sig\_f               0.0000000000000000       0.0000000000000000
+         L\_nm\_nm                 2.6889485082915456      0.32260868339714660
+         L\_nf\_nm                 0.0000000000000000       0.0000000000000000
+         L\_nf\_nf                 1.7604243970895372      0.27809241139621660
+         scale\_m                 1.0000000000000000       0.0000000000000000
+         scale\_f                 1.0000000000000000       0.0000000000000000
+         scale\_h                 1.0000000000000000       0.0000000000000000
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}15}]:} \PY{n}{uncor}\PY{o}{.}\PY{n}{sim}\PY{o}{.}\PY{n}{describe}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}15}]:}            hhidpn  insim       jprob  rexpret\_sim  sexpret\_sim   leisure\_m  \textbackslash{}
+         count  464.000000  464.0  464.000000   464.000000   464.000000  464.000000   
+         mean   303.915948    1.0    0.088362    65.646552    63.909483   -0.079614   
+         std    174.229335    0.0    0.284127     4.561089     2.697971    2.043431   
+         min      1.000000    1.0    0.000000    54.000000    58.000000   -4.379481   
+         25\%    155.750000    1.0    0.000000    62.000000    62.000000   -1.756941   
+         50\%    300.500000    1.0    0.000000    65.000000    64.000000   -0.070071   
+         75\%    454.250000    1.0    0.000000    70.000000    65.000000    1.500670   
+         max    604.000000    1.0    1.000000    80.000000    80.000000    5.754107   
+         
+                 leisure\_f   rage    rcollege      hwho\_m     {\ldots}          rhlth62  \textbackslash{}
+         count  464.000000  464.0  464.000000  464.000000     {\ldots}       464.000000   
+         mean     0.060195    0.0    0.441810    0.538793     {\ldots}         0.400431   
+         std      1.103602    0.0    0.497139    0.499031     {\ldots}         0.277485   
+         min     -2.488377    0.0    0.000000    0.000000     {\ldots}         0.000000   
+         25\%     -0.687988    0.0    0.000000    0.000000     {\ldots}         0.200000   
+         50\%      0.045366    0.0    0.000000    1.000000     {\ldots}         0.400000   
+         75\%      0.794043    0.0    1.000000    1.000000     {\ldots}         0.500000   
+         max      2.775941    0.0    1.000000    1.000000     {\ldots}         1.000000   
+         
+                   shlth62     rliv75r     sliv75r       rwage       swage      rhours  \textbackslash{}
+         count  464.000000  464.000000  464.000000  464.000000  464.000000  464.000000   
+         mean     0.395948    0.962090    0.912592   32.615540   25.620789   42.728448   
+         std      0.265845    0.322436    0.245628   35.582619   60.577724   10.666330   
+         min      0.000000    0.137999    0.062038    0.000000    0.000000    2.000000   
+         25\%      0.200000    0.720568    0.744456   16.347501   12.967500   40.000000   
+         50\%      0.400000    1.012476    0.968663   25.092495   18.000000   40.000000   
+         75\%      0.500000    1.175370    1.065559   36.758401   27.415630   50.000000   
+         max      1.000000    1.491040    1.291550  365.000000  916.666687   80.000000   
+         
+                    shours      rexpret      sexpret  
+         count  464.000000   200.000000   257.000000  
+         mean    35.831897  2019.150000  2019.669261  
+         std     12.125414     5.325345     5.157249  
+         min      1.000000  2010.000000  2010.000000  
+         25\%     30.000000  2015.000000  2016.000000  
+         50\%     40.000000  2019.000000  2019.000000  
+         75\%     40.000000  2022.000000  2023.000000  
+         max     75.000000  2040.000000  2034.000000  
+         
+         [8 rows x 147 columns]
+\end{Verbatim}
+            
+    \subsubsection{Model without Survival
+Risk}\label{model-without-survival-risk}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}16}]:} \PY{n}{nosurv} \PY{o}{=} \PY{n}{sp}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{nosurv}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Default options: 
+isurvival  =  T
+iload  =  F
+iestimate  =  T
+data  =  hrs\_final\_ref.csv
+info  =  info\_ref.dat
+includeratings  =  F
+icomplement  =  T
+ihetero  =  T
+icorr  =  T
+iunitary  =  F
+idiscount  =  F
+idirect  =  F
+arf  =  0.06
+drc  =  0.08
+reprate  =  0.6
+ishufheter  =  F
+ishufwages  =  F
+iblockcomp  =  F
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}17}]:} \PY{n}{nosurv}\PY{o}{.}\PY{n}{chgoption}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{isurvival}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{F}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{nosurv}\PY{o}{.}\PY{n}{chgoption}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{idiscount}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{T}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{nosurv}\PY{o}{.}\PY{n}{chgoption}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{iload}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{T}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+changed item  isurvival  with value T  to  F  {\ldots}
+changed item  idiscount  with value F  to  T  {\ldots}
+changed item  iload  with value F  to  T  {\ldots}
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}18}]:} \PY{n}{nosurv}\PY{o}{.}\PY{n}{estimate}\PY{p}{(}\PY{p}{)}
+         \PY{n}{nosurv}\PY{o}{.}\PY{n}{loglike}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}18}]:} -2818.120226635457
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}19}]:} \PY{n}{nosurv}\PY{o}{.}\PY{n}{params}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}19}]:}                                       par                       se
+         alpha\_c           5.7937437701925977E-002  1.8685959777645762E-002
+         alpha\_lm\_cons         -1.5569891225270480      0.44541774572065673
+         alpha\_lm\_age          0.39753938236519670  6.3788681427956087E-002
+         alpha\_lm\_hlim          1.3336471853986134      0.52879474065546739
+         alpha\_lm\_college      0.18752700990462692      0.26597546774532815
+         alpha\_lm\_male         0.14628562356290978      0.30977343355771275
+         alpha\_lm\_job          0.12593483425053939      0.31756201519433302
+         alpha\_lf               0.0000000000000000       0.0000000000000000
+         alpha\_lm\_lf           0.10550926148941667  1.9630021307509786E-002
+         beta\_c            6.7583277293491339E-002  2.5578055813741288E-002
+         beta\_lf\_cons         -0.68082625194673874      0.33382649050123009
+         beta\_lf\_age           0.44117277786824077  8.1720893523168789E-002
+         beta\_lf\_hlim           1.2820647657970310      0.47500928823973809
+         beta\_lf\_college      -0.15853861591137058      0.22226425154498003
+         beta\_lf\_male          0.90430251699161335      0.32951909189810158
+         beta\_lf\_job          -0.19157453827138776      0.24123765560475949
+         beta\_lm                0.0000000000000000       0.0000000000000000
+         beta\_lm\_lf        7.3899559015865909E-002  1.9620054787783094E-002
+         mu                1.3585435371352695E-002      0.32614823410856181
+         wageratio             0.45996365684047502      0.29604261692535994
+         log\_rho\_m         3.0342494520804571E-002  1.0385765026975080E-002
+         log\_rho\_f         1.6703383253027140E-002  1.2436078705210020E-002
+         tau\_m\_0               -3.0000000000000000       0.0000000000000000
+         log\_tau\_m              1.0000000000000000       0.0000000000000000
+         log\_tau\_m              1.0000000000000000       0.0000000000000000
+         log\_tau\_m              1.0000000000000000       0.0000000000000000
+         log\_tau\_m              1.0000000000000000       0.0000000000000000
+         log\_tau\_m              1.0000000000000000       0.0000000000000000
+         log\_tau\_m              1.0000000000000000       0.0000000000000000
+         log\_tau\_m              1.0000000000000000       0.0000000000000000
+         log\_tau\_m              1.0000000000000000       0.0000000000000000
+         tau\_f\_0               -3.0000000000000000       0.0000000000000000
+         log\_tau\_f              1.0000000000000000       0.0000000000000000
+         log\_tau\_f              1.0000000000000000       0.0000000000000000
+         log\_tau\_f              1.0000000000000000       0.0000000000000000
+         log\_tau\_f              1.0000000000000000       0.0000000000000000
+         log\_tau\_f              1.0000000000000000       0.0000000000000000
+         log\_tau\_f              1.0000000000000000       0.0000000000000000
+         log\_tau\_f              1.0000000000000000       0.0000000000000000
+         log\_tau\_f              1.0000000000000000       0.0000000000000000
+         log\_sig\_m              0.0000000000000000       0.0000000000000000
+         log\_sig\_f              0.0000000000000000       0.0000000000000000
+         L\_nm\_nm                2.5521059687009942      0.31077235161910743
+         L\_nf\_nm                1.8028811124829329      0.27673469133903150
+         L\_nf\_nf               0.18438574202742528      0.35149314714567520
+         scale\_m                1.0000000000000000       0.0000000000000000
+         scale\_f                1.0000000000000000       0.0000000000000000
+         scale\_h                1.0000000000000000       0.0000000000000000
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}20}]:} \PY{n}{nosurv}\PY{o}{.}\PY{n}{sim}\PY{o}{.}\PY{n}{describe}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}20}]:}            hhidpn  insim       jprob  rexpret\_sim  sexpret\_sim   leisure\_m  \textbackslash{}
+         count  464.000000  464.0  464.000000   464.000000   464.000000  464.000000   
+         mean   303.915948    1.0    0.135776    65.659483    63.698276   -0.000398   
+         std    174.229335    0.0    0.342920     4.757215     3.162195    2.121325   
+         min      1.000000    1.0    0.000000    54.000000    55.000000   -4.258304   
+         25\%    155.750000    1.0    0.000000    62.000000    62.000000   -1.785382   
+         50\%    300.500000    1.0    0.000000    65.000000    63.500000   -0.073973   
+         75\%    454.250000    1.0    0.000000    70.000000    66.000000    1.709255   
+         max    604.000000    1.0    1.000000    80.000000    80.000000    7.040929   
+         
+                 leisure\_f   rage    rcollege      hwho\_m     {\ldots}          rhlth62  \textbackslash{}
+         count  464.000000  464.0  464.000000  464.000000     {\ldots}       464.000000   
+         mean     0.001453    0.0    0.441810    0.538793     {\ldots}         0.400431   
+         std      1.507879    0.0    0.497139    0.499031     {\ldots}         0.277485   
+         min     -3.059676    0.0    0.000000    0.000000     {\ldots}         0.000000   
+         25\%     -1.244012    0.0    0.000000    0.000000     {\ldots}         0.200000   
+         50\%     -0.073523    0.0    0.000000    1.000000     {\ldots}         0.400000   
+         75\%      1.216423    0.0    1.000000    1.000000     {\ldots}         0.500000   
+         max      5.008634    0.0    1.000000    1.000000     {\ldots}         1.000000   
+         
+                   shlth62     rliv75r     sliv75r       rwage       swage      rhours  \textbackslash{}
+         count  464.000000  464.000000  464.000000  464.000000  464.000000  464.000000   
+         mean     0.395948    0.962090    0.912592   32.615540   25.620789   42.728448   
+         std      0.265845    0.322436    0.245628   35.582619   60.577724   10.666330   
+         min      0.000000    0.137999    0.062038    0.000000    0.000000    2.000000   
+         25\%      0.200000    0.720568    0.744456   16.347501   12.967500   40.000000   
+         50\%      0.400000    1.012476    0.968663   25.092495   18.000000   40.000000   
+         75\%      0.500000    1.175370    1.065559   36.758401   27.415630   50.000000   
+         max      1.000000    1.491040    1.291550  365.000000  916.666687   80.000000   
+         
+                    shours      rexpret      sexpret  
+         count  464.000000   200.000000   257.000000  
+         mean    35.831897  2019.150000  2019.669261  
+         std     12.125414     5.325345     5.157249  
+         min      1.000000  2010.000000  2010.000000  
+         25\%     30.000000  2015.000000  2016.000000  
+         50\%     40.000000  2019.000000  2019.000000  
+         75\%     40.000000  2022.000000  2023.000000  
+         max     75.000000  2040.000000  2034.000000  
+         
+         [8 rows x 147 columns]
+\end{Verbatim}
+            
+    \subsubsection{Model without
+Complementarity}\label{model-without-complementarity}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}21}]:} \PY{n}{nocomp} \PY{o}{=} \PY{n}{sp}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{nocomp}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Default options: 
+isurvival  =  T
+iload  =  F
+iestimate  =  T
+data  =  hrs\_final\_ref.csv
+info  =  info\_ref.dat
+includeratings  =  F
+icomplement  =  T
+ihetero  =  T
+icorr  =  T
+iunitary  =  F
+idiscount  =  F
+idirect  =  F
+arf  =  0.06
+drc  =  0.08
+reprate  =  0.6
+ishufheter  =  F
+ishufwages  =  F
+iblockcomp  =  F
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}22}]:} \PY{n}{nocomp}\PY{o}{.}\PY{n}{chgoption}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{idiscount}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{T}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{nocomp}\PY{o}{.}\PY{n}{chgoption}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{icomplement}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{F}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{nocomp}\PY{o}{.}\PY{n}{chgoption}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{iload}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{T}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+changed item  idiscount  with value F  to  T  {\ldots}
+changed item  icomplement  with value T  to  F  {\ldots}
+changed item  iload  with value F  to  T  {\ldots}
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}23}]:} \PY{n}{nocomp}\PY{o}{.}\PY{n}{estimate}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}24}]:} \PY{n}{nocomp}\PY{o}{.}\PY{n}{loglike}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}24}]:} -2855.7661896271484
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}25}]:} \PY{n}{nocomp}\PY{o}{.}\PY{n}{params}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}25}]:}                                        par                       se
+         alpha\_c            6.7684114800481102E-002  2.1125315408699219E-002
+         alpha\_lm\_cons          -1.2170811179200167      0.40079968589044540
+         alpha\_lm\_age           0.45481435809495274  6.7766162367306010E-002
+         alpha\_lm\_hlim           1.3604653358285910      0.52278416175670195
+         alpha\_lm\_college   9.3951859449528441E-002      0.25667368427848036
+         alpha\_lm\_male          0.54276941604783990      0.30397804670483097
+         alpha\_lm\_job           0.12313002674575364      0.30475058014360912
+         alpha\_lf                0.0000000000000000       0.0000000000000000
+         alpha\_lm\_lf             0.0000000000000000       0.0000000000000000
+         beta\_c             6.4138939825550037E-002  2.0747345557093864E-002
+         beta\_lf\_cons          -0.43329039766274519      0.29745350194114933
+         beta\_lf\_age            0.45705866120729566  8.0737929200789801E-002
+         beta\_lf\_hlim            1.2415022846946957      0.44742368823001244
+         beta\_lf\_college       -0.18990553568380528      0.21077746783058879
+         beta\_lf\_male            1.1698775542079083      0.32330953633726717
+         beta\_lf\_job           -0.15210009976387934      0.22640318484424771
+         beta\_lm                 0.0000000000000000       0.0000000000000000
+         beta\_lm\_lf              0.0000000000000000       0.0000000000000000
+         mu                -6.3526427342565167E-002      0.32045305829599025
+         wageratio              0.53306770597258557      0.29010031828782473
+         log\_rho\_m          4.4053589133654925E-002  1.1749315117099739E-002
+         log\_rho\_f          2.9382550901632078E-002  1.2279142500165945E-002
+         tau\_m\_0                -3.0000000000000000       0.0000000000000000
+         log\_tau\_m               1.0000000000000000       0.0000000000000000
+         log\_tau\_m               1.0000000000000000       0.0000000000000000
+         log\_tau\_m               1.0000000000000000       0.0000000000000000
+         log\_tau\_m               1.0000000000000000       0.0000000000000000
+         log\_tau\_m               1.0000000000000000       0.0000000000000000
+         log\_tau\_m               1.0000000000000000       0.0000000000000000
+         log\_tau\_m               1.0000000000000000       0.0000000000000000
+         log\_tau\_m               1.0000000000000000       0.0000000000000000
+         tau\_f\_0                -3.0000000000000000       0.0000000000000000
+         log\_tau\_f               1.0000000000000000       0.0000000000000000
+         log\_tau\_f               1.0000000000000000       0.0000000000000000
+         log\_tau\_f               1.0000000000000000       0.0000000000000000
+         log\_tau\_f               1.0000000000000000       0.0000000000000000
+         log\_tau\_f               1.0000000000000000       0.0000000000000000
+         log\_tau\_f               1.0000000000000000       0.0000000000000000
+         log\_tau\_f               1.0000000000000000       0.0000000000000000
+         log\_tau\_f               1.0000000000000000       0.0000000000000000
+         log\_sig\_m               0.0000000000000000       0.0000000000000000
+         log\_sig\_f               0.0000000000000000       0.0000000000000000
+         L\_nm\_nm                 2.4620823263829235      0.33736996351434723
+         L\_nf\_nm                 1.7112125845760651      0.26203155150501378
+         L\_nf\_nf                0.15818941692517388      0.33801943004323448
+         scale\_m                 1.0000000000000000       0.0000000000000000
+         scale\_f                 1.0000000000000000       0.0000000000000000
+         scale\_h                 1.0000000000000000       0.0000000000000000
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}26}]:} \PY{n}{nocomp}\PY{o}{.}\PY{n}{sim}\PY{o}{.}\PY{n}{describe}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}26}]:}            hhidpn  insim       jprob  rexpret\_sim  sexpret\_sim   leisure\_m  \textbackslash{}
+         count  464.000000  464.0  464.000000   464.000000   464.000000  464.000000   
+         mean   303.915948    1.0    0.116379    65.790948    64.478448   -0.006056   
+         std    174.229335    0.0    0.321025     4.161617     2.939191    2.041977   
+         min      1.000000    1.0    0.000000    57.000000    56.000000   -4.148323   
+         25\%    155.750000    1.0    0.000000    62.000000    62.000000   -1.690364   
+         50\%    300.500000    1.0    0.000000    66.000000    65.000000   -0.080175   
+         75\%    454.250000    1.0    0.000000    69.000000    67.000000    1.687099   
+         max    604.000000    1.0    1.000000    80.000000    79.000000    5.436692   
+         
+                 leisure\_f   rage    rcollege      hwho\_m     {\ldots}          rhlth62  \textbackslash{}
+         count  464.000000  464.0  464.000000  464.000000     {\ldots}       464.000000   
+         mean    -0.002523    0.0    0.441810    0.538793     {\ldots}         0.400431   
+         std      1.427030    0.0    0.497139    0.499031     {\ldots}         0.277485   
+         min     -2.877898    0.0    0.000000    0.000000     {\ldots}         0.000000   
+         25\%     -1.162311    0.0    0.000000    0.000000     {\ldots}         0.200000   
+         50\%     -0.075648    0.0    0.000000    1.000000     {\ldots}         0.400000   
+         75\%      1.162369    0.0    1.000000    1.000000     {\ldots}         0.500000   
+         max      3.831154    0.0    1.000000    1.000000     {\ldots}         1.000000   
+         
+                   shlth62     rliv75r     sliv75r       rwage       swage      rhours  \textbackslash{}
+         count  464.000000  464.000000  464.000000  464.000000  464.000000  464.000000   
+         mean     0.395948    0.962090    0.912592   32.615540   25.620789   42.728448   
+         std      0.265845    0.322436    0.245628   35.582619   60.577724   10.666330   
+         min      0.000000    0.137999    0.062038    0.000000    0.000000    2.000000   
+         25\%      0.200000    0.720568    0.744456   16.347501   12.967500   40.000000   
+         50\%      0.400000    1.012476    0.968663   25.092495   18.000000   40.000000   
+         75\%      0.500000    1.175370    1.065559   36.758401   27.415630   50.000000   
+         max      1.000000    1.491040    1.291550  365.000000  916.666687   80.000000   
+         
+                    shours      rexpret      sexpret  
+         count  464.000000   200.000000   257.000000  
+         mean    35.831897  2019.150000  2019.669261  
+         std     12.125414     5.325345     5.157249  
+         min      1.000000  2010.000000  2010.000000  
+         25\%     30.000000  2015.000000  2016.000000  
+         50\%     40.000000  2019.000000  2019.000000  
+         75\%     40.000000  2022.000000  2023.000000  
+         max     75.000000  2040.000000  2034.000000  
+         
+         [8 rows x 147 columns]
+\end{Verbatim}
+            
+    \subsubsection{Unitary Model}\label{unitary-model}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}27}]:} \PY{n}{unitary} \PY{o}{=} \PY{n}{sp}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{unitary}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{unitary}\PY{o}{.}\PY{n}{chgoption}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{iunitary}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{T}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{unitary}\PY{o}{.}\PY{n}{chgoption}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{idiscount}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{T}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{unitary}\PY{o}{.}\PY{n}{chgoption}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{iload}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{T}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Default options: 
+isurvival  =  T
+iload  =  F
+iestimate  =  T
+data  =  hrs\_final\_ref.csv
+info  =  info\_ref.dat
+includeratings  =  F
+icomplement  =  T
+ihetero  =  T
+icorr  =  T
+iunitary  =  F
+idiscount  =  F
+idirect  =  F
+arf  =  0.06
+drc  =  0.08
+reprate  =  0.6
+ishufheter  =  F
+ishufwages  =  F
+iblockcomp  =  F
+changed item  iunitary  with value F  to  T  {\ldots}
+changed item  idiscount  with value F  to  T  {\ldots}
+changed item  iload  with value F  to  T  {\ldots}
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}28}]:} \PY{n}{unitary}\PY{o}{.}\PY{n}{estimate}\PY{p}{(}\PY{p}{)}
+         \PY{n}{unitary}\PY{o}{.}\PY{n}{loglike}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}28}]:} -2821.128273333861
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}29}]:} \PY{n}{unitary}\PY{o}{.}\PY{n}{params}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}29}]:}                                       par                       se
+         alpha\_c               0.15182406589585989  3.6515442807415519E-002
+         alpha\_lm\_cons         -1.6332190463212242      0.47920257905411873
+         alpha\_lm\_age          0.43978975451722974  6.5674456817966145E-002
+         alpha\_lm\_hlim          1.6016682028999958      0.57991010763889972
+         alpha\_lm\_college      0.18890444304578757      0.29514226604767002
+         alpha\_lm\_male         0.17241043919956345      0.35310262979713164
+         alpha\_lm\_job      3.1270538303150297E-002      0.35129118557519690
+         alpha\_lf               0.0000000000000000       0.0000000000000000
+         alpha\_lm\_lf           0.13156460331229886  2.2219316196333432E-002
+         beta\_c                0.11644184827948612  3.7494000762092340E-002
+         beta\_lf\_cons         -0.76121050924083900      0.35431469034514063
+         beta\_lf\_age           0.47550737984740393  8.7280864075439293E-002
+         beta\_lf\_hlim           1.3998530431902385      0.50242822559667200
+         beta\_lf\_college      -0.18990389663978482      0.24037187392418863
+         beta\_lf\_male          0.95489005492934931      0.35745048652950767
+         beta\_lf\_job          -0.19990931749879925      0.25972725877600911
+         beta\_lm                0.0000000000000000       0.0000000000000000
+         beta\_lm\_lf        8.3377570799921752E-002  2.2062729677311068E-002
+         mu                5.4465499281290214E-002      0.31442616883468111
+         wageratio              0.0000000000000000       0.0000000000000000
+         log\_rho\_m         3.0513754669652459E-002  9.7806943730015285E-003
+         log\_rho\_f         1.7548533291637688E-002  1.2426394396677639E-002
+         tau\_m\_0               -3.0000000000000000       0.0000000000000000
+         log\_tau\_m              1.0000000000000000       0.0000000000000000
+         log\_tau\_m              1.0000000000000000       0.0000000000000000
+         log\_tau\_m              1.0000000000000000       0.0000000000000000
+         log\_tau\_m              1.0000000000000000       0.0000000000000000
+         log\_tau\_m              1.0000000000000000       0.0000000000000000
+         log\_tau\_m              1.0000000000000000       0.0000000000000000
+         log\_tau\_m              1.0000000000000000       0.0000000000000000
+         log\_tau\_m              1.0000000000000000       0.0000000000000000
+         tau\_f\_0               -3.0000000000000000       0.0000000000000000
+         log\_tau\_f              1.0000000000000000       0.0000000000000000
+         log\_tau\_f              1.0000000000000000       0.0000000000000000
+         log\_tau\_f              1.0000000000000000       0.0000000000000000
+         log\_tau\_f              1.0000000000000000       0.0000000000000000
+         log\_tau\_f              1.0000000000000000       0.0000000000000000
+         log\_tau\_f              1.0000000000000000       0.0000000000000000
+         log\_tau\_f              1.0000000000000000       0.0000000000000000
+         log\_tau\_f              1.0000000000000000       0.0000000000000000
+         log\_sig\_m              0.0000000000000000       0.0000000000000000
+         log\_sig\_f              0.0000000000000000       0.0000000000000000
+         L\_nm\_nm                2.8174463204995299      0.33258627578260586
+         L\_nf\_nm                1.9342076271723192      0.29597088083342304
+         L\_nf\_nf               0.19511085082811300      0.38799314915048322
+         scale\_m                1.0000000000000000       0.0000000000000000
+         scale\_f                1.0000000000000000       0.0000000000000000
+         scale\_h                1.0000000000000000       0.0000000000000000
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}30}]:} \PY{n}{unitary}\PY{o}{.}\PY{n}{sim}\PY{o}{.}\PY{n}{describe}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}30}]:}            hhidpn  insim       jprob  rexpret\_sim  sexpret\_sim   leisure\_m  \textbackslash{}
+         count  464.000000  464.0  464.000000   464.000000   464.000000  464.000000   
+         mean   303.915948    1.0    0.127155    65.635776    63.903017   -0.000685   
+         std    174.229335    0.0    0.333506     4.632369     3.098329    2.335276   
+         min      1.000000    1.0    0.000000    55.000000    55.000000   -4.758435   
+         25\%    155.750000    1.0    0.000000    62.000000    62.000000   -1.965214   
+         50\%    300.500000    1.0    0.000000    65.000000    64.000000   -0.073420   
+         75\%    454.250000    1.0    0.000000    69.000000    66.000000    1.901728   
+         max    604.000000    1.0    1.000000    80.000000    78.000000    7.349665   
+         
+                 leisure\_f   rage    rcollege      hwho\_m     {\ldots}          rhlth62  \textbackslash{}
+         count  464.000000  464.0  464.000000  464.000000     {\ldots}       464.000000   
+         mean     0.001419    0.0    0.441810    0.538793     {\ldots}         0.400431   
+         std      1.613392    0.0    0.497139    0.499031     {\ldots}         0.277485   
+         min     -3.293268    0.0    0.000000    0.000000     {\ldots}         0.000000   
+         25\%     -1.347942    0.0    0.000000    0.000000     {\ldots}         0.200000   
+         50\%     -0.055019    0.0    0.000000    1.000000     {\ldots}         0.400000   
+         75\%      1.310731    0.0    1.000000    1.000000     {\ldots}         0.500000   
+         max      5.090378    0.0    1.000000    1.000000     {\ldots}         1.000000   
+         
+                   shlth62     rliv75r     sliv75r       rwage       swage      rhours  \textbackslash{}
+         count  464.000000  464.000000  464.000000  464.000000  464.000000  464.000000   
+         mean     0.395948    0.962090    0.912592   32.615540   25.620789   42.728448   
+         std      0.265845    0.322436    0.245628   35.582619   60.577724   10.666330   
+         min      0.000000    0.137999    0.062038    0.000000    0.000000    2.000000   
+         25\%      0.200000    0.720568    0.744456   16.347501   12.967500   40.000000   
+         50\%      0.400000    1.012476    0.968663   25.092495   18.000000   40.000000   
+         75\%      0.500000    1.175370    1.065559   36.758401   27.415630   50.000000   
+         max      1.000000    1.491040    1.291550  365.000000  916.666687   80.000000   
+         
+                    shours      rexpret      sexpret  
+         count  464.000000   200.000000   257.000000  
+         mean    35.831897  2019.150000  2019.669261  
+         std     12.125414     5.325345     5.157249  
+         min      1.000000  2010.000000  2010.000000  
+         25\%     30.000000  2015.000000  2016.000000  
+         50\%     40.000000  2019.000000  2019.000000  
+         75\%     40.000000  2022.000000  2023.000000  
+         max     75.000000  2040.000000  2034.000000  
+         
+         [8 rows x 147 columns]
+\end{Verbatim}
+            
+    \subsubsection{Table with LR Tests}\label{table-with-lr-tests}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}31}]:} \PY{k+kn}{import} \PY{n+nn}{pandas} \PY{k}{as} \PY{n+nn}{pd}
+         \PY{n}{data} \PY{o}{=} \PY{p}{[}\PY{n}{disc}\PY{o}{.}\PY{n}{loglike}\PY{p}{,}\PY{n}{base}\PY{o}{.}\PY{n}{loglike}\PY{p}{,}\PY{n}{uncor}\PY{o}{.}\PY{n}{loglike}\PY{p}{,}\PY{n}{nocomp}\PY{o}{.}\PY{n}{loglike}\PY{p}{,}\PY{n}{unitary}\PY{o}{.}\PY{n}{loglike}\PY{p}{]}
+         \PY{n}{lr} \PY{o}{=} \PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}
+         \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{n+nb}{len}\PY{p}{(}\PY{n}{data}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+             \PY{n}{lr}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mf}{2.0}\PY{o}{*}\PY{p}{(}\PY{n}{data}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{o}{\PYZhy{}}\PY{n}{data}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+         \PY{n}{names} \PY{o}{=} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Baseline}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Fixed Discount Rates (2)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No Correlation UH (1)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No Complementarity (2)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Unitary (1)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+         \PY{n}{table} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{data}\PY{o}{=}\PY{n+nb}{list}\PY{p}{(}\PY{n+nb}{zip}\PY{p}{(}\PY{n}{data}\PY{p}{,}\PY{n}{lr}\PY{p}{)}\PY{p}{)}\PY{p}{,}\PY{n}{index}\PY{o}{=}\PY{n}{names}\PY{p}{,}\PY{n}{columns}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Loglikehood Value}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{LR Statistic}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+         \PY{k}{def} \PY{n+nf}{f}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{p}{:}
+             \PY{k}{return} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+si}{\PYZob{}:1.3f\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{x}\PY{p}{)}
+         \PY{k}{with} \PY{n+nb}{open}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{../tex/tables/lrtests.tex}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{w}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)} \PY{k}{as} \PY{n}{tf}\PY{p}{:}
+             \PY{n}{tf}\PY{o}{.}\PY{n}{write}\PY{p}{(}\PY{n}{table}\PY{o}{.}\PY{n}{to\PYZus{}latex}\PY{p}{(}\PY{n}{formatters}\PY{o}{=}\PY{p}{[}\PY{n}{f}\PY{p}{,}\PY{n}{f}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+         \PY{n}{table}    
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}31}]:}                           Loglikehood Value  LR Statistic
+         Baseline                       -2818.344871      0.000000
+         Fixed Discount Rates (2)       -2846.719603     56.749464
+         No Correlation UH (1)          -2899.352771    162.015800
+         No Complementarity (2)         -2855.766190     74.842637
+         Unitary (1)                    -2821.128273      5.566805
+\end{Verbatim}
+            
+    Critical values at 5\% for these tests:
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}32}]:} \PY{k+kn}{from} \PY{n+nn}{scipy}\PY{n+nn}{.}\PY{n+nn}{stats} \PY{k}{import} \PY{n}{chi2}
+         \PY{p}{[}\PY{n}{chi2}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{)}\PY{o}{.}\PY{n}{ppf}\PY{p}{(}\PY{l+m+mf}{0.95}\PY{p}{)}\PY{p}{,}\PY{n}{chi2}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{)}\PY{o}{.}\PY{n}{ppf}\PY{p}{(}\PY{l+m+mf}{0.95}\PY{p}{)}\PY{p}{]}
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}32}]:} [3.8414588206941236, 5.99146454710798]
+\end{Verbatim}
+            
+    \subsection{Correlation with Expected Retirement in
+HRS}\label{correlation-with-expected-retirement-in-hrs}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}33}]:} \PY{n}{disc}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rexpret}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{disc}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rage\PYZus{}mod}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{+} \PY{p}{(}\PY{n}{disc}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rexpret}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{\PYZhy{}}\PY{l+m+mi}{2011}\PY{p}{)}
+         \PY{n}{disc}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sexpret}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{disc}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sage\PYZus{}mod}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{+} \PY{p}{(}\PY{n}{disc}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sexpret}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{\PYZhy{}}\PY{l+m+mi}{2011}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}34}]:} \PY{n}{disc}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rexpret}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sexpret}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{o}{.}\PY{n}{describe}\PY{p}{(}\PY{p}{)}
+           
+\end{Verbatim}
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}34}]:}           rexpret     sexpret
+         count  200.000000  257.000000
+         mean    64.870000   64.459144
+         std      4.203743    4.221328
+         min     54.000000   54.000000
+         25\%     62.000000   62.000000
+         50\%     65.000000   64.000000
+         75\%     68.000000   66.000000
+         max     84.000000   80.000000
+\end{Verbatim}
+            
+    Correlations with simulated expected retirement age
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}35}]:} \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Males   : }\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{disc}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rexpret}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rexpret\PYZus{}sim}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{o}{.}\PY{n}{corr}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+         \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Females : }\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{disc}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sexpret}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sexpret\PYZus{}sim}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{o}{.}\PY{n}{corr}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+             
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Males   :                rexpret  rexpret\_sim
+rexpret      1.000000     0.208299
+rexpret\_sim  0.208299     1.000000
+Females :                sexpret  sexpret\_sim
+sexpret      1.000000     0.245102
+sexpret\_sim  0.245102     1.000000
+
+    \end{Verbatim}
+
+    We will do a figure to check correlation
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}36}]:} \PY{k+kn}{from} \PY{n+nn}{scipy}\PY{n+nn}{.}\PY{n+nn}{stats} \PY{k}{import} \PY{n}{linregress}
+         \PY{n}{data} \PY{o}{=} \PY{n}{disc}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rexpret\PYZus{}sim}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rexpret}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{o}{.}\PY{n}{dropna}\PY{p}{(}\PY{p}{)}
+         \PY{n}{x} \PY{o}{=} \PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rexpret\PYZus{}sim}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+         \PY{n}{y} \PY{o}{=} \PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rexpret}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+         \PY{n}{slope}\PY{p}{,} \PY{n}{intercept}\PY{p}{,} \PY{n}{r\PYZus{}value}\PY{p}{,} \PY{n}{p\PYZus{}value}\PY{p}{,} \PY{n}{std\PYZus{}err} \PY{o}{=} \PY{n}{linregress}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n}{y}\PY{p}{)}
+         \PY{n}{line} \PY{o}{=} \PY{n}{slope}\PY{o}{*}\PY{n}{x}\PY{o}{+}\PY{n}{intercept}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{scatter}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n}{y}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{line}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{r}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{y=}\PY{l+s+si}{\PYZob{}:.2f\PYZcb{}}\PY{l+s+s1}{x+}\PY{l+s+si}{\PYZob{}:.2f\PYZcb{}}\PY{l+s+s1}{: \PYZdl{}R\PYZca{}2\PYZdl{}=}\PY{l+s+si}{\PYZob{}:.2f\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{slope}\PY{p}{,}\PY{n}{intercept}\PY{p}{,}\PY{n}{r\PYZus{}value}\PY{p}{)}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{expected retirement age (Model)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{expected retirement age (HRS)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+m+mi}{4}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{savefig}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{../tex/figures/match\PYZus{}males.eps}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_54_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}37}]:} \PY{k+kn}{from} \PY{n+nn}{scipy}\PY{n+nn}{.}\PY{n+nn}{stats} \PY{k}{import} \PY{n}{linregress}
+         \PY{n}{data} \PY{o}{=} \PY{n}{disc}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sexpret\PYZus{}sim}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sexpret}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{o}{.}\PY{n}{dropna}\PY{p}{(}\PY{p}{)}
+         \PY{n}{x} \PY{o}{=} \PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sexpret\PYZus{}sim}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+         \PY{n}{y} \PY{o}{=} \PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sexpret}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+         \PY{n}{slope}\PY{p}{,} \PY{n}{intercept}\PY{p}{,} \PY{n}{r\PYZus{}value}\PY{p}{,} \PY{n}{p\PYZus{}value}\PY{p}{,} \PY{n}{std\PYZus{}err} \PY{o}{=} \PY{n}{linregress}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n}{y}\PY{p}{)}
+         \PY{n}{line} \PY{o}{=} \PY{n}{slope}\PY{o}{*}\PY{n}{x}\PY{o}{+}\PY{n}{intercept}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{scatter}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n}{y}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{line}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{r}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{y=}\PY{l+s+si}{\PYZob{}:.2f\PYZcb{}}\PY{l+s+s1}{x+}\PY{l+s+si}{\PYZob{}:.2f\PYZcb{}}\PY{l+s+s1}{: \PYZdl{}R\PYZca{}2\PYZdl{}=}\PY{l+s+si}{\PYZob{}:.2f\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{slope}\PY{p}{,}\PY{n}{intercept}\PY{p}{,}\PY{n}{r\PYZus{}value}\PY{p}{)}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{expected retirement age (Model)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{expected retirement age (HRS)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+m+mi}{4}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{savefig}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{../tex/figures/match\PYZus{}females.eps}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_55_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \subsection{Distribution of Retirement
+Ages}\label{distribution-of-retirement-ages}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}38}]:} \PY{o}{\PYZpc{}}\PY{k}{matplotlib} inline
+         \PY{k+kn}{from} \PY{n+nn}{scipy}\PY{n+nn}{.}\PY{n+nn}{stats} \PY{k}{import} \PY{n}{gaussian\PYZus{}kde}
+         \PY{k+kn}{from} \PY{n+nn}{numba} \PY{k}{import} \PY{n}{jit}
+         \PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+         \PY{n}{x} \PY{o}{=} \PY{n}{disc}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rexpret\PYZus{}sim}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{tolist}\PY{p}{(}\PY{p}{)}
+         \PY{n}{y} \PY{o}{=} \PY{n}{disc}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sexpret\PYZus{}sim}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{tolist}\PY{p}{(}\PY{p}{)}
+         \PY{n+nb}{print}\PY{p}{(}\PY{n}{disc}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rexpret\PYZus{}sim}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sexpret\PYZus{}sim}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{o}{.}\PY{n}{describe}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+         \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{correlation : }\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{disc}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rexpret\PYZus{}sim}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sexpret\PYZus{}sim}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{o}{.}\PY{n}{corr}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+         \PY{n}{X}\PY{p}{,} \PY{n}{Y} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{mgrid}\PY{p}{[}\PY{l+m+mi}{60}\PY{p}{:}\PY{l+m+mi}{69}\PY{p}{:}\PY{l+m+mi}{10}\PY{n}{j}\PY{p}{,} \PY{l+m+mi}{60}\PY{p}{:}\PY{l+m+mi}{69}\PY{p}{:}\PY{l+m+mi}{10}\PY{n}{j}\PY{p}{]}
+         \PY{n}{positions} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{vstack}\PY{p}{(}\PY{p}{[}\PY{n}{X}\PY{o}{.}\PY{n}{ravel}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{n}{Y}\PY{o}{.}\PY{n}{ravel}\PY{p}{(}\PY{p}{)}\PY{p}{]}\PY{p}{)}
+         \PY{n}{values} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{vstack}\PY{p}{(}\PY{p}{[}\PY{n}{x}\PY{p}{,} \PY{n}{y}\PY{p}{]}\PY{p}{)}
+         \PY{n}{kernel} \PY{o}{=} \PY{n}{gaussian\PYZus{}kde}\PY{p}{(}\PY{n}{values}\PY{p}{)}
+         \PY{n}{Z} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{reshape}\PY{p}{(}\PY{n}{kernel}\PY{p}{(}\PY{n}{positions}\PY{p}{)}\PY{o}{.}\PY{n}{T}\PY{p}{,} \PY{n}{X}\PY{o}{.}\PY{n}{shape}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{contour}\PY{p}{(}\PY{n}{X}\PY{p}{,}\PY{n}{Y}\PY{p}{,}\PY{n}{Z}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Expected Retirement Age Husband}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Expected Retirement Age Wife}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{savefig}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{../tex/figures/retages.eps}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+       rexpret\_sim  sexpret\_sim
+count   464.000000   464.000000
+mean     65.728448    63.829741
+std       4.670523     3.130547
+min      55.000000    54.000000
+25\%      62.000000    62.000000
+50\%      65.000000    64.000000
+75\%      69.000000    66.000000
+max      80.000000    80.000000
+correlation :               rexpret\_sim  sexpret\_sim
+rexpret\_sim     1.000000     0.741182
+sexpret\_sim     0.741182     1.000000
+
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_57_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}39}]:} \PY{n}{disc}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{distance\PYZus{}m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{disc}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rexpret\PYZus{}sim}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{\PYZhy{}} \PY{n}{disc}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rage\PYZus{}mod}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+         \PY{n}{disc}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{distance\PYZus{}f}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{disc}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sexpret\PYZus{}sim}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{\PYZhy{}} \PY{n}{disc}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sage\PYZus{}mod}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+         \PY{n+nb}{print}\PY{p}{(}\PY{n}{disc}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{distance\PYZus{}m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{distance\PYZus{}f}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{o}{.}\PY{n}{describe}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+         \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{correlation: }\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{disc}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{distance\PYZus{}m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{distance\PYZus{}f}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{o}{.}\PY{n}{corr}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+         
+         \PY{o}{\PYZpc{}}\PY{k}{matplotlib} inline
+         \PY{k+kn}{from} \PY{n+nn}{scipy}\PY{n+nn}{.}\PY{n+nn}{stats} \PY{k}{import} \PY{n}{gaussian\PYZus{}kde}
+         \PY{k+kn}{from} \PY{n+nn}{numba} \PY{k}{import} \PY{n}{jit}
+         \PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+         \PY{n}{x} \PY{o}{=} \PY{n}{disc}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{distance\PYZus{}m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{tolist}\PY{p}{(}\PY{p}{)}
+         \PY{n}{y} \PY{o}{=} \PY{n}{disc}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{distance\PYZus{}f}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{tolist}\PY{p}{(}\PY{p}{)}
+         
+         \PY{n}{X}\PY{p}{,} \PY{n}{Y} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{mgrid}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{:}\PY{l+m+mi}{20}\PY{p}{:}\PY{l+m+mi}{20}\PY{n}{j}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{:}\PY{l+m+mi}{20}\PY{p}{:}\PY{l+m+mi}{20}\PY{n}{j}\PY{p}{]}
+         \PY{n}{positions} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{vstack}\PY{p}{(}\PY{p}{[}\PY{n}{X}\PY{o}{.}\PY{n}{ravel}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{n}{Y}\PY{o}{.}\PY{n}{ravel}\PY{p}{(}\PY{p}{)}\PY{p}{]}\PY{p}{)}
+         \PY{n}{values} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{vstack}\PY{p}{(}\PY{p}{[}\PY{n}{x}\PY{p}{,} \PY{n}{y}\PY{p}{]}\PY{p}{)}
+         \PY{n}{kernel} \PY{o}{=} \PY{n}{gaussian\PYZus{}kde}\PY{p}{(}\PY{n}{values}\PY{p}{)}
+         \PY{n}{Z} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{reshape}\PY{p}{(}\PY{n}{kernel}\PY{p}{(}\PY{n}{positions}\PY{p}{)}\PY{o}{.}\PY{n}{T}\PY{p}{,} \PY{n}{X}\PY{o}{.}\PY{n}{shape}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{contour}\PY{p}{(}\PY{n}{X}\PY{p}{,}\PY{n}{Y}\PY{p}{,}\PY{n}{Z}\PY{p}{)}
+         \PY{n}{xx} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{linspace}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{20}\PY{p}{,}\PY{l+m+mi}{20}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{fill\PYZus{}between}\PY{p}{(}\PY{n}{xx}\PY{p}{,} \PY{n}{xx}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{xx}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{grey}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{alpha}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{0.1}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{xlim}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{20}\PY{p}{]}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{ylim}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{20}\PY{p}{]}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Expected Distance (yrs) to Retirement Husband}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Expected Distance (yrs) to Retirement Wife}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{savefig}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{../tex/figures/distances.eps}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{dpi}\PY{o}{=}\PY{l+m+mi}{600}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+       distance\_m  distance\_f
+count  464.000000  464.000000
+mean     9.092672    8.168103
+std      5.640990    4.582549
+min      0.000000    0.000000
+25\%      5.000000    5.000000
+50\%      9.000000    8.000000
+75\%     13.000000   11.000000
+max     23.000000   23.000000
+correlation:              distance\_m  distance\_f
+distance\_m    1.000000    0.766069
+distance\_f    0.766069    1.000000
+
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_58_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \subsection{Joint Retirement}\label{joint-retirement}
+
+    We will now re-rerun the discount model (baseline) with three scenarios:
+reshuffling heterogeneity, reshuffling wages and shutting down
+complementarity.
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}40}]:} \PY{n}{wages} \PY{o}{=} \PY{n}{sp}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{discount}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{wages}\PY{o}{.}\PY{n}{chgoption}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{iload}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{T}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{wages}\PY{o}{.}\PY{n}{chgoption}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{idiscount}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{T}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{wages}\PY{o}{.}\PY{n}{chgoption}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ishufwages}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{T}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{wages}\PY{o}{.}\PY{n}{estimate}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Default options: 
+isurvival  =  T
+iload  =  F
+iestimate  =  T
+data  =  hrs\_final\_ref.csv
+info  =  info\_ref.dat
+includeratings  =  F
+icomplement  =  T
+ihetero  =  T
+icorr  =  T
+iunitary  =  F
+idiscount  =  F
+idirect  =  F
+arf  =  0.06
+drc  =  0.08
+reprate  =  0.6
+ishufheter  =  F
+ishufwages  =  F
+iblockcomp  =  F
+changed item  iload  with value F  to  T  {\ldots}
+changed item  idiscount  with value F  to  T  {\ldots}
+changed item  ishufwages  with value F  to  T  {\ldots}
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}41}]:} \PY{n}{heter} \PY{o}{=} \PY{n}{sp}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{discount}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{heter}\PY{o}{.}\PY{n}{chgoption}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{iload}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{T}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{heter}\PY{o}{.}\PY{n}{chgoption}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{idiscount}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{T}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{heter}\PY{o}{.}\PY{n}{chgoption}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ishufheter}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{T}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{heter}\PY{o}{.}\PY{n}{estimate}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Default options: 
+isurvival  =  T
+iload  =  F
+iestimate  =  T
+data  =  hrs\_final\_ref.csv
+info  =  info\_ref.dat
+includeratings  =  F
+icomplement  =  T
+ihetero  =  T
+icorr  =  T
+iunitary  =  F
+idiscount  =  F
+idirect  =  F
+arf  =  0.06
+drc  =  0.08
+reprate  =  0.6
+ishufheter  =  F
+ishufwages  =  F
+iblockcomp  =  F
+changed item  iload  with value F  to  T  {\ldots}
+changed item  idiscount  with value F  to  T  {\ldots}
+changed item  ishufheter  with value F  to  T  {\ldots}
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}46}]:} \PY{n}{comp} \PY{o}{=} \PY{n}{sp}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{discount}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{comp}\PY{o}{.}\PY{n}{chgoption}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{iload}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{T}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{comp}\PY{o}{.}\PY{n}{chgoption}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{idiscount}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{T}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{comp}\PY{o}{.}\PY{n}{chgoption}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{iblockcomp}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{T}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{comp}\PY{o}{.}\PY{n}{estimate}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Default options: 
+isurvival  =  T
+iload  =  F
+iestimate  =  T
+data  =  hrs\_final\_ref.csv
+info  =  info\_ref.dat
+includeratings  =  F
+icomplement  =  T
+ihetero  =  T
+icorr  =  T
+iunitary  =  F
+idiscount  =  F
+idirect  =  F
+arf  =  0.06
+drc  =  0.08
+reprate  =  0.6
+ishufheter  =  F
+ishufwages  =  F
+iblockcomp  =  F
+changed item  iload  with value F  to  T  {\ldots}
+changed item  idiscount  with value F  to  T  {\ldots}
+changed item  iblockcomp  with value F  to  T  {\ldots}
+
+    \end{Verbatim}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}47}]:} \PY{n}{specs} \PY{o}{=} \PY{p}{[}\PY{n}{disc}\PY{p}{,}\PY{n}{wages}\PY{p}{,}\PY{n}{heter}\PY{p}{,}\PY{n}{comp}\PY{p}{]}
+         \PY{n}{names} \PY{o}{=}  \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Baseline}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Shuffling Wages}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Shuffling UH}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No Complementarity}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+         \PY{n}{data} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
+         \PY{k}{for} \PY{n}{i}\PY{p}{,}\PY{n}{s} \PY{o+ow}{in} \PY{n+nb}{enumerate}\PY{p}{(}\PY{n}{specs}\PY{p}{)}\PY{p}{:}
+             \PY{n}{s}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{distance\PYZus{}m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{s}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rexpret\PYZus{}sim}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{\PYZhy{}} \PY{n}{s}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rage\PYZus{}mod}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+             \PY{n}{s}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{distance\PYZus{}f}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{s}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sexpret\PYZus{}sim}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{\PYZhy{}} \PY{n}{s}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sage\PYZus{}mod}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+             \PY{n}{s}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{joint}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{abs}\PY{p}{(}\PY{n}{s}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{distance\PYZus{}m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{\PYZhy{}} \PY{n}{s}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{distance\PYZus{}f}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{o}{\PYZlt{}}\PY{o}{=}\PY{l+m+mf}{1.0}
+             \PY{n}{s}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{joint\PYZus{}yrs}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{s}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{distance\PYZus{}m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{\PYZhy{}} \PY{n}{s}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{distance\PYZus{}f}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+             \PY{n}{x} \PY{o}{=} \PY{n}{s}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{joint\PYZus{}yrs}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{values}
+             \PY{n}{x}\PY{o}{.}\PY{n}{sort}\PY{p}{(}\PY{p}{)}
+             \PY{n}{ff} \PY{o}{=} \PY{n}{gaussian\PYZus{}kde}\PY{p}{(}\PY{n}{x}\PY{p}{)}
+             \PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n}{ff}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{p}{,}\PY{n}{label}\PY{o}{=}\PY{n}{names}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}
+             \PY{n}{data}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{p}{[}\PY{n}{s}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rexpret\PYZus{}sim}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{,}\PY{n}{s}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sexpret\PYZus{}sim}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{,}\PY{n}{s}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{joint}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{]}\PY{p}{)}
+         \PY{n}{table} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{data}\PY{o}{=}\PY{n}{data}\PY{p}{,}\PY{n}{index}\PY{o}{=}\PY{n}{names}\PY{p}{,}\PY{n}{columns}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Ret Age Males}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Ret Age Females}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Fraction Joint}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}  
+         \PY{k}{def} \PY{n+nf}{f}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{p}{:}
+             \PY{k}{return} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+si}{\PYZob{}:1.3f\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{x}\PY{p}{)}
+         \PY{k}{with} \PY{n+nb}{open}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{../tex/tables/joint.tex}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{w}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)} \PY{k}{as} \PY{n}{tf}\PY{p}{:}
+             \PY{n}{tf}\PY{o}{.}\PY{n}{write}\PY{p}{(}\PY{n}{table}\PY{o}{.}\PY{n}{to\PYZus{}latex}\PY{p}{(}\PY{n}{formatters}\PY{o}{=}\PY{p}{[}\PY{n}{f}\PY{p}{,}\PY{n}{f}\PY{p}{,}\PY{n}{f}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{loc}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{difference in distance to retirement}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{density}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{xlim}\PY{p}{(}\PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mi}{15}\PY{p}{,}\PY{l+m+mi}{15}\PY{p}{]}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{savefig}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{../tex/figures/compare\PYZus{}distances.eps}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+         \PY{n}{table}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_64_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}47}]:}                     Ret Age Males  Ret Age Females  Fraction Joint
+         Baseline                65.728448        63.829741        0.336207
+         Shuffling Wages         65.629310        63.803879        0.368534
+         Shuffling UH            65.765086        63.892241        0.176724
+         No Complementarity      66.142241        64.471983        0.303879
+\end{Verbatim}
+            
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}48}]:} \PY{o}{\PYZpc{}}\PY{k}{matplotlib} inline
+         \PY{k+kn}{from} \PY{n+nn}{scipy}\PY{n+nn}{.}\PY{n+nn}{stats} \PY{k}{import} \PY{n}{gaussian\PYZus{}kde}
+         \PY{k+kn}{from} \PY{n+nn}{numba} \PY{k}{import} \PY{n}{jit}
+         \PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+         \PY{n}{x} \PY{o}{=} \PY{n}{comp}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{distance\PYZus{}m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{tolist}\PY{p}{(}\PY{p}{)}
+         \PY{n}{y} \PY{o}{=} \PY{n}{comp}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{distance\PYZus{}f}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{tolist}\PY{p}{(}\PY{p}{)}
+         
+         \PY{n}{X}\PY{p}{,} \PY{n}{Y} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{mgrid}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{:}\PY{l+m+mi}{20}\PY{p}{:}\PY{l+m+mi}{20}\PY{n}{j}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{:}\PY{l+m+mi}{20}\PY{p}{:}\PY{l+m+mi}{20}\PY{n}{j}\PY{p}{]}
+         \PY{n}{positions} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{vstack}\PY{p}{(}\PY{p}{[}\PY{n}{X}\PY{o}{.}\PY{n}{ravel}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{n}{Y}\PY{o}{.}\PY{n}{ravel}\PY{p}{(}\PY{p}{)}\PY{p}{]}\PY{p}{)}
+         \PY{n}{values} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{vstack}\PY{p}{(}\PY{p}{[}\PY{n}{x}\PY{p}{,} \PY{n}{y}\PY{p}{]}\PY{p}{)}
+         \PY{n}{kernel} \PY{o}{=} \PY{n}{gaussian\PYZus{}kde}\PY{p}{(}\PY{n}{values}\PY{p}{)}
+         \PY{n}{Z} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{reshape}\PY{p}{(}\PY{n}{kernel}\PY{p}{(}\PY{n}{positions}\PY{p}{)}\PY{o}{.}\PY{n}{T}\PY{p}{,} \PY{n}{X}\PY{o}{.}\PY{n}{shape}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{contour}\PY{p}{(}\PY{n}{X}\PY{p}{,}\PY{n}{Y}\PY{p}{,}\PY{n}{Z}\PY{p}{)}
+         \PY{n}{xx} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{linspace}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{20}\PY{p}{,}\PY{l+m+mi}{20}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{fill\PYZus{}between}\PY{p}{(}\PY{n}{xx}\PY{p}{,} \PY{n}{xx}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{xx}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{grey}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{alpha}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{0.1}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{xlim}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{20}\PY{p}{]}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{ylim}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{20}\PY{p}{]}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Expected Distance (yrs) to Retirement Husband}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Expected Distance (yrs) to Retirement Wife}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+         \PY{n}{plt}\PY{o}{.}\PY{n}{savefig}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{../tex/figures/distances\PYZus{}nocomp.eps}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{dpi}\PY{o}{=}\PY{l+m+mi}{600}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_65_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}45}]:} \PY{n}{disc}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{agediff}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{disc}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rage\PYZus{}mod}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{\PYZhy{}} \PY{n}{disc}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sage\PYZus{}mod}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+         \PY{n+nb}{print}\PY{p}{(}\PY{n}{comp}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{distance\PYZus{}m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{distance\PYZus{}f}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{o}{.}\PY{n}{describe}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+         \PY{n+nb}{print}\PY{p}{(}\PY{n}{disc}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{distance\PYZus{}m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{distance\PYZus{}f}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{o}{.}\PY{n}{describe}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+       distance\_m  distance\_f
+count  464.000000  464.000000
+mean     9.810345    9.519397
+std      5.755889    4.703711
+min      0.000000    0.000000
+25\%      6.000000    6.000000
+50\%     10.000000    9.000000
+75\%     14.000000   13.000000
+max     24.000000   23.000000
+       distance\_m  distance\_f
+count  464.000000  464.000000
+mean     9.092672    8.168103
+std      5.640990    4.582549
+min      0.000000    0.000000
+25\%      5.000000    5.000000
+50\%      9.000000    8.000000
+75\%     13.000000   11.000000
+max     23.000000   23.000000
+
+    \end{Verbatim}
+
+    \section{Policy Simulation}\label{policy-simulation}
+
+    Finally, we have to check what happens when we do policy simulations. We
+will do policy simulations over two parameters, the ARF (actuarial
+reduction factor) and the generosity of the pension (replacement rate).
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor} }]:} \PY{n}{arf} \PY{o}{=} \PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mf}{0.09}\PY{p}{]}
+        \PY{n}{drc} \PY{o}{=} \PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mf}{0.11}\PY{p}{]}
+        \PY{n}{rep} \PY{o}{=} \PY{p}{[}\PY{l+m+mf}{0.4}\PY{p}{,}\PY{l+m+mf}{0.8}\PY{p}{]}
+        \PY{n}{factors} \PY{o}{=} \PY{n+nb}{zip}\PY{p}{(}\PY{n}{arf}\PY{p}{,}\PY{n}{drc}\PY{p}{)}
+        \PY{n}{experiments} \PY{o}{=} \PY{p}{[}\PY{n}{disc}\PY{p}{]}
+        \PY{k}{for} \PY{n}{a}\PY{p}{,}\PY{n}{d} \PY{o+ow}{in} \PY{n}{factors}\PY{p}{:}
+            \PY{n}{this} \PY{o}{=} \PY{n}{sp}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{discount}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+            \PY{n}{this}\PY{o}{.}\PY{n}{chgoption}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{iload}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{T}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+            \PY{n}{this}\PY{o}{.}\PY{n}{chgoption}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{idiscount}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{T}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+            \PY{n}{this}\PY{o}{.}\PY{n}{chgoption}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{arf}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{a}\PY{p}{)}
+            \PY{n}{this}\PY{o}{.}\PY{n}{chgoption}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{drc}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{d}\PY{p}{)}
+            \PY{n}{this}\PY{o}{.}\PY{n}{estimate}\PY{p}{(}\PY{p}{)}
+            \PY{n}{this}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{distance\PYZus{}m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{this}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rexpret\PYZus{}sim}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{\PYZhy{}} \PY{n}{this}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rage\PYZus{}mod}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+            \PY{n}{this}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{distance\PYZus{}f}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{this}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sexpret\PYZus{}sim}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{\PYZhy{}} \PY{n}{this}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sage\PYZus{}mod}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+            \PY{n}{this}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{joint}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{abs}\PY{p}{(}\PY{n}{this}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{distance\PYZus{}m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{\PYZhy{}} \PY{n}{this}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{distance\PYZus{}f}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{o}{\PYZlt{}}\PY{o}{=}\PY{l+m+mf}{1.0}    
+            \PY{n}{experiments}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{this}\PY{p}{)}
+        \PY{k}{for} \PY{n}{r} \PY{o+ow}{in} \PY{n}{rep}\PY{p}{:}
+            \PY{n}{this} \PY{o}{=} \PY{n}{sp}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{discount}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+            \PY{n}{this}\PY{o}{.}\PY{n}{chgoption}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{iload}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{T}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+            \PY{n}{this}\PY{o}{.}\PY{n}{chgoption}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{idiscount}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{T}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+            \PY{n}{this}\PY{o}{.}\PY{n}{chgoption}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{reprate}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{r}\PY{p}{)}
+            \PY{n}{this}\PY{o}{.}\PY{n}{estimate}\PY{p}{(}\PY{p}{)}
+            \PY{n}{this}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{distance\PYZus{}m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{this}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rexpret\PYZus{}sim}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{\PYZhy{}} \PY{n}{this}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rage\PYZus{}mod}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+            \PY{n}{this}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{distance\PYZus{}f}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{this}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sexpret\PYZus{}sim}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{\PYZhy{}} \PY{n}{this}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sage\PYZus{}mod}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+            \PY{n}{this}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{joint}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{abs}\PY{p}{(}\PY{n}{this}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{distance\PYZus{}m}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{\PYZhy{}} \PY{n}{this}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{distance\PYZus{}f}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{o}{\PYZlt{}}\PY{o}{=}\PY{l+m+mf}{1.0}    
+            \PY{n}{experiments}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{this}\PY{p}{)}
+            
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor} }]:} \PY{n}{data} \PY{o}{=} \PY{p}{[}\PY{p}{[}\PY{n}{e}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rexpret\PYZus{}sim}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{,}\PY{n}{e}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sexpret\PYZus{}sim}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{,}\PY{n}{e}\PY{o}{.}\PY{n}{sim}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{joint}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{]} \PY{k}{for} \PY{n}{e} \PY{o+ow}{in} \PY{n}{experiments}\PY{p}{]}
+        \PY{n}{names} \PY{o}{=} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Baseline}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No Penalty}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{High Penalty}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Low Generosity}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{High Generosity}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+        \PY{n}{table} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{data}\PY{o}{=}\PY{n}{data}\PY{p}{,}\PY{n}{columns}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Ret Age Males}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Ret Age Females}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Fraction Retiring Jointly}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}\PY{n}{index}\PY{o}{=}\PY{n}{names}\PY{p}{)}
+        \PY{n+nb}{print}\PY{p}{(}\PY{n}{table}\PY{p}{)}
+        \PY{k}{def} \PY{n+nf}{f}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{p}{:}
+            \PY{k}{return} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+si}{\PYZob{}:1.3f\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{x}\PY{p}{)}
+        \PY{k}{with} \PY{n+nb}{open}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{../tex/tables/policy.tex}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{w}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)} \PY{k}{as} \PY{n}{tf}\PY{p}{:}
+            \PY{n}{tf}\PY{o}{.}\PY{n}{write}\PY{p}{(}\PY{n}{table}\PY{o}{.}\PY{n}{to\PYZus{}latex}\PY{p}{(}\PY{n}{formatters}\PY{o}{=}\PY{p}{[}\PY{n}{f}\PY{p}{,}\PY{n}{f}\PY{p}{,}\PY{n}{f}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+    \end{document}
