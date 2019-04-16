@@ -14,6 +14,7 @@ class sp:
             'includeratings': 'F',
             'icomplement': 'T',
             'ihetero': 'T',
+            'ijointhetero': 'F',
             'icorr': 'T',
             'iunitary': 'F',
             'idiscount': 'F',

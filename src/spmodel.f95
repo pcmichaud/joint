@@ -13,6 +13,7 @@ implicit none
 integer Time			! maximum age to which can survive
 double precision Lmax;	! maximum amount of leisure in a week (hours)
 integer nd				! number of draws in simulating likelihood, 1 if no sim
+integer ndj				! number of draws in simulating likelihood, joint leisure, 1 if no sim
 integer nm				! possible number of ratings (1 to 10)
 integer nparmax 		! maximum number of parameters
 parameter (Lmax =168.0d0, Time = 100, nm = 10, nparmax = 200)
@@ -45,6 +46,7 @@ double precision, allocatable :: Hm(:,:,:,:)		! hours of husbands in scenarios (
 double precision, allocatable :: Hf(:,:,:,:)		! hours of wives in scenarios (n,nj,2,3)
 double precision, allocatable :: Y(:,:,:,:)			! household income in scenarios  (n,nj,2,3)
 double precision, allocatable :: D(:, :, :)			! for uniform draws (n,nd,2)
+double precision, allocatable :: DJ(:, :, :)			! for uniform draws (n,nd,2), joint ret.
 character*20, allocatable :: shifters(:)                ! for variable labels of shifters
 double precision, allocatable :: L(:,:,:)
 double precision, allocatable :: pHL(:,:), sHL(:,:), p75r(:,:)
@@ -63,7 +65,7 @@ double precision arf, drc, reprate
 logical ishufheter, ishufwages, iblockcomp
 
 !!!! Luc !!!!!
-logical :: ifixcorr, inoestim
+logical :: ifixcorr, inoestim, ijointhetero
 double precision :: dfixrho, ddiscount
 integer iloccorr
 
@@ -90,6 +92,7 @@ contains
 		read(1,*) buffer, includeratings
 		read(1,*) buffer, icomplement
 		read(1,*) buffer, ihetero
+		read(1,*) buffer, ijointhetero
 		read(1,*) buffer, icorr
 		read(1,*) buffer, iunitary
 		read(1,*) buffer, idiscount
@@ -106,11 +109,26 @@ contains
 		read(1,*) buffer, inoestim
 		close(1)
 
-		if (.not. ihetero) then
+		!if (.not. ihetero) then
+		!	nd = 1
+		!else
+		!	nd = 100
+		!end if
+    !
+		!if(.not. ijointhetero) then
+		!	ndj = 1
+		!else
+		!	ndj = 100
+		!end if
+
+		if (.not. (ihetero .or. ijointhetero)) then
 			nd = 1
 		else
 			nd = 50
 		end if
+
+
+
 
 	end subroutine initsettings
 
@@ -137,7 +155,7 @@ contains
 		write(*,*) '+ read information'
 		open(1,file='../data/'//adjustl(trim(info)))
 				read(1,*)
-                        read(1,*) nj,nr,nc,n,nxm,nxf,nz,nvar
+                read(1,*) nj,nr,nc,n,nxm,nxf,nz,nvar
                 close(1)
 
                 nxm = nxm + 1
@@ -179,6 +197,7 @@ contains
 		allocate(Hf(n,nj,2,3))
 		allocate(Y(n,nj,2,3))
 		allocate(D(n,nd,2))
+		allocate(DJ(n,nd,2))
 		allocate(pHL(n,4))
 		allocate(sHL(n,4))
 		allocate(p75r(n,2))
@@ -290,8 +309,11 @@ contains
 		close(2)
 
 		! Taking uniform draws for both dimensions
+    if(ihetero .or. ijointhetero) then
+		   call set_random_seed
+	  end if
+
 		if (ihetero) then
-			call set_random_seed
 			do i = 1, n, 1
 				do u = 1, nd, 1
 					call random_number(draw)
@@ -321,6 +343,42 @@ contains
 		else
 			D(:,:,:) = 0.0d0
 		end if
+
+		!!!! LUC Same for joint leisure heterogeneity
+    !call set_random_seed
+		if (ijointhetero) then
+			!call set_random_seed
+			do i = 1, n, 1
+				do u = 1, nd, 1
+					call random_number(draw)
+
+					DJ(i,u,1) = quann(draw)
+
+					if (DJ(i,u,1).lt.-10.0d0) then
+						DJ(i,u,1) = -10.0d0
+					else if (DJ(i,u,1).gt.10.0d0) then
+						DJ(i,u,1) = 10.0d0
+					end if
+					if (nd.eq.1) then
+						DJ(i,u,1) = 0.0d0
+					end if
+					call random_number(draw)
+					DJ(i,u,2) = quann(draw)
+					if (DJ(i,u,2).lt.-10.0d0) then
+						DJ(i,u,2) = -10.0d0
+					else if (DJ(i,u,2).gt.10.0d0) then
+						DJ(i,u,2) = 10.0d0
+					end if
+					if (nd.eq.1) then
+						DJ(i,u,2) = 0.0d0
+					end if
+	!			  print *, i, u,  D(i,u,:)
+				end do
+			end do
+		else
+			DJ(:,:,:) = 0.0d0
+		end if
+
 		! load life tables
 		open(3,file='../params/gompertz_ref.csv')
 			read(3,*) gomp(1,:)
@@ -566,6 +624,38 @@ contains
 			end if
 			pos = pos + 3
 
+
+
+			! UH terms (choleski terms for heterogeneity in joint leisure)
+			ipar(pos)   = 1.0d0	! L(nm,nm)
+			labpar(pos) = 'LJ_nm_nm'
+			if (.not. ijointhetero) then
+				fixpar(pos) = 0.0d0
+			end if
+			ipar(pos+1) = 0.0d0 	! L(nf,nm)
+			labpar(pos+1) = 'LJ_nf_nm'
+			if (.not. ijointhetero) then
+				fixpar(pos+1) = ipar(pos+1)
+			end if
+			if (.not. icorr) then
+				fixpar(pos+1) = ipar(pos+1)
+			end if
+
+			!!!! LUC : Manual and inconsistent fix !!!!
+			if (ifixcorr) then
+          ipar(pos+1)   = dfixrho
+					fixpar(pos+1) = ipar(pos+1)
+					iloccorr      = pos + 1
+			end if
+
+			ipar(pos+2) = 1.0d0	! L(nf,nf)
+			labpar(pos+2) = 'LJ_nf_nf'
+			if (.not. ijointhetero) then
+				fixpar(pos+2) = 0.0d0
+			end if
+			pos = pos + 3
+
+
 			! Scale for the utility function
             ipar(pos) = 1.0d0
             labpar(pos) = 'scale_m'
@@ -632,9 +722,9 @@ contains
 
 	! MAPPING PARAMETER VECTOR TO INDIVIDUAL PARAMETERS
 	! parsing the parameter vector into useful parameter arrays for computations
-	subroutine maptopar(par,bm,bf,bz, rho, cutm, cutf, sigm, sigf, Lo, utilscale)
+	subroutine maptopar(par,bm,bf,bz, rho, cutm, cutf, sigm, sigf, Lo, Lj, utilscale)
 		double precision par(npar), bm(4,nxm), bf(4,nxf), bz(nz)
-		double precision rho(2), cutm(nm+1), cutf(nm+1), sigm, sigf, Lo(2,2), utilscale(3)
+		double precision rho(2), cutm(nm+1), cutf(nm+1), sigm, sigf, Lo(2,2), Lj(2,2), utilscale(3)
 		integer pos, i, m
 		pos = 1
 		! initialize parameter values
@@ -709,6 +799,13 @@ contains
 			Lo(2,1) = par(pos+1)  ! L(nf,nm)
 			Lo(2,2) = par(pos+2)  ! L(nf,nf)
 			Lo(1,2) = 0.0d0       ! L(nm,nf)
+			pos = pos + 3
+
+			! UH terms (choleski terms, joint leisure)
+			Lj(1,1) = par(pos)    ! L(nm,nm)
+			Lj(2,1) = par(pos+1)  ! L(nf,nm)
+			Lj(2,2) = par(pos+2)  ! L(nf,nf)
+			Lj(1,2) = 0.0d0       ! L(nm,nf)
 			pos = pos + 3
 
 			! Scale for the utility function
@@ -787,12 +884,12 @@ contains
 
 	end subroutine factor
 
-	pure subroutine getutility(cons, lown, lsp, parc,parown, parsp, parlmlf, eta, utility)
-        double precision, intent(in)  ::lown, lsp, cons, parc, parown, parsp, parlmlf,  eta
+	pure subroutine getutility(cons, lown, lsp, parc,parown, parsp, parlmlf, eta, zeta, utility)
+        double precision, intent(in)  ::lown, lsp, cons, parc, parown, parsp, parlmlf,  eta, zeta
         double precision, intent(out) ::utility
 
-        utility = parc*dlog(cons)  + (parown+eta)*dlog(lown) + parsp*dlog(lsp) &
-            + parlmlf*dlog(lsp)*dlog(lown)
+        utility = parc*dlog(cons)  + (parown+eta)*dlog(lown) + (parsp)*dlog(lsp) &
+            + (parlmlf+zeta)*dlog(lsp)*dlog(lown)
 
 	end subroutine getutility
 
@@ -815,15 +912,17 @@ contains
 		integer i,u,j, s, k, agem(3), agef(3),hh
 		! intermediate arrays double
 		double precision fm(3), ff(3), w, lf,lm,cons,v,vm,vf,um,uf,vm1,vf1,vm2,vf2,vh1,vh2
+		double precision ujm, ujf
 		double precision  pf, ph, pu, pi, pm
 		! arrays for parameters
 		double precision bm(4,nxm), bf(4,nxf), bz(nz), bum, buf, buma, bufa
 		double precision rho(2),cutm(nm+1), cutf(nm+1), sigm, sigf, Lo(2,2), uscale(3)
+		double precision Lj(2,2)
 
 		! get all parameters from freebeta array and fixpar array
 		call getpar(freebeta, beta)
 		! map parameters
-		call maptopar(beta, bm, bf, bz, rho, cutm, cutf, sigm, sigf, Lo, uscale)
+		call maptopar(beta, bm, bf, bz, rho, cutm, cutf, sigm, sigf, Lo, Lj, uscale)
 		! start loop over respondents
 
 		do i = 1, n, 1
@@ -870,6 +969,18 @@ contains
 				um = Lo(1,1)*D(i,u,1)
 				uf = Lo(2,1)*D(i,u,1) + Lo(2,2)*D(i,u,2)
 
+				!! Joint term
+				if(ifixcorr) then
+					Lj(2,1) = (dfixrho/dsqrt(1-dfixrho**2))*Lj(2,2)
+					!!! This is bad. Overwritting the fix par...)
+					fixpar(iloccorr) = Lj(2,1)
+				end if
+
+				! update draws for UH
+				ujm = Lj(1,1)*DJ(i,u,1)
+				ujf = Lj(2,1)*DJ(i,u,1) + Lj(2,2)*DJ(i,u,2)
+				!aj = dexp()
+
 
 				! initialize probability p(i,u)
 				pu = 1.0d0
@@ -896,7 +1007,7 @@ contains
 								! compute log consumption
 								cons = Y(i,j,1,s)
 								! compute utility for this period
-							    call getutility(cons, lm, lf, bm(1,1), buma, bm(3,1), bm(4,1), um, v)
+							    call getutility(cons, lm, lf, bm(1,1), buma, bm(3,1), bm(4,1), um,ujm, v)
 								! discount and add to expected utility
 								vm = vm + fm(s)*v
 							end do
@@ -920,7 +1031,7 @@ contains
 								! compute log consumption
 								cons = Y(i,j,1,s)
 								! compute utility for this period
-								call getutility(cons, lf, lm, bf(1,1), bufa, bf(3,1), bf(4,1), uf, v)
+								call getutility(cons, lf, lm, bf(1,1), bufa, bf(3,1), bf(4,1), uf, ujf, v)
 
 								! discount and add
 								vf = vf + ff(s)*v
@@ -962,7 +1073,7 @@ contains
 								lm = Lmax - Hm(i,j,1,s)
 								lf = Lmax - Hf(i,j,1,s)
 								cons = Y(i,j,1,s)
-								call getutility(cons, lm, lf, bm(1,1), buma, bm(3,1), bm(4,1), um, v)
+								call getutility(cons, lm, lf, bm(1,1), buma, bm(3,1), bm(4,1), um,ujm, v)
 								vm1 = vm1 + pHL(i,hh)*fm(s)*v
 							end do
 							! expected utility option 2
@@ -975,7 +1086,7 @@ contains
 								lm = Lmax - Hm(i,j,2,s)
 								lf = Lmax - Hf(i,j,2,s)
 								cons = Y(i,j,2,s)
-								call getutility(cons, lm, lf, bm(1,1), buma, bm(3,1), bm(4,1), um, v)
+								call getutility(cons, lm, lf, bm(1,1), buma, bm(3,1), bm(4,1), um,ujm, v)
 								vm2 = vm2 + pHL(i,hh)*fm(s)*v
 							end do
 
@@ -990,7 +1101,7 @@ contains
 								lf = Lmax - Hf(i,j,1,s)
 								lm = Lmax - Hm(i,j,1,s)
 								cons = Y(i,j,1,s)
-								call getutility(cons, lf, lm, bf(1,1), bufa, bf(3,1), bf(4,1), uf, v)
+								call getutility(cons, lf, lm, bf(1,1), bufa, bf(3,1), bf(4,1), uf,ujf, v)
 								vf1 = vf1 + pHL(i,hh)*ff(s)*v
 							end do
 							! expected utility option 2
@@ -1003,7 +1114,7 @@ contains
 								lf = Lmax - Hf(i,j,2,s)
 								lm = Lmax - Hm(i,j,2,s)
 								cons = Y(i,j,2,s)
-								call getutility(cons, lf, lm, bf(1,1), bufa, bf(3,1), bf(4,1), uf, v)
+								call getutility(cons, lf, lm, bf(1,1), bufa, bf(3,1), bf(4,1), uf,ujf,v)
 								vf2 = vf2 + pHL(i,hh)*ff(s)*v
 							end do
 
@@ -1383,13 +1494,14 @@ contains
         ! integers
         double precision bm(4,nxm), bf(4,nxf), bz(nz), bum(n), buf(n), buma, bufa, um, uf
         double precision rho(2),cutm(nm+1), cutf(nm+1), sigm, sigf, Lo(2,2), uscale(3)
-        double precision VarCovType(2,2), lm, lf, v, vm, vf, cons
+				double precision Lj(2,2)
+        double precision VarCovType(2,2),VarCovTypeJ(2,2), lm, lf, v, vm, vf, cons
         double precision val1, val2, posterior(n,2), Lbase(2), surv(2), w, totcprob
         double precision expret(n,2), jointret(n), base, maxp, draw
         ! get all parameters from freebeta array and fixpar array
         call getpar(freepar, beta)
         ! map parameters
-        call maptopar(beta, bm, bf, bz, rho, cutm, cutf, sigm, sigf, Lo, uscale)
+        call maptopar(beta, bm, bf, bz, rho, cutm, cutf, sigm, sigf, Lo, Lj, uscale)
         ! start loop over respondents
         bm(2,5) = 0.0d0
         bf(2,5) = 0.0d0
@@ -1406,6 +1518,22 @@ contains
 	    print *, 'Correlation across leisure heterogeneity'
 	    print *, VarCovType(2,1)/(sqrt(VarCovType(1,1))*sqrt(VarCovType(2,2)))
 	    print *, ' '
+
+
+			print *, ' '
+	    print *, 'Variance/covariance of joint heterogeneity'
+
+			VarCovTypeJ = matmul(Lj, transpose(Lj))
+
+			do i = 1,2
+				 write(*, '(3F10.3,3F10.3)') VarCovTypeJ(i,:)
+			end do
+			print *, ' '
+	    print *, 'Correlation across joint leisure heterogeneity'
+	    print *, VarCovTypeJ(2,1)/(sqrt(VarCovTypeJ(1,1))*sqrt(VarCovTypeJ(2,2)))
+	    print *, ' '
+
+
 
 	    ! stats on unobserved heterogeneity term
 	    print *, 'Fraction with positive marginal utility of leisure (at L(s)=Lmax, age 65)'
@@ -1598,7 +1726,7 @@ contains
 											lf = Lmax - sum(Hf_sim(:,m,f,j))/dble(n)
 										end if
 										cons = Y_sim(i,m,f,j)
-										call getutility(cons, lm, lf, bm(1,1), buma, bm(3,1), bm(4,1), 0.0d0, v)
+										call getutility(cons, lm, lf, bm(1,1), buma, bm(3,1), bm(4,1), 0.0d0,0.0d0, v)
 										vm = vm + pHL(i,hh)*(rho(1)**(aam-age(i,1)))*surv(1)*v
 				    				end do
 				    				! evaluate utility of wife
@@ -1620,7 +1748,7 @@ contains
 										end if
 										lf = Lmax - Hf_sim(i,m,f,j)
 										cons = Y_sim(i,m,f,j)
-										call getutility(cons, lf, lm, bf(1,1), bufa, bf(3,1), bf(4,1), 0.0d0, v)
+										call getutility(cons, lf, lm, bf(1,1), bufa, bf(3,1), bf(4,1), 0.0d0,0.0d0, v)
 										vf = vf + pHL(i,hh)*(rho(2)**(aaf-age(i,2)))*surv(2)*v
 				    				end do
 				    				! discount, weight and add to cumulative sum
@@ -1743,17 +1871,18 @@ contains
 		integer i,u,j, s, k, agem(3), agef(3),hh
 		! intermediate arrays double
 		double precision fm(3), ff(3), w, lf,lm,cons,v,vm,vf,um,uf,vm1,vf1,vm2,vf2,vh1,vh2
+		double precision ujm, ujf
 		double precision  pf, ph, pu, pi, pm, pim, pif
 		! arrays for parameters
 		double precision bm(4,nxm), bf(4,nxf), bz(nz), bum, buf, buma, bufa
-		double precision rho(2),cutm(nm+1), cutf(nm+1), sigm, sigf, Lo(2,2), uscale(3)
+		double precision rho(2),cutm(nm+1), cutf(nm+1), sigm, sigf, Lo(2,2),Lj(2,2),uscale(3)
 
 		! get choice probabilities
 		call getprob(freebeta, prob)
 		! get all parameters from freebeta array and fixpar array
 		call getpar(freebeta, beta)
 		! map parameters
-		call maptopar(beta, bm, bf, bz, rho, cutm, cutf, sigm, sigf, Lo, uscale)
+		call maptopar(beta, bm, bf, bz, rho, cutm, cutf, sigm, sigf, Lo,Lj, uscale)
 		! start loop over respondents
 
 		do i = 1, n, 1
@@ -1794,6 +1923,11 @@ contains
 				um = Lo(1,1)*D(i,u,1)
 				uf = Lo(2,1)*D(i,u,1) + Lo(2,2)*D(i,u,2)
 
+				! update draws for UH
+				ujm = Lj(1,1)*DJ(i,u,1)
+				ujf = Lj(2,1)*DJ(i,u,1) + Lj(2,2)*DJ(i,u,2)
+				!aj = dexp()
+
 				! initialize probability p(i,u)
 				pu = 1.0d0
 				! start looping over questions, first nr are ratings, remaining choices
@@ -1817,7 +1951,7 @@ contains
 								! compute log consumption
 								cons = Y(i,j,1,s)
 								! compute utility for this period
-							    call getutility(cons, lm, lf, bm(1,1), buma, bm(3,1), bm(4,1), um, v)
+							    call getutility(cons, lm, lf, bm(1,1), buma, bm(3,1), bm(4,1), um,ujm, v)
 								! discount and add to expected utility
 								vm = vm + fm(s)*v
 							end do
@@ -1841,7 +1975,7 @@ contains
 								! compute log consumption
 								cons = Y(i,j,1,s)
 								! compute utility for this period
-								call getutility(cons, lf, lm, bf(1,1), bufa, bf(3,1), bf(4,1), uf, v)
+								call getutility(cons, lf, lm, bf(1,1), bufa, bf(3,1), bf(4,1), uf,ujf, v)
 
 								! discount and add
 								vf = vf + ff(s)*v
@@ -1882,7 +2016,7 @@ contains
 								lm = Lmax - Hm(i,j,1,s)
 								lf = Lmax - Hf(i,j,1,s)
 								cons = Y(i,j,1,s)
-								call getutility(cons, lm, lf, bm(1,1), buma, bm(3,1), bm(4,1), um, v)
+								call getutility(cons, lm, lf, bm(1,1), buma, bm(3,1), bm(4,1), um,ujm, v)
 								vm1 = vm1 + pHL(i,hh)*fm(s)*v
 							end do
 							! expected utility option 2
@@ -1895,7 +2029,7 @@ contains
 								lm = Lmax - Hm(i,j,2,s)
 								lf = Lmax - Hf(i,j,2,s)
 								cons = Y(i,j,2,s)
-								call getutility(cons, lm, lf, bm(1,1), buma, bm(3,1), bm(4,1), um, v)
+								call getutility(cons, lm, lf, bm(1,1), buma, bm(3,1), bm(4,1), um,ujm, v)
 								vm2 = vm2 + pHL(i,hh)*fm(s)*v
 							end do
 
@@ -1910,7 +2044,7 @@ contains
 								lf = Lmax - Hf(i,j,1,s)
 								lm = Lmax - Hm(i,j,1,s)
 								cons = Y(i,j,1,s)
-								call getutility(cons, lf, lm, bf(1,1), bufa, bf(3,1), bf(4,1), uf, v)
+								call getutility(cons, lf, lm, bf(1,1), bufa, bf(3,1), bf(4,1), uf,ujf, v)
 								vf1 = vf1 + pHL(i,hh)*ff(s)*v
 							end do
 							! expected utility option 2
@@ -1923,7 +2057,7 @@ contains
 								lf = Lmax - Hf(i,j,2,s)
 								lm = Lmax - Hm(i,j,2,s)
 								cons = Y(i,j,2,s)
-								call getutility(cons, lf, lm, bf(1,1), bufa, bf(3,1), bf(4,1), uf, v)
+								call getutility(cons, lf, lm, bf(1,1), bufa, bf(3,1), bf(4,1), uf,ujf, v)
 								vf2 = vf2 + pHL(i,hh)*ff(s)*v
 							end do
 

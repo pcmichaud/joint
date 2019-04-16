@@ -6,6 +6,7 @@ info, info_ref.dat
 includeratings, F 
 icomplement, T 
 ihetero, T 
+ijointhetero, F 
 icorr, T 
 iunitary, F 
 idiscount, T 
@@ -13,10 +14,10 @@ ddiscount, 0.95
 idirect, F 
 arf, 0.06 
 drc, 0.08 
-reprate, 0.6 
+reprate, 0.8 
 ishufheter, F 
 ishufwages, F 
-iblockcomp, T 
+iblockcomp, F 
 ifixcorr, F 
 dfixrho, 0.5 
 inoestim, F 
