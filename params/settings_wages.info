@@ -6,7 +6,8 @@ info, info_ref.dat
 includeratings, F 
 icomplement, T 
 ihetero, T 
-ijointhetero, T 
+ijointhetero, T
+ibargaininghetero, T 
 icorr, T 
 iunitary, F 
 idiscount, T 
@@ -20,3 +21,4 @@ ishufwages, T
 iblockcomp, F 
 ifixcorr, F 
 dfixrho, 0.5 
+inoestim, F 

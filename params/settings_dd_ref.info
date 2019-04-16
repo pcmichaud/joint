@@ -7,6 +7,7 @@ includeratings, F
 icomplement, T
 ihetero, T, 50
 ijointhetero, T 
+ibargaininghetero, T 
 icorr, T
 iunitary, F
 idiscount, F

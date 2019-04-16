@@ -15,6 +15,7 @@ class sp:
             'icomplement': 'T',
             'ihetero': 'T',
             'ijointhetero': 'F',
+            'ibargaininghetero': 'F',
             'icorr': 'T',
             'iunitary': 'F',
             'idiscount': 'F',

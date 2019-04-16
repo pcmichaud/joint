@@ -6,7 +6,8 @@ info, info_ref.dat
 includeratings, F 
 icomplement, T 
 ihetero, T 
-ijointhetero, F 
+ijointhetero, T 
+ibargaininghetero, T 
 icorr, T 
 iunitary, F 
 idiscount, T 

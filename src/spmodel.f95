@@ -46,7 +46,8 @@ double precision, allocatable :: Hm(:,:,:,:)		! hours of husbands in scenarios (
 double precision, allocatable :: Hf(:,:,:,:)		! hours of wives in scenarios (n,nj,2,3)
 double precision, allocatable :: Y(:,:,:,:)			! household income in scenarios  (n,nj,2,3)
 double precision, allocatable :: D(:, :, :)			! for uniform draws (n,nd,2)
-double precision, allocatable :: DJ(:, :, :)			! for uniform draws (n,nd,2), joint ret.
+double precision, allocatable :: DJ(:, :, :)		! for uniform draws (n,nd,2), joint ret.
+double precision, allocatable :: DW(:,:)        ! for uniform draws, (n,nd), bargaining weight
 character*20, allocatable :: shifters(:)                ! for variable labels of shifters
 double precision, allocatable :: L(:,:,:)
 double precision, allocatable :: pHL(:,:), sHL(:,:), p75r(:,:)
@@ -65,7 +66,7 @@ double precision arf, drc, reprate
 logical ishufheter, ishufwages, iblockcomp
 
 !!!! Luc !!!!!
-logical :: ifixcorr, inoestim, ijointhetero
+logical :: ifixcorr, inoestim, ijointhetero, ibargaininghetero
 double precision :: dfixrho, ddiscount
 integer iloccorr
 
@@ -93,6 +94,7 @@ contains
 		read(1,*) buffer, icomplement
 		read(1,*) buffer, ihetero
 		read(1,*) buffer, ijointhetero
+		read(1,*) buffer, ibargaininghetero
 		read(1,*) buffer, icorr
 		read(1,*) buffer, iunitary
 		read(1,*) buffer, idiscount
@@ -121,10 +123,10 @@ contains
 		!	ndj = 100
 		!end if
 
-		if (.not. (ihetero .or. ijointhetero)) then
+		if (.not. (ihetero .or. ijointhetero .or. ibargaininghetero)) then
 			nd = 1
 		else
-			nd = 50
+			nd = 100
 		end if
 
 
@@ -198,6 +200,7 @@ contains
 		allocate(Y(n,nj,2,3))
 		allocate(D(n,nd,2))
 		allocate(DJ(n,nd,2))
+		allocate(DW(n,nd))
 		allocate(pHL(n,4))
 		allocate(sHL(n,4))
 		allocate(p75r(n,2))
@@ -309,7 +312,7 @@ contains
 		close(2)
 
 		! Taking uniform draws for both dimensions
-    if(ihetero .or. ijointhetero) then
+    if(ihetero .or. ijointhetero .or. ibargaininghetero) then
 		   call set_random_seed
 	  end if
 
@@ -378,6 +381,32 @@ contains
 		else
 			DJ(:,:,:) = 0.0d0
 		end if
+
+
+		if (ibargaininghetero) then
+			!call set_random_seed
+			do i = 1, n, 1
+				do u = 1, nd, 1
+					call random_number(draw)
+
+					DW(i,u) = quann(draw)
+					if (DW(i,u).lt.-10.0d0) then
+						DW(i,u) = -10.0d0
+					else if (DW(i,u).gt.10.0d0) then
+						DW(i,u) = 10.0d0
+					end if
+					if (nd.eq.1) then
+						DW(i,u) = 0.0d0
+					end if
+	!			  print *, i, u,  D(i,u,:)
+				end do
+			end do
+		else
+			DW(:,:) = 0.0d0
+		end if
+
+
+
 
 		! load life tables
 		open(3,file='../params/gompertz_ref.csv')
@@ -655,6 +684,14 @@ contains
 			end if
 			pos = pos + 3
 
+			!LUC Variance of heterogenous bargaining weight.
+			ipar(pos) = 0.10d0
+			labpar(pos) = 'LW'
+			if (.not. ibargaininghetero) then
+				fixpar(pos) = 0.0d0
+			end if
+			pos = pos + 1
+
 
 			! Scale for the utility function
             ipar(pos) = 1.0d0
@@ -722,9 +759,9 @@ contains
 
 	! MAPPING PARAMETER VECTOR TO INDIVIDUAL PARAMETERS
 	! parsing the parameter vector into useful parameter arrays for computations
-	subroutine maptopar(par,bm,bf,bz, rho, cutm, cutf, sigm, sigf, Lo, Lj, utilscale)
+	subroutine maptopar(par,bm,bf,bz, rho, cutm, cutf, sigm, sigf, Lo, Lj, Lw, utilscale)
 		double precision par(npar), bm(4,nxm), bf(4,nxf), bz(nz)
-		double precision rho(2), cutm(nm+1), cutf(nm+1), sigm, sigf, Lo(2,2), Lj(2,2), utilscale(3)
+		double precision rho(2), cutm(nm+1), cutf(nm+1), sigm, sigf, Lo(2,2), Lj(2,2), Lw, utilscale(3)
 		integer pos, i, m
 		pos = 1
 		! initialize parameter values
@@ -807,6 +844,10 @@ contains
 			Lj(2,2) = par(pos+2)  ! L(nf,nf)
 			Lj(1,2) = 0.0d0       ! L(nm,nf)
 			pos = pos + 3
+
+			! UH ibargaining
+			Lw = par(pos)
+			pos = pos + 1
 
 			! Scale for the utility function
 			utilscale(1) = par(pos)
@@ -912,6 +953,7 @@ contains
 		integer i,u,j, s, k, agem(3), agef(3),hh
 		! intermediate arrays double
 		double precision fm(3), ff(3), w, lf,lm,cons,v,vm,vf,um,uf,vm1,vf1,vm2,vf2,vh1,vh2
+		double precision Lw
 		double precision ujm, ujf
 		double precision  pf, ph, pu, pi, pm
 		! arrays for parameters
@@ -922,7 +964,7 @@ contains
 		! get all parameters from freebeta array and fixpar array
 		call getpar(freebeta, beta)
 		! map parameters
-		call maptopar(beta, bm, bf, bz, rho, cutm, cutf, sigm, sigf, Lo, Lj, uscale)
+		call maptopar(beta, bm, bf, bz, rho, cutm, cutf, sigm, sigf, Lo, Lj,Lw,uscale)
 		! start loop over respondents
 
 		do i = 1, n, 1
@@ -931,17 +973,21 @@ contains
 
 			! compute weight (same across questions)
 			! initialize weight
-			w = 0.0d0
-			do j = 1, nz, 1
-				w = w + Z(i,j)*bz(j)
-			end do
-			if (w .ge. 5.0d0) then
-				w = 1.0d0
-			else if (w .le. -5.0d0) then
-				w = 0.0d0
-			else
-				w = dexp(w)/(1.0d0+dexp(w))
-			end if
+
+      !LUC : Moved within draws below
+			!if(.not. ibargaininghetero) then
+			!	w = 0.0d0
+			!	do j = 1, nz, 1
+			!		w = w + Z(i,j)*bz(j)
+			!	end do
+			!	if (w .ge. 5.0d0) then
+			!		w = 1.0d0
+			!	else if (w .le. -5.0d0) then
+			!		w = 0.0d0
+			!	else
+			!		w = dexp(w)/(1.0d0+dexp(w))
+			!	end if
+			!end if
 
 
 			! reduce marginal utility of leisure into bum and buf
@@ -958,6 +1004,23 @@ contains
 			pi = 0.0d0
 			! start looping over draws for UH
 			do u = 1, nd, 1
+
+
+			!! LUC This block from above brought here to allow UH
+					w = Lw * DW(i,u)
+					do j = 1, nz, 1
+						w = w + Z(i,j)*bz(j)
+					end do
+					if (w .ge. 5.0d0) then
+						w = 1.0d0
+					else if (w .le. -5.0d0) then
+						w = 0.0d0
+					else
+						w = dexp(w)/(1.0d0+dexp(w))
+					end if
+
+					!print *, Lw, DW(n,nd), n, nd
+
 				!LUC: if the coefficient is fixed. The cst computation should be opt. away
 				if(ifixcorr) then
 					Lo(2,1) = (dfixrho/dsqrt(1-dfixrho**2))*Lo(2,2)
@@ -1494,14 +1557,14 @@ contains
         ! integers
         double precision bm(4,nxm), bf(4,nxf), bz(nz), bum(n), buf(n), buma, bufa, um, uf
         double precision rho(2),cutm(nm+1), cutf(nm+1), sigm, sigf, Lo(2,2), uscale(3)
-				double precision Lj(2,2)
+				double precision Lj(2,2), Lw
         double precision VarCovType(2,2),VarCovTypeJ(2,2), lm, lf, v, vm, vf, cons
         double precision val1, val2, posterior(n,2), Lbase(2), surv(2), w, totcprob
         double precision expret(n,2), jointret(n), base, maxp, draw
         ! get all parameters from freebeta array and fixpar array
         call getpar(freepar, beta)
         ! map parameters
-        call maptopar(beta, bm, bf, bz, rho, cutm, cutf, sigm, sigf, Lo, Lj, uscale)
+        call maptopar(beta, bm, bf, bz, rho, cutm, cutf, sigm, sigf, Lo, Lj,Lw,uscale)
         ! start loop over respondents
         bm(2,5) = 0.0d0
         bf(2,5) = 0.0d0
@@ -1871,7 +1934,7 @@ contains
 		integer i,u,j, s, k, agem(3), agef(3),hh
 		! intermediate arrays double
 		double precision fm(3), ff(3), w, lf,lm,cons,v,vm,vf,um,uf,vm1,vf1,vm2,vf2,vh1,vh2
-		double precision ujm, ujf
+		double precision ujm, ujf, Lw
 		double precision  pf, ph, pu, pi, pm, pim, pif
 		! arrays for parameters
 		double precision bm(4,nxm), bf(4,nxf), bz(nz), bum, buf, buma, bufa
@@ -1882,7 +1945,7 @@ contains
 		! get all parameters from freebeta array and fixpar array
 		call getpar(freebeta, beta)
 		! map parameters
-		call maptopar(beta, bm, bf, bz, rho, cutm, cutf, sigm, sigf, Lo,Lj, uscale)
+		call maptopar(beta, bm, bf, bz, rho, cutm, cutf, sigm, sigf, Lo,Lj,Lw, uscale)
 		! start loop over respondents
 
 		do i = 1, n, 1
@@ -1891,17 +1954,19 @@ contains
 
 			! compute weight (same across questions)
 			! initialize weight
-			w = 0.0d0
-			do j = 1, nz, 1
-				w = w + Z(i,j)*bz(j)
-			end do
-			if (w .ge. 5.0d0) then
-				w = 1.0d0
-			else if (w .le. -5.0d0) then
-				w = 0.0d0
-			else
-				w = dexp(w)/(1.0d0+dexp(w))
-			end if
+
+      !LUC Moved within draws
+			!w = 0.0d0
+			!do j = 1, nz, 1
+			!	w = w + Z(i,j)*bz(j)
+			!end do
+			!if (w .ge. 5.0d0) then
+			!	w = 1.0d0
+			!else if (w .le. -5.0d0) then
+			!	w = 0.0d0
+			!else
+			!	w = dexp(w)/(1.0d0+dexp(w))
+			!end if
 
 
 			! reduce marginal utility of leisure into bum and buf
@@ -1919,6 +1984,22 @@ contains
 			pif = 0.0d0
 			! start looping over draws for UH
 			do u = 1, nd, 1
+				!! LUC This block from above brought here to allow UH
+						w = Lw * DW(i,u)
+						do j = 1, nz, 1
+							w = w + Z(i,j)*bz(j)
+						end do
+						if (w .ge. 5.0d0) then
+							w = 1.0d0
+						else if (w .le. -5.0d0) then
+							w = 0.0d0
+						else
+							w = dexp(w)/(1.0d0+dexp(w))
+						end if
+
+
+
+
 				! update draws for UH
 				um = Lo(1,1)*D(i,u,1)
 				uf = Lo(2,1)*D(i,u,1) + Lo(2,2)*D(i,u,2)
