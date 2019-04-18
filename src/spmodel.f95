@@ -48,6 +48,7 @@ double precision, allocatable :: Y(:,:,:,:)			! household income in scenarios  (
 double precision, allocatable :: D(:, :, :)			! for uniform draws (n,nd,2)
 double precision, allocatable :: DJ(:, :, :)		! for uniform draws (n,nd,2), joint ret.
 double precision, allocatable :: DW(:,:)        ! for uniform draws, (n,nd), bargaining weight
+double precision, allocatable :: DH(:,:,:)        ! All halton draws
 character*20, allocatable :: shifters(:)                ! for variable labels of shifters
 double precision, allocatable :: L(:,:,:)
 double precision, allocatable :: pHL(:,:), sHL(:,:), p75r(:,:)
@@ -67,6 +68,8 @@ logical ishufheter, ishufwages, iblockcomp
 
 !!!! Luc !!!!!
 logical :: ifixcorr, inoestim, ijointhetero, ibargaininghetero
+logical, parameter:: ihalton = .false.
+integer, parameter:: nhdim = 5 !2 for leisure UH, 2 for Joint UH, 1 for bargaining
 double precision :: dfixrho, ddiscount
 integer iloccorr
 
@@ -126,11 +129,8 @@ contains
 		if (.not. (ihetero .or. ijointhetero .or. ibargaininghetero)) then
 			nd = 1
 		else
-			nd = 100
+			nd = 50
 		end if
-
-
-
 
 	end subroutine initsettings
 
@@ -201,6 +201,7 @@ contains
 		allocate(D(n,nd,2))
 		allocate(DJ(n,nd,2))
 		allocate(DW(n,nd))
+		allocate(DH(n,nd,nhdim))
 		allocate(pHL(n,4))
 		allocate(sHL(n,4))
 		allocate(p75r(n,2))
@@ -312,99 +313,117 @@ contains
 		close(2)
 
 		! Taking uniform draws for both dimensions
-    if(ihetero .or. ijointhetero .or. ibargaininghetero) then
-		   call set_random_seed
-	  end if
 
-		if (ihetero) then
-			do i = 1, n, 1
-				do u = 1, nd, 1
-					call random_number(draw)
-
-					D(i,u,1) = quann(draw)
-					if (D(i,u,1).lt.-10.0d0) then
-						D(i,u,1) = -10.0d0
-					else if (D(i,u,1).gt.10.0d0) then
-						D(i,u,1) = 10.0d0
-					end if
-					if (nd.eq.1) then
-						D(i,u,1) = 0.0d0
-					end if
-					call random_number(draw)
-					D(i,u,2) = quann(draw)
-					if (D(i,u,2).lt.-10.0d0) then
-						D(i,u,2) = -10.0d0
-					else if (D(i,u,2).gt.10.0d0) then
-						D(i,u,2) = 10.0d0
-					end if
-					if (nd.eq.1) then
-						D(i,u,2) = 0.0d0
-					end if
-	!			  print *, i, u,  D(i,u,:)
-				end do
-			end do
+		if(.not.ihalton) then
+				if(ihetero .or. ijointhetero .or. ibargaininghetero) then
+				   call set_random_seed
+			  end if
 		else
-			D(:,:,:) = 0.0d0
-		end if
+				call GenHalton(nhdim, n, nd,DH )
+    end if
 
-		!!!! LUC Same for joint leisure heterogeneity
-    !call set_random_seed
-		if (ijointhetero) then
-			!call set_random_seed
-			do i = 1, n, 1
-				do u = 1, nd, 1
-					call random_number(draw)
+			if (ihetero) then
+					do i = 1, n, 1
+						do u = 1, nd, 1
+							if(.not.ihalton) then
+							   call random_number(draw)
+								 D(i,u,1) = quann(draw)
+								 call random_number(draw)
+								 D(i,u,2) = quann(draw)
+							else
+								 D(i,u,1)  = DH(i,u,1)
+								 D(i,u,2)  = DH(i,u,2)
+							end if
 
-					DJ(i,u,1) = quann(draw)
+							if (D(i,u,1).lt.-10.0d0) then
+								D(i,u,1) = -10.0d0
+							else if (D(i,u,1).gt.10.0d0) then
+								D(i,u,1) = 10.0d0
+							end if
+							if (nd.eq.1) then
+								D(i,u,1) = 0.0d0
+							end if
 
-					if (DJ(i,u,1).lt.-10.0d0) then
-						DJ(i,u,1) = -10.0d0
-					else if (DJ(i,u,1).gt.10.0d0) then
-						DJ(i,u,1) = 10.0d0
-					end if
-					if (nd.eq.1) then
-						DJ(i,u,1) = 0.0d0
-					end if
-					call random_number(draw)
-					DJ(i,u,2) = quann(draw)
-					if (DJ(i,u,2).lt.-10.0d0) then
-						DJ(i,u,2) = -10.0d0
-					else if (DJ(i,u,2).gt.10.0d0) then
-						DJ(i,u,2) = 10.0d0
-					end if
-					if (nd.eq.1) then
-						DJ(i,u,2) = 0.0d0
-					end if
-	!			  print *, i, u,  D(i,u,:)
-				end do
-			end do
-		else
-			DJ(:,:,:) = 0.0d0
-		end if
+							if (D(i,u,2).lt.-10.0d0) then
+								D(i,u,2) = -10.0d0
+							else if (D(i,u,2).gt.10.0d0) then
+								D(i,u,2) = 10.0d0
+							end if
+							if (nd.eq.1) then
+								D(i,u,2) = 0.0d0
+							end if
+			!			  print *, i, u,  D(i,u,:)
+						end do
+					end do
+				else
+					D(:,:,:) = 0.0d0
+				end if
 
+				!!!! LUC Same for joint leisure heterogeneity
+		    !call set_random_seed
+				if (ijointhetero) then
+					!call set_random_seed
+					do i = 1, n, 1
+						do u = 1, nd, 1
+							if(.not.ihalton) then
+								 call random_number(draw)
+								 DJ(i,u,1) = quann(draw)
+								 call random_number(draw)
+								 DJ(i,u,2) = quann(draw)
+							else
+								 DJ(i,u,1)  = DH(i,u,3)
+								 DJ(i,u,2)  = DH(i,u,4)
+							end if
 
-		if (ibargaininghetero) then
-			!call set_random_seed
-			do i = 1, n, 1
-				do u = 1, nd, 1
-					call random_number(draw)
+							if (DJ(i,u,1).lt.-10.0d0) then
+								DJ(i,u,1) = -10.0d0
+							else if (DJ(i,u,1).gt.10.0d0) then
+								DJ(i,u,1) = 10.0d0
+							end if
+							if (nd.eq.1) then
+								DJ(i,u,1) = 0.0d0
+							end if
 
-					DW(i,u) = quann(draw)
-					if (DW(i,u).lt.-10.0d0) then
-						DW(i,u) = -10.0d0
-					else if (DW(i,u).gt.10.0d0) then
-						DW(i,u) = 10.0d0
-					end if
-					if (nd.eq.1) then
-						DW(i,u) = 0.0d0
-					end if
-	!			  print *, i, u,  D(i,u,:)
-				end do
-			end do
-		else
-			DW(:,:) = 0.0d0
-		end if
+							if (DJ(i,u,2).lt.-10.0d0) then
+								DJ(i,u,2) = -10.0d0
+							else if (DJ(i,u,2).gt.10.0d0) then
+								DJ(i,u,2) = 10.0d0
+							end if
+							if (nd.eq.1) then
+								DJ(i,u,2) = 0.0d0
+							end if
+			!			  print *, i, u,  D(i,u,:)
+						end do
+					end do
+				else
+					DJ(:,:,:) = 0.0d0
+				end if
 
+				if (ibargaininghetero) then
+					!call set_random_seed
+					do i = 1, n, 1
+						do u = 1, nd, 1
+							if(.not.ihalton) then
+								 call random_number(draw)
+								 DW(i,u) = quann(draw)
+							else
+								 DW(i,u)  = DH(i,u,5)
+							end if
+
+							if (DW(i,u).lt.-10.0d0) then
+								DW(i,u) = -10.0d0
+							else if (DW(i,u).gt.10.0d0) then
+								DW(i,u) = 10.0d0
+							end if
+							if (nd.eq.1) then
+								DW(i,u) = 0.0d0
+							end if
+			!			  print *, i, u,  D(i,u,:)
+						end do
+					end do
+				else
+					DW(:,:) = 0.0d0
+			end if
 
 
 
@@ -929,8 +948,8 @@ contains
         double precision, intent(in)  ::lown, lsp, cons, parc, parown, parsp, parlmlf,  eta, zeta
         double precision, intent(out) ::utility
 
-        utility = parc*dlog(cons)  + (parown+eta)*dlog(lown) + (parsp)*dlog(lsp) &
-            + (parlmlf+zeta)*dlog(lsp)*dlog(lown)
+        utility = parc*dlog(cons)  + (parown+ eta)*dlog(lown) + (parsp)*dlog(lsp) &
+            + (parlmlf + zeta)*dlog(lsp)*dlog(lown)
 
 	end subroutine getutility
 
@@ -2201,6 +2220,68 @@ contains
 
 	end subroutine getposterior
 
+	SUBROUTINE genhalton(nDim,nind,ndraws,draws)
+    IMPLICIT NONE
+
+    INTEGER, INTENT(IN):: nDIM, nind, ndraws!!Dimension, number of individ, number of draw per ind.
+    INTEGER                       :: n1  !!Will be a prime number
+		DOUBLE PRECISION, INTENT(OUT) :: DRAWS(nind,ndraws,ndim)
+    DOUBLE PRECISION              :: SERIES(nind*ndraws+1000+1)
+    INTEGER                       :: LENGHT(1000)
+    INTEGER                          I,J, T,D, COUNT, LAST, ISTART, ISTOP
+    DOUBLE PRECISION              :: K, KT
+
+    ! Thanks to Wikipedia for the primes...
+    INTEGER, PARAMETER::PRIMES(168)=(/2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47,&
+         53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137,&
+         139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227,&
+         229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313,&
+         317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409, 419,&
+         421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499, 503, 509,&
+         521, 523, 541, 547, 557, 563, 569, 571, 577, 587, 593, 599, 601, 607, 613, 617,&
+         619, 631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691, 701, 709, 719, 727,&
+         733, 739, 743, 751, 757, 761, 769, 773, 787, 797, 809, 811, 821, 823, 827, 829,&
+         839, 853, 857, 859, 863, 877, 881, 883, 887, 907, 911, 919, 929, 937, 941, 947,&
+         953, 967, 971, 977, 983, 991, 997/)
+
+    ! We start at 7. No reason!!!
+    do d =1,nDIM
+	    n1 = PRIMES(d + 3)
+	    SERIES(1) = 0.0d0
+	    K = 1.0d0/DBLE(n1)
+	    LENGHT(1) = 1
+	    COUNT = 0
+	    LAST = nind*ndraws+1000
+
+	    DO T=1,1000
+	       LENGHT(T+1) = n1**(T)-n1**(T-1)
+	       KT = K**T
+
+	       DO I = 1,(n1-1)
+	          DO J = 1,LENGHT(T+1)/(n1-1)
+	             COUNT = COUNT + 1
+
+	             IF(COUNT > LAST) THEN
+	                GO TO 1000
+	             END IF
+
+	             SERIES(COUNT+1) = SERIES(J) + (DBLE(I)*KT)
+	          END DO
+	       END DO
+	    END DO
+
+	  1000 DO I = 1, nind
+	       ISTART =    1000 + (I-1)*ndraws + 1
+	       ISTOP =     1000 + I*ndraws
+	       Draws(I,1:NDRAWS,d) = SERIES(ISTART:ISTOP)
+	    END DO
+   end do
+
+
+ END SUBROUTINE genhalton
+
+
+
 	double precision function probn(value)
 		double precision value,  q, bound
 		integer ifail, status
@@ -2229,5 +2310,10 @@ contains
 		integer ifail, status
 		call cdfnor(2,prob,1.0d0-prob, quann, 0.0d0, 1.0d0, status, bound)
 	end function
+
+
+
+
+
 
 end module sp
