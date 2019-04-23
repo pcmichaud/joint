@@ -2,9 +2,9 @@ clear all
 capture log close
 set mem 500m
 set more off
-set maxvar 25000, perm
+capture set maxvar 25000, perm
 capture cd "~/cedia/Projets/joint"
-capture cd "~/dropbox/joint"
+*capture cd "~/dropbox/joint"
 
 log using tex/tables/prepare.txt, text replace
 
@@ -421,7 +421,16 @@ sum ri_scn* si_scn*
 
 
 **** merge to RAND HRS 2010 (interviews for half the new respondents in 2010) ****
-	merge hhidpn using raw/rndhrs_n.dta, nokeep sort
+	capture merge hhidpn using raw/rndhrs_n.dta, nokeep sort
+	
+	if _rc{
+		preserve
+			 insheet using raw/rndhrs_redux.csv, clear
+			 sort hhidpn
+			 save raw/rndhrs_n_redux.dta, replace
+		restore
+		merge hhidpn using raw/rndhrs_n_redux.dta, nokeep sort
+	}	
 
 	foreach var of varlist * {
 		capture	rename `var' `=lower("`var'")'
@@ -433,7 +442,7 @@ sum ri_scn* si_scn*
 
 	* get wage and earnings of both spouses
 	egen rearn = rowmean(r7iearn r8iearn r9iearn r10iearn)
-	egen searn = rowmean(r7iearn r8iearn r9iearn r10iearn)
+	egen searn = rowmean(s7iearn s8iearn s9iearn s10iearn)
 
 	* get wages from various waves
 	egen rwage = rowmean(r7wgihr r8wgihr r9wgihr r10wgihr)
@@ -497,6 +506,11 @@ sum ri_scn* si_scn*
 	sum rwage swage, d
 	gen wageratio = log(max((min(rwage/swage,5)),0.1))
 
+	gen reducplus = rcollege > scollege
+	gen seducplus = scollege > rcollege
+	gen agediff   = rage_mod - sage_mod
+	
+	
 * j048, j050 survival 75
 	rename r10liv75r rliv75r
 	rename s10liv75r sliv75r

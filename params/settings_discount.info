@@ -5,8 +5,8 @@ data, hrs_final_ref.csv
 info, info_ref.dat
 includeratings, F
 icomplement, T
-ihetero, T
-ijointhetero, F
+ihetero, F
+ijointhetero, T
 ibargaininghetero, F
 icorr, T
 iunitary, F

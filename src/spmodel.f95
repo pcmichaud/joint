@@ -68,7 +68,7 @@ logical ishufheter, ishufwages, iblockcomp
 
 !!!! Luc !!!!!
 logical :: ifixcorr, inoestim, ijointhetero, ibargaininghetero
-logical, parameter:: ihalton = .false.
+logical, parameter:: ihalton = .True.
 integer, parameter:: nhdim = 5 !2 for leisure UH, 2 for Joint UH, 1 for bargaining
 double precision :: dfixrho, ddiscount
 integer iloccorr
@@ -129,7 +129,7 @@ contains
 		if (.not. (ihetero .or. ijointhetero .or. ibargaininghetero)) then
 			nd = 1
 		else
-			nd = 50
+			nd = 100
 		end if
 
 	end subroutine initsettings
@@ -2246,7 +2246,7 @@ contains
 
     ! We start at 7. No reason!!!
     do d =1,nDIM
-	    n1 = PRIMES(d + 3)
+	    n1 = PRIMES(d + 10)
 	    SERIES(1) = 0.0d0
 	    K = 1.0d0/DBLE(n1)
 	    LENGHT(1) = 1
