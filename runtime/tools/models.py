@@ -13,8 +13,8 @@ class sp:
             'info': 'info_ref.dat',
             'includeratings': 'F',
             'icomplement': 'T',
-            'ihetero': 'T',
-            'ijointhetero': 'F',
+            'ihetero': 'F',
+            'ijointhetero': 'T',
             'ibargaininghetero': 'F',
             'icorr': 'T',
             'iunitary': 'F',
@@ -142,7 +142,7 @@ class sp:
         table.write('\\end{tabular} \n')
         table.close()
     def getsim(self):
-        vars = ['hhidpn','insim','jprob','rexpret_sim','sexpret_sim','leisure_m', 'leisure_f'] 
+        vars = ['hhidpn','insim','jprob','rexpret_sim','sexpret_sim','leisure_m', 'leisure_f', 'leisure_joint_m', 'leisure_joint_f', 'uhbargain'] 
         sim = pd.read_csv('../data/outcomes_'+self.scenario+'.dat',names=vars,sep='\s+')
         self.sim = sim[sim.insim==1]        
         hrs = pd.read_stata('../data/hrs_final_ref.dta')

@@ -1575,10 +1575,11 @@ contains
 	    logical mask(n), enough
         ! integers
         double precision bm(4,nxm), bf(4,nxf), bz(nz), bum(n), buf(n), buma, bufa, um, uf
+				double precision bujm(n), bujf(n), buw(n)
         double precision rho(2),cutm(nm+1), cutf(nm+1), sigm, sigf, Lo(2,2), uscale(3)
 				double precision Lj(2,2), Lw
         double precision VarCovType(2,2),VarCovTypeJ(2,2), lm, lf, v, vm, vf, cons
-        double precision val1, val2, posterior(n,2), Lbase(2), surv(2), w, totcprob
+        double precision val1, val2, posterior(n,5), Lbase(2), surv(2), w, totcprob
         double precision expret(n,2), jointret(n), base, maxp, draw
         ! get all parameters from freebeta array and fixpar array
         call getpar(freepar, beta)
@@ -1651,11 +1652,16 @@ contains
 	    do i = 1, n, 1
 	    	bum(i) = bum(i) + posterior(i,1)
 	    	buf(i) = buf(i) + posterior(i,2)
+
+				!assuming no covariates in this dimension
+        bujm(i) = bm(4,1) + posterior(i,3)
+				bujf(i) = bf(4,1) + posterior(i,4)
+
 	    	!write(*,*) posterior(i,:)
-	    	if (bum(i) + 3.0d0*bm(2,2) + bm(4,1)*dlog(Lmax) .gt. 0.0d0) then
+	    	if ((bum(i) + 3.0d0*bm(2,2) + bujm(i)*dlog(Lmax)) .gt. 0.0d0) then
 	    		nposm = nposm + 1
 	    	end if
-	    	if (buf(i) + 3.0d0*bf(2,2) + bf(4,1)*dlog(Lmax) .gt. 0.0d0) then
+	    	if ((buf(i) + 3.0d0*bf(2,2) + bujf(i)*dlog(Lmax)) .gt. 0.0d0) then
 	    		nposf = nposf + 1
 	    	end if
 
@@ -1686,12 +1692,14 @@ contains
 	    		call random_number(draw)
 	    		j = 1+floor(i*draw)
 	    		bum(i) = bum(j)
+					bujm(i) = bujm(j)
 	    	end do
 
 	    	do i = n, 1, -1
 	    		call random_number(draw)
 	    		j = 1+floor(i*draw)
 	    		buf(i) = buf(j)
+					bujf(i) = bujf(j)
 	    	end do
 	    end if
 
@@ -1722,7 +1730,7 @@ contains
 	    ! construct expected utilities (joint)
 	    do i = 1, n, 1
 	    	if (mask(i)) then
-				w = 0.0d0
+				w = posterior(i,5) !0.0d0
 				do j = 1, nz, 1
 					w = w + Z(i,j)*bz(j)
 				end do
@@ -1808,7 +1816,7 @@ contains
 											lf = Lmax - sum(Hf_sim(:,m,f,j))/dble(n)
 										end if
 										cons = Y_sim(i,m,f,j)
-										call getutility(cons, lm, lf, bm(1,1), buma, bm(3,1), bm(4,1), 0.0d0,0.0d0, v)
+										call getutility(cons, lm, lf, bm(1,1), buma, bm(3,1), bm(4,1), 0.0d0,bujm(i), v)
 										vm = vm + pHL(i,hh)*(rho(1)**(aam-age(i,1)))*surv(1)*v
 				    				end do
 				    				! evaluate utility of wife
@@ -1830,7 +1838,7 @@ contains
 										end if
 										lf = Lmax - Hf_sim(i,m,f,j)
 										cons = Y_sim(i,m,f,j)
-										call getutility(cons, lf, lm, bf(1,1), bufa, bf(3,1), bf(4,1), 0.0d0,0.0d0, v)
+										call getutility(cons, lf, lm, bf(1,1), bufa, bf(3,1), bf(4,1), 0.0d0,bujf(i), v)
 										vf = vf + pHL(i,hh)*(rho(2)**(aaf-age(i,2)))*surv(2)*v
 				    				end do
 				    				! discount, weight and add to cumulative sum
@@ -1876,6 +1884,7 @@ contains
 			    		end if
 			    	end do
 			    end do
+
 			    do m = 1, nages, 1
 			    	do f = 1, nages, 1
 			    		if (value(i,m,f) .gt. -999.0d0) then
@@ -1885,8 +1894,6 @@ contains
 			    		end if
 			    	end do
 			    end do
-
-
 
 			    ! get most preferred retirement age of each spouse
 			    expret(i,:) = 0.0d0
@@ -1907,9 +1914,11 @@ contains
 			    	end do
 			    end do
 
+
+
 			    ! get measure of joint retirement 0 years apart from each other
 			    jointret(i) = 0.0d0
-			    if ((expret(i,1) - expret(i,2)) .eq. agedif(i)) then
+					if ((expret(i,1) - expret(i,2)) .eq. agedif(i)) then
 			    	jointret(i) = 1.0d0
 			    end if
 			    !if ((expret(i,1) - expret(i,2)) .eq. agedif(i)-1.0d0) then
@@ -1937,6 +1946,7 @@ contains
 			do i = 1, n, 1
 				if (mask(i)) then
 					!write(*,*) age(i,1),age(i,2), id(i)
+         	write(*,*) id(i),1,jointret(i),expret(i,1),expret(i,2),posterior(i,:)
 					write(2,*) id(i),1,jointret(i),expret(i,1),expret(i,2),posterior(i,:)
 				else
 					write(2,*) id(i),0,-999,-999,-999,posterior(i,:)
@@ -1948,13 +1958,13 @@ contains
 	end subroutine postestimation
 
 	subroutine getposterior(freebeta, posterior)
-		double precision freebeta(nfreepar), beta(npar), prob(n), posterior(n,2)
+		double precision freebeta(nfreepar), beta(npar), prob(n), posterior(n,5)
 		! integers
 		integer i,u,j, s, k, agem(3), agef(3),hh
 		! intermediate arrays double
 		double precision fm(3), ff(3), w, lf,lm,cons,v,vm,vf,um,uf,vm1,vf1,vm2,vf2,vh1,vh2
 		double precision ujm, ujf, Lw
-		double precision  pf, ph, pu, pi, pm, pim, pif
+		double precision  pf, ph, pu, pi, pm, pim, pif, pijf, pijm, piw, uw
 		! arrays for parameters
 		double precision bm(4,nxm), bf(4,nxf), bz(nz), bum, buf, buma, bufa
 		double precision rho(2),cutm(nm+1), cutf(nm+1), sigm, sigf, Lo(2,2),Lj(2,2),uscale(3)
@@ -2001,10 +2011,15 @@ contains
 			! initialize posterior
 			pim = 0.0d0
 			pif = 0.0d0
+			pijm = 0.0d0
+			pijf = 0.0d0
+			piw = 0.0d0
+
 			! start looping over draws for UH
 			do u = 1, nd, 1
 				!! LUC This block from above brought here to allow UH
-						w = Lw * DW(i,u)
+						uw = Lw * DW(i,u)
+            w = uw
 						do j = 1, nz, 1
 							w = w + Z(i,j)*bz(j)
 						end do
@@ -2204,14 +2219,25 @@ contains
 
 				end do ! end loop questions over questions
 			! sum over draws for respondent i
-			pim = pim + pu/prob(i)*um
-			pif = pif + pu/prob(i)*uf
 
+       !! Posterior individual
+			 pim = pim + pu/prob(i)*um
+			 pif = pif + pu/prob(i)*uf
+
+       !! Posterior joint
+			 pijm = pijm + pu/prob(i)*ujm
+			 pijf = pijf + pu/prob(i)*ujf
+
+       !!! Bargaining heterogeneity
+			 piw = piw + pu/prob(i)*uw
 
 			end do ! end loop over draws
 			! probability of respondent i (average over p(i,u))
 			posterior(i,1) = pim/dble(nd)
 			posterior(i,2) = pif/dble(nd)
+			posterior(i,3) = pijm/dble(nd)
+			posterior(i,4) = pijf/dble(nd)
+			posterior(i,5) = piw/dble(nd)
 
 			!write(*,*) pro
 
