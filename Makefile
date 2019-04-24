@@ -9,7 +9,7 @@
 .PHONY: all clean
 
 # Change this line if you are using a different Fortran compiler
-FORTRAN_COMPILER = gfortran
+FORTRAN_COMPILER =  /usr/local/bin/gfortran
 FFLAGS = -funroll-all-loops -fopenmp -finit-local-zero -mfpmath=sse -fstrength-reduce  -fbounds-check -llapack   -lblas
 
 OBJ = obj

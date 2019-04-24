@@ -1,0 +1,675 @@
+------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/pcmichaud/Dropbox (CEDIA)/Projets/joint/tex/tables/robustness.txt
+  log type:  text
+ opened on:   2 Jun 2017, 05:07:24
+
+. 
+. * scenario with unitary model
+. cd runtime
+/Users/pcmichaud/Dropbox (CEDIA)/Projets/joint/runtime
+
+. ! ./runestimation unitary
+
+ + read information
+ -------------------------------------
+ Information of dataset to load
+number of scenarios =    8
+number of ratings =    5
+number of choice =    3
+number of records =  677
+number of shifters m (incl const) =    6
+number of shifters f (incl const) =    6
+number of distr. factors (incl const) =    2
+number of vars dataset =  137
+ -------------------------------------
+ initial values of parameters
+   1alpha_c                      0.104
+   2alpha_lm_cons               -1.140
+   3alpha_lm_age                 0.281
+   4alpha_lm_hlim                1.026
+   5alpha_lm_college             0.100
+   6alpha_lm_male                0.254
+   7alpha_lm_job                 0.021
+   8alpha_lm_lf                  0.077
+   9beta_c                       0.079
+  10beta_lf_cons                -0.398
+  11beta_lf_age                  0.327
+  12beta_lf_hlim                 0.621
+  13beta_lf_college             -0.083
+  14beta_lf_male                 0.559
+  15beta_lf_job                 -0.175
+  16beta_lm_lf                   0.054
+  17mu                           0.049
+  18log_rho_m                    0.019
+  19log_rho_f                    0.013
+  20L_nm_nm                      1.904
+  21L_nf_nm                      1.236
+  22L_nf_nf                      0.363
+ 
+ iter =            0 func =   -3124.8626438814149      step =   0.10000000000000001     
+ iter =            1 func =   -3124.8497066363307      step =    2.0000000000000000     
+ iter =            2 func =   -3124.8221215525869      step =   0.10000000000000001     
+ iter =            3 func =   -3124.8104238519063      step =   0.10000000000000001     
+ iter =            4 func =   -3124.8050995983835      step =   0.10000000000000001     
+ iter =            5 func =   -3124.8023807831455      step =   0.10000000000000001     
+ iter =            6 func =   -3124.8020045323992      step =    2.0000000000000000     
+ iter =            7 func =   -3124.7970687931802      step =   0.10000000000000001     
+ iter =            8 func =   -3124.7949474476814      step =   0.10000000000000001     
+ iter =            9 func =   -3124.7939655949494      step =   0.10000000000000001     
+ iter =           10 func =   -3124.7934521000361      step =   0.10000000000000001     
+ iter =           11 func =   -3124.7931493423257      step =    2.0000000000000000     
+ iter =           12 func =   -3124.7922405477270      step =   0.10000000000000001     
+ iter =           13 func =   -3124.7918440757530      step =   0.10000000000000001     
+ iter =           14 func =   -3124.7916545028083      step =   0.10000000000000001     
+ iter =           15 func =   -3124.7915501482607      step =   0.10000000000000001     
+ results for scenario = unitary
+ converged,  loglikelihood =    -3124.7915501482607     
+ 1 alpha_c          0.103     0.022     4.576
+ 2 alpha_lm_con    -1.126     0.313    -3.597
+ 3 alpha_lm_age     0.283     0.039     7.271
+ 4 alpha_lm_hli     1.027     0.370     2.772
+ 5 alpha_lm_col     0.109     0.186     0.582
+ 6 alpha_lm_mal     0.252     0.222     1.133
+ 7 alpha_lm_job    -0.009     0.215    -0.042
+ 8 alpha_lm_lf      0.076     0.013     5.865
+ 9 beta_c           0.081     0.021     3.810
+10 beta_lf_cons    -0.416     0.235    -1.773
+11 beta_lf_age      0.331     0.052     6.379
+12 beta_lf_hlim     0.619     0.316     1.956
+13 beta_lf_coll    -0.079     0.153    -0.516
+14 beta_lf_male     0.545     0.206     2.639
+15 beta_lf_job     -0.169     0.173    -0.979
+16 beta_lm_lf       0.056     0.013     4.451
+17 mu               0.081     0.277     0.292
+18 log_rho_m        0.020     0.009     2.129
+19 log_rho_f        0.012     0.011     1.094
+20 L_nm_nm          1.908     0.193     9.903
+21 L_nf_nm          1.252     0.168     7.454
+22 L_nf_nf          0.361     0.197     1.829
+
+. cd ..
+/Users/pcmichaud/Dropbox (CEDIA)/Projets/joint
+
+. 
+. * scenario with fixed rhos (0.95)
+. cd runtime
+/Users/pcmichaud/Dropbox (CEDIA)/Projets/joint/runtime
+
+. ! ./runestimation nodisc
+
+ + read information
+ -------------------------------------
+ Information of dataset to load
+number of scenarios =    8
+number of ratings =    5
+number of choice =    3
+number of records =  677
+number of shifters m (incl const) =    6
+number of shifters f (incl const) =    6
+number of distr. factors (incl const) =    2
+number of vars dataset =  137
+ -------------------------------------
+ initial values of parameters
+   1alpha_c                      0.104
+   2alpha_lm_cons               -1.140
+   3alpha_lm_age                 0.281
+   4alpha_lm_hlim                1.026
+   5alpha_lm_college             0.100
+   6alpha_lm_male                0.254
+   7alpha_lm_job                 0.021
+   8alpha_lm_lf                  0.077
+   9beta_c                       0.079
+  10beta_lf_cons                -0.398
+  11beta_lf_age                  0.327
+  12beta_lf_hlim                 0.621
+  13beta_lf_college             -0.083
+  14beta_lf_male                 0.559
+  15beta_lf_job                 -0.175
+  16beta_lm_lf                   0.054
+  17mu                           0.049
+  18wageratio                    0.491
+  19L_nm_nm                      1.904
+  20L_nf_nm                      1.236
+  21L_nf_nf                      0.363
+ 
+ iter =            0 func =   -3179.4283424993300      step =    4.0000000000000000     
+ iter =            1 func =   -3171.4145139808684      step =   0.10000000000000001     
+ iter =            2 func =   -3166.1903282291264      step =   0.10000000000000001     
+ iter =            3 func =   -3162.7688219666134      step =   0.10000000000000001     
+ iter =            4 func =   -3160.6917262940492      step =    2.0000000000000000     
+ iter =            5 func =   -3156.5963824910596      step =   0.10000000000000001     
+ iter =            6 func =   -3154.4132485893256      step =   0.10000000000000001     
+ iter =            7 func =   -3153.2793167556160      step =   0.10000000000000001     
+ iter =            8 func =   -3152.6550871755680      step =   0.10000000000000001     
+ iter =            9 func =   -3152.2673750838317      step =    2.0000000000000000     
+ iter =           10 func =   -3151.3910796174596      step =   0.10000000000000001     
+ iter =           11 func =   -3150.9514901754669      step =   0.10000000000000001     
+ iter =           12 func =   -3150.7118910150743      step =   0.10000000000000001     
+ iter =           13 func =   -3150.5656646628890      step =   0.10000000000000001     
+ iter =           14 func =   -3150.3032361628048      step =    2.0000000000000000     
+ iter =           15 func =   -3150.1014243413556      step =   0.10000000000000001     
+ iter =           16 func =   -3150.0002341615286      step =   0.10000000000000001     
+ iter =           17 func =   -3149.9425031312894      step =   0.10000000000000001     
+ iter =           18 func =   -3149.8505170600974      step =    2.0000000000000000     
+ iter =           19 func =   -3149.7694053046803      step =   0.10000000000000001     
+ iter =           20 func =   -3149.7284643578951      step =   0.10000000000000001     
+ iter =           21 func =   -3149.7050881355785      step =   0.10000000000000001     
+ iter =           22 func =   -3149.6734218115503      step =    2.0000000000000000     
+ iter =           23 func =   -3149.6372029578474      step =   0.10000000000000001     
+ iter =           24 func =   -3149.6195939155145      step =   0.10000000000000001     
+ iter =           25 func =   -3149.6098587857659      step =   0.10000000000000001     
+ iter =           26 func =   -3149.5978598739202      step =    2.0000000000000000     
+ iter =           27 func =   -3149.5825069708831      step =   0.10000000000000001     
+ iter =           28 func =   -3149.5750643926176      step =   0.10000000000000001     
+ iter =           29 func =   -3149.5709751986815      step =   0.10000000000000001     
+ iter =           30 func =   -3149.5666018840070      step =    2.0000000000000000     
+ iter =           31 func =   -3149.5597891882035      step =   0.10000000000000001     
+ iter =           32 func =   -3149.5565527448985      step =   0.10000000000000001     
+ iter =           33 func =   -3149.5548090420907      step =   0.10000000000000001     
+ iter =           34 func =   -3149.5531479116771      step =    2.0000000000000000     
+ iter =           35 func =   -3149.5501799919966      step =   0.10000000000000001     
+ iter =           36 func =   -3149.5487805518223      step =   0.10000000000000001     
+ iter =           37 func =   -3149.5480339839828      step =   0.10000000000000001     
+ iter =           38 func =   -3149.5474322642713      step =    2.0000000000000000     
+ iter =           39 func =   -3149.5461130960002      step =   0.10000000000000001     
+ iter =           40 func =   -3149.5454994415945      step =   0.10000000000000001     
+ iter =           41 func =   -3149.5451769099036      step =   0.10000000000000001     
+ iter =           42 func =   -3149.5449581320013      step =    2.0000000000000000     
+ iter =           43 func =   -3149.5443753626605      step =   0.10000000000000001     
+ iter =           44 func =   -3149.5441066291132      step =   0.10000000000000001     
+ iter =           45 func =   -3149.5439669723105      step =   0.10000000000000001     
+ iter =           46 func =   -3149.5438931456638      step =    2.0000000000000000     
+ iter =           47 func =   -3149.5436332128652      step =   0.10000000000000001     
+ iter =           48 func =   -3149.5435145987690      step =   0.10000000000000001     
+ iter =           49 func =   -3149.5434537485503      step =   0.10000000000000001     
+ results for scenario = nodisc
+ converged,  loglikelihood =    -3149.5434537485503     
+ 1 alpha_c          0.328     0.027    12.300
+ 2 alpha_lm_con    -1.653     0.491    -3.368
+ 3 alpha_lm_age     0.429     0.059     7.223
+ 4 alpha_lm_hli     1.531     0.602     2.543
+ 5 alpha_lm_col     0.154     0.313     0.493
+ 6 alpha_lm_mal     0.391     0.372     1.050
+ 7 alpha_lm_job    -0.054     0.353    -0.154
+ 8 alpha_lm_lf      0.146     0.020     7.184
+ 9 beta_c           0.247     0.022    11.263
+10 beta_lf_cons    -0.488     0.419    -1.165
+11 beta_lf_age      0.604     0.069     8.812
+12 beta_lf_hlim     0.995     0.543     1.833
+13 beta_lf_coll    -0.183     0.270    -0.679
+14 beta_lf_male     0.885     0.339     2.610
+15 beta_lf_job     -0.433     0.306    -1.412
+16 beta_lm_lf       0.098     0.018     5.452
+17 mu               0.028     0.288     0.097
+18 wageratio        0.494     0.261     1.894
+19 L_nm_nm          3.117     0.240    13.006
+20 L_nf_nm          2.277     0.199    11.464
+21 L_nf_nf          0.526     0.370     1.421
+
+. cd ..
+/Users/pcmichaud/Dropbox (CEDIA)/Projets/joint
+
+. 
+. * scenario with more draws (100)
+. cd runtime
+/Users/pcmichaud/Dropbox (CEDIA)/Projets/joint/runtime
+
+. ! ./runestimation moredraws
+
+ + read information
+ -------------------------------------
+ Information of dataset to load
+number of scenarios =    8
+number of ratings =    5
+number of choice =    3
+number of records =  677
+number of shifters m (incl const) =    6
+number of shifters f (incl const) =    6
+number of distr. factors (incl const) =    2
+number of vars dataset =  137
+ -------------------------------------
+ initial values of parameters
+   1alpha_c                      0.104
+   2alpha_lm_cons               -1.140
+   3alpha_lm_age                 0.281
+   4alpha_lm_hlim                1.026
+   5alpha_lm_college             0.100
+   6alpha_lm_male                0.254
+   7alpha_lm_job                 0.021
+   8alpha_lm_lf                  0.077
+   9beta_c                       0.079
+  10beta_lf_cons                -0.398
+  11beta_lf_age                  0.327
+  12beta_lf_hlim                 0.621
+  13beta_lf_college             -0.083
+  14beta_lf_male                 0.559
+  15beta_lf_job                 -0.175
+  16beta_lm_lf                   0.054
+  17mu                           0.049
+  18wageratio                    0.491
+  19log_rho_m                    0.019
+  20log_rho_f                    0.013
+  21L_nm_nm                      1.904
+  22L_nf_nm                      1.236
+  23L_nf_nf                      0.363
+ 
+ iter =            0 func =   -3124.9346647544048      step =    2.0000000000000000     
+ iter =            1 func =   -3124.6615262804789      step =    2.0000000000000000     
+ iter =            2 func =   -3124.5137334475553      step =   0.10000000000000001     
+ iter =            3 func =   -3124.4206363582498      step =   0.10000000000000001     
+ iter =            4 func =   -3124.3614649332790      step =   0.10000000000000001     
+ iter =            5 func =   -3124.3574752163322      step =    2.0000000000000000     
+ iter =            6 func =   -3124.3033850803181      step =   0.10000000000000001     
+ iter =            7 func =   -3124.2708343521304      step =   0.10000000000000001     
+ iter =            8 func =   -3124.2516444241433      step =   0.10000000000000001     
+ iter =            9 func =   -3124.2403097804545      step =   0.10000000000000001     
+ iter =           10 func =   -3124.2334466445964      step =   0.10000000000000001     
+ iter =           11 func =   -3124.2291088116340      step =   0.10000000000000001     
+ iter =           12 func =   -3124.2250680989027      step =    2.0000000000000000     
+ iter =           13 func =   -3124.2206192837461      step =   0.10000000000000001     
+ iter =           14 func =   -3124.2181931028354      step =   0.10000000000000001     
+ iter =           15 func =   -3124.2168194628389      step =   0.10000000000000001     
+ iter =           16 func =   -3124.2160012555305      step =   0.10000000000000001     
+ iter =           17 func =   -3124.2156905585921      step =    2.0000000000000000     
+ iter =           18 func =   -3124.2147423325082      step =   0.10000000000000001     
+ iter =           19 func =   -3124.2142323255357      step =   0.10000000000000001     
+ iter =           20 func =   -3124.2139476947182      step =   0.10000000000000001     
+ iter =           21 func =   -3124.2137803797750      step =   0.10000000000000001     
+ iter =           22 func =   -3124.2137399037242      step =    2.0000000000000000     
+ iter =           23 func =   -3124.2135254932095      step =   0.10000000000000001     
+ iter =           24 func =   -3124.2134113879270      step =   0.10000000000000001     
+ iter =           25 func =   -3124.2133479447539      step =   0.10000000000000001     
+ results for scenario = moredraws
+ converged,  loglikelihood =    -3124.2133479447539     
+ 1 alpha_c          0.099     0.021     4.630
+ 2 alpha_lm_con    -0.984     0.304    -3.241
+ 3 alpha_lm_age     0.277     0.039     7.200
+ 4 alpha_lm_hli     0.775     0.371     2.090
+ 5 alpha_lm_col    -0.038     0.187    -0.204
+ 6 alpha_lm_mal     0.349     0.234     1.493
+ 7 alpha_lm_job    -0.019     0.215    -0.087
+ 8 alpha_lm_lf      0.074     0.013     5.781
+ 9 beta_c           0.086     0.022     3.835
+10 beta_lf_cons    -0.389     0.233    -1.671
+11 beta_lf_age      0.333     0.052     6.400
+12 beta_lf_hlim     0.641     0.317     2.020
+13 beta_lf_coll    -0.055     0.150    -0.367
+14 beta_lf_male     0.476     0.208     2.287
+15 beta_lf_job     -0.178     0.168    -1.059
+16 beta_lm_lf       0.056     0.013     4.366
+17 mu               0.050     0.292     0.172
+18 wageratio        0.476     0.268     1.776
+19 log_rho_m        0.021     0.009     2.305
+20 log_rho_f        0.009     0.011     0.806
+21 L_nm_nm          1.886     0.192     9.799
+22 L_nf_nm          1.294     0.172     7.538
+23 L_nf_nf          0.093     0.373     0.250
+
+. cd ..
+/Users/pcmichaud/Dropbox (CEDIA)/Projets/joint
+
+. 
+. 
+. * scenario without survival
+. cd runtime
+/Users/pcmichaud/Dropbox (CEDIA)/Projets/joint/runtime
+
+. ! ./runestimation nosurv
+
+ + read information
+ -------------------------------------
+ Information of dataset to load
+number of scenarios =    8
+number of ratings =    5
+number of choice =    3
+number of records =  677
+number of shifters m (incl const) =    6
+number of shifters f (incl const) =    6
+number of distr. factors (incl const) =    2
+number of vars dataset =  137
+ -------------------------------------
+ initial values of parameters
+   1alpha_c                      0.104
+   2alpha_lm_cons               -1.140
+   3alpha_lm_age                 0.281
+   4alpha_lm_hlim                1.026
+   5alpha_lm_college             0.100
+   6alpha_lm_male                0.254
+   7alpha_lm_job                 0.021
+   8alpha_lm_lf                  0.077
+   9beta_c                       0.079
+  10beta_lf_cons                -0.398
+  11beta_lf_age                  0.327
+  12beta_lf_hlim                 0.621
+  13beta_lf_college             -0.083
+  14beta_lf_male                 0.559
+  15beta_lf_job                 -0.175
+  16beta_lm_lf                   0.054
+  17mu                           0.049
+  18wageratio                    0.491
+  19log_rho_m                    0.019
+  20log_rho_f                    0.013
+  21L_nm_nm                      1.904
+  22L_nf_nm                      1.236
+  23L_nf_nf                      0.363
+ 
+ iter =            0 func =   -3211.3540580981357      step =    4.0000000000000000     
+ iter =            1 func =   -3193.9061734992806      step =    2.0000000000000000     
+ iter =            2 func =   -3180.6421109358362      step =    2.0000000000000000     
+ iter =            3 func =   -3169.5490754747079      step =   0.10000000000000001     
+ iter =            4 func =   -3161.3350864561280      step =   0.10000000000000001     
+ iter =            5 func =   -3155.4774418075931      step =   0.10000000000000001     
+ iter =            6 func =   -3151.2898203559648      step =   0.10000000000000001     
+ iter =            7 func =   -3143.4316832250270      step =    2.0000000000000000     
+ iter =            8 func =   -3137.4527938318770      step =   0.10000000000000001     
+ iter =            9 func =   -3133.7132119168100      step =   0.10000000000000001     
+ iter =           10 func =   -3131.3581392111569      step =   0.10000000000000001     
+ iter =           11 func =   -3127.4358796948850      step =    2.0000000000000000     
+ iter =           12 func =   -3123.9830041806872      step =   0.10000000000000001     
+ iter =           13 func =   -3122.0756039358821      step =   0.10000000000000001     
+ iter =           14 func =   -3120.9834569949548      step =   0.10000000000000001     
+ iter =           15 func =   -3120.4762207554045      step =    2.0000000000000000     
+ iter =           16 func =   -3118.2600662654372      step =   0.10000000000000001     
+ iter =           17 func =   -3117.1895573781981      step =   0.10000000000000001     
+ iter =           18 func =   -3116.6489361170475      step =   0.10000000000000001     
+ iter =           19 func =   -3116.5948688403682      step =    2.0000000000000000     
+ iter =           20 func =   -3115.5292823334553      step =   0.10000000000000001     
+ iter =           21 func =   -3115.0570282774543      step =   0.10000000000000001     
+ iter =           22 func =   -3114.8338881642580      step =   0.10000000000000001     
+ iter =           23 func =   -3114.7113459789507      step =   0.10000000000000001     
+ iter =           24 func =   -3114.4856540092578      step =    2.0000000000000000     
+ iter =           25 func =   -3114.2695172398226      step =   0.10000000000000001     
+ iter =           26 func =   -3114.1738402593355      step =   0.10000000000000001     
+ iter =           27 func =   -3114.1248040484024      step =   0.10000000000000001     
+ iter =           28 func =   -3114.0660879050297      step =    2.0000000000000000     
+ iter =           29 func =   -3113.9745665765199      step =   0.10000000000000001     
+ iter =           30 func =   -3113.9355083390869      step =   0.10000000000000001     
+ iter =           31 func =   -3113.9164201174817      step =   0.10000000000000001     
+ iter =           32 func =   -3113.9082210768665      step =    2.0000000000000000     
+ iter =           33 func =   -3113.8684738217012      step =   0.10000000000000001     
+ iter =           34 func =   -3113.8520250630086      step =   0.10000000000000001     
+ iter =           35 func =   -3113.8443435103668      step =   0.10000000000000001     
+ iter =           36 func =   -3113.8400183125536      step =   0.10000000000000001     
+ iter =           37 func =   -3113.8288030024614      step =    2.0000000000000000     
+ iter =           38 func =   -3113.8219653936580      step =   0.10000000000000001     
+ iter =           39 func =   -3113.8188863832911      step =   0.10000000000000001     
+ iter =           40 func =   -3113.8172343211090      step =   0.10000000000000001     
+ iter =           41 func =   -3113.8140689617640      step =    2.0000000000000000     
+ iter =           42 func =   -3113.8111913316097      step =   0.10000000000000001     
+ iter =           43 func =   -3113.8099356655534      step =   0.10000000000000001     
+ iter =           44 func =   -3113.8092920671961      step =   0.10000000000000001     
+ iter =           45 func =   -3113.8084652890943      step =    2.0000000000000000     
+ iter =           46 func =   -3113.8072566286519      step =   0.10000000000000001     
+ iter =           47 func =   -3113.8067429245511      step =   0.10000000000000001     
+ iter =           48 func =   -3113.8064902384394      step =   0.10000000000000001     
+ iter =           49 func =   -3113.8063237169058      step =    2.0000000000000000     
+ iter =           50 func =   -3113.8058118865724      step =   0.10000000000000001     
+ iter =           51 func =   -3113.8055990805710      step =   0.10000000000000001     
+ iter =           52 func =   -3113.8054982253871      step =   0.10000000000000001     
+ results for scenario = nosurv
+ converged,  loglikelihood =    -3113.8054982253871     
+ 1 alpha_c          0.046     0.013     3.577
+ 2 alpha_lm_con    -1.043     0.282    -3.697
+ 3 alpha_lm_age     0.255     0.037     6.809
+ 4 alpha_lm_hli     0.881     0.328     2.684
+ 5 alpha_lm_col     0.136     0.166     0.815
+ 6 alpha_lm_mal     0.208     0.195     1.067
+ 7 alpha_lm_job     0.018     0.195     0.094
+ 8 alpha_lm_lf      0.066     0.011     5.799
+ 9 beta_c           0.046     0.015     3.157
+10 beta_lf_cons    -0.353     0.216    -1.637
+11 beta_lf_age      0.296     0.047     6.249
+12 beta_lf_hlim     0.548     0.292     1.872
+13 beta_lf_coll    -0.059     0.141    -0.419
+14 beta_lf_male     0.516     0.191     2.706
+15 beta_lf_job     -0.162     0.158    -1.025
+16 beta_lm_lf       0.050     0.011     4.433
+17 mu               0.064     0.294     0.218
+18 wageratio        0.469     0.268     1.749
+19 log_rho_m        0.019     0.010     2.012
+20 log_rho_f        0.014     0.011     1.294
+21 L_nm_nm          1.696     0.180     9.405
+22 L_nf_nm          1.125     0.154     7.322
+23 L_nf_nf          0.367     0.167     2.195
+
+. cd ..
+/Users/pcmichaud/Dropbox (CEDIA)/Projets/joint
+
+. 
+. * scenario without UH
+. cd runtime
+/Users/pcmichaud/Dropbox (CEDIA)/Projets/joint/runtime
+
+. ! ./runestimation nouh
+
+ + read information
+ -------------------------------------
+ Information of dataset to load
+number of scenarios =    8
+number of ratings =    5
+number of choice =    3
+number of records =  677
+number of shifters m (incl const) =    6
+number of shifters f (incl const) =    6
+number of distr. factors (incl const) =    2
+number of vars dataset =  137
+ -------------------------------------
+ initial values of parameters
+   1alpha_c                      0.104
+   2alpha_lm_cons               -1.140
+   3alpha_lm_age                 0.281
+   4alpha_lm_hlim                1.026
+   5alpha_lm_college             0.100
+   6alpha_lm_male                0.254
+   7alpha_lm_job                 0.021
+   8alpha_lm_lf                  0.077
+   9beta_c                       0.079
+  10beta_lf_cons                -0.398
+  11beta_lf_age                  0.327
+  12beta_lf_hlim                 0.621
+  13beta_lf_college             -0.083
+  14beta_lf_male                 0.559
+  15beta_lf_job                 -0.175
+  16beta_lm_lf                   0.054
+  17mu                           0.049
+  18wageratio                    0.491
+  19log_rho_m                    0.019
+  20log_rho_f                    0.013
+ 
+ iter =            0 func =   -3587.6211360814173      step =    2.0000000000000000     
+ iter =            1 func =   -3569.4203933835229      step =    2.0000000000000000     
+ iter =            2 func =   -3566.4906494034099      step =    2.0000000000000000     
+ iter =            3 func =   -3559.0732124749816      step =   0.10000000000000001     
+ iter =            4 func =   -3554.1965253677017      step =   0.10000000000000001     
+ iter =            5 func =   -3551.0380212537834      step =   0.10000000000000001     
+ iter =            6 func =   -3548.9878227642607      step =   0.10000000000000001     
+ iter =            7 func =   -3546.4214671354957      step =    2.0000000000000000     
+ iter =            8 func =   -3542.8242852892754      step =   0.10000000000000001     
+ iter =            9 func =   -3541.1602483992515      step =   0.10000000000000001     
+ iter =           10 func =   -3540.2509971418722      step =   0.10000000000000001     
+ iter =           11 func =   -3537.5061582908797      step =    2.0000000000000000     
+ iter =           12 func =   -3536.1463752248164      step =   0.10000000000000001     
+ iter =           13 func =   -3535.4300631911478      step =   0.10000000000000001     
+ iter =           14 func =   -3534.9163918306549      step =    2.0000000000000000     
+ iter =           15 func =   -3533.3767423903269      step =   0.10000000000000001     
+ iter =           16 func =   -3532.8068674004808      step =   0.10000000000000001     
+ iter =           17 func =   -3532.5242658016737      step =   0.10000000000000001     
+ iter =           18 func =   -3531.7232779200262      step =    2.0000000000000000     
+ iter =           19 func =   -3531.2594743622494      step =   0.10000000000000001     
+ iter =           20 func =   -3531.0426715537819      step =   0.10000000000000001     
+ iter =           21 func =   -3530.9111269398704      step =    2.0000000000000000     
+ iter =           22 func =   -3530.4228627594803      step =   0.10000000000000001     
+ iter =           23 func =   -3530.2510228836150      step =   0.10000000000000001     
+ iter =           24 func =   -3530.1677885388431      step =   0.10000000000000001     
+ iter =           25 func =   -3529.9602858600815      step =    2.0000000000000000     
+ iter =           26 func =   -3529.8137176605601      step =   0.10000000000000001     
+ iter =           27 func =   -3529.7497127485740      step =   0.10000000000000001     
+ iter =           28 func =   -3529.7276966770705      step =    2.0000000000000000     
+ iter =           29 func =   -3529.5797745521909      step =   0.10000000000000001     
+ iter =           30 func =   -3529.5278078859483      step =   0.10000000000000001     
+ iter =           31 func =   -3529.5032836634600      step =   0.10000000000000001     
+ iter =           32 func =   -3529.4556203401439      step =    2.0000000000000000     
+ iter =           33 func =   -3529.4095737072839      step =   0.10000000000000001     
+ iter =           34 func =   -3529.3904289207626      step =   0.10000000000000001     
+ iter =           35 func =   -3529.3800201541389      step =   0.10000000000000001     
+ iter =           36 func =   -3529.3474616023373      step =    2.0000000000000000     
+ iter =           37 func =   -3529.3308911504100      step =   0.10000000000000001     
+ iter =           38 func =   -3529.3234745858904      step =   0.10000000000000001     
+ iter =           39 func =   -3529.3156603543739      step =    2.0000000000000000     
+ iter =           40 func =   -3529.3004305776003      step =   0.10000000000000001     
+ iter =           41 func =   -3529.2944220231916      step =   0.10000000000000001     
+ iter =           42 func =   -3529.2913680080733      step =   0.10000000000000001     
+ iter =           43 func =   -3529.2845981816427      step =    2.0000000000000000     
+ iter =           44 func =   -3529.2792653751435      step =   0.10000000000000001     
+ iter =           45 func =   -3529.2769875807021      step =   0.10000000000000001     
+ iter =           46 func =   -3529.2766066657314      step =    2.0000000000000000     
+ iter =           47 func =   -3529.2715743618282      step =   0.10000000000000001     
+ iter =           48 func =   -3529.2696593399478      step =   0.10000000000000001     
+ iter =           49 func =   -3529.2687427721089      step =   0.10000000000000001     
+ iter =           50 func =   -3529.2675980430477      step =    2.0000000000000000     
+ iter =           51 func =   -3529.2658595731023      step =   0.10000000000000001     
+ iter =           52 func =   -3529.2651440577042      step =   0.10000000000000001     
+ iter =           53 func =   -3529.2647656189565      step =   0.10000000000000001     
+ iter =           54 func =   -3529.2639341259651      step =    2.0000000000000000     
+ iter =           55 func =   -3529.2633141680849      step =   0.10000000000000001     
+ iter =           56 func =   -3529.2630309912179      step =   0.10000000000000001     
+ iter =           57 func =   -3529.2629405877346      step =    2.0000000000000000     
+ iter =           58 func =   -3529.2623684965738      step =   0.10000000000000001     
+ iter =           59 func =   -3529.2621384675331      step =   0.10000000000000001     
+ iter =           60 func =   -3529.2620233660928      step =   0.10000000000000001     
+ iter =           61 func =   -3529.2618939418207      step =    2.0000000000000000     
+ iter =           62 func =   -3529.2616879330994      step =   0.10000000000000001     
+ iter =           63 func =   -3529.2615968854352      step =   0.10000000000000001     
+ iter =           64 func =   -3529.2615471048362      step =   0.10000000000000001     
+ results for scenario = nouh
+ converged,  loglikelihood =    -3529.2615471048362     
+ 1 alpha_c          0.095     0.027     3.478
+ 2 alpha_lm_con    -0.509     0.130    -3.917
+ 3 alpha_lm_age     0.156     0.039     4.026
+ 4 alpha_lm_hli     0.453     0.099     4.567
+ 5 alpha_lm_col    -0.043     0.042    -1.023
+ 6 alpha_lm_mal     0.094     0.085     1.097
+ 7 alpha_lm_job     0.082     0.053     1.550
+ 8 alpha_lm_lf      0.062     0.017     3.595
+ 9 beta_c           0.071     0.023     3.042
+10 beta_lf_cons    -0.416     0.123    -3.376
+11 beta_lf_age      0.270     0.052     5.239
+12 beta_lf_hlim     0.301     0.097     3.093
+13 beta_lf_coll    -0.015     0.046    -0.335
+14 beta_lf_male     0.213     0.099     2.143
+15 beta_lf_job     -0.069     0.056    -1.236
+16 beta_lm_lf       0.048     0.014     3.355
+17 mu              -0.291     0.900    -0.323
+18 wageratio        0.925     0.765     1.209
+19 log_rho_m        0.003     0.014     0.207
+20 log_rho_f        0.004     0.014     0.332
+
+. cd ..
+/Users/pcmichaud/Dropbox (CEDIA)/Projets/joint
+
+. 
+. 
+. * scenario without complementarity
+. cd runtime
+/Users/pcmichaud/Dropbox (CEDIA)/Projets/joint/runtime
+
+. ! ./runestimation nocomp
+
+ + read information
+ -------------------------------------
+ Information of dataset to load
+number of scenarios =    8
+number of ratings =    5
+number of choice =    3
+number of records =  677
+number of shifters m (incl const) =    6
+number of shifters f (incl const) =    6
+number of distr. factors (incl const) =    2
+number of vars dataset =  137
+ -------------------------------------
+ initial values of parameters
+   1alpha_c                      0.104
+   2alpha_lm_cons               -1.140
+   3alpha_lm_age                 0.281
+   4alpha_lm_hlim                1.026
+   5alpha_lm_college             0.100
+   6alpha_lm_male                0.254
+   7alpha_lm_job                 0.021
+   8beta_c                       0.079
+   9beta_lf_cons                -0.398
+  10beta_lf_age                  0.327
+  11beta_lf_hlim                 0.621
+  12beta_lf_college             -0.083
+  13beta_lf_male                 0.559
+  14beta_lf_job                 -0.175
+  15mu                           0.049
+  16wageratio                    0.491
+  17log_rho_m                    0.019
+  18log_rho_f                    0.013
+  19L_nm_nm                      1.904
+  20L_nf_nm                      1.236
+  21L_nf_nf                      0.363
+ 
+ iter =            0 func =   -3175.3847981062063      step =    2.0000000000000000     
+ iter =            1 func =   -3164.2320339817234      step =    2.0000000000000000     
+ iter =            2 func =   -3161.0382904308376      step =    2.0000000000000000     
+ iter =            3 func =   -3160.0145764136919      step =   0.10000000000000001     
+ iter =            4 func =   -3159.4827989583846      step =   0.10000000000000001     
+ iter =            5 func =   -3159.4023999763153      step =    2.0000000000000000     
+ iter =            6 func =   -3158.3699013437417      step =   0.10000000000000001     
+ iter =            7 func =   -3157.9335024043089      step =   0.10000000000000001     
+ iter =            8 func =   -3157.7322522975060      step =   0.10000000000000001     
+ iter =            9 func =   -3157.6223137952725      step =   0.10000000000000001     
+ iter =           10 func =   -3157.4190826351069      step =    2.0000000000000000     
+ iter =           11 func =   -3157.2492185286578      step =   0.10000000000000001     
+ iter =           12 func =   -3157.1768710855899      step =   0.10000000000000001     
+ iter =           13 func =   -3157.1405965642589      step =   0.10000000000000001     
+ iter =           14 func =   -3157.1086852325939      step =    2.0000000000000000     
+ iter =           15 func =   -3157.0412244519939      step =   0.10000000000000001     
+ iter =           16 func =   -3157.0140883369872      step =   0.10000000000000001     
+ iter =           17 func =   -3157.0015140412952      step =   0.10000000000000001     
+ iter =           18 func =   -3156.9943672655909      step =   0.10000000000000001     
+ iter =           19 func =   -3156.9754123436901      step =    2.0000000000000000     
+ iter =           20 func =   -3156.9651639862382      step =   0.10000000000000001     
+ iter =           21 func =   -3156.9607187348347      step =   0.10000000000000001     
+ iter =           22 func =   -3156.9583877781211      step =   0.10000000000000001     
+ iter =           23 func =   -3156.9543833584348      step =    2.0000000000000000     
+ iter =           24 func =   -3156.9504215729589      step =   0.10000000000000001     
+ iter =           25 func =   -3156.9487913269791      step =   0.10000000000000001     
+ iter =           26 func =   -3156.9479986794672      step =   0.10000000000000001     
+ iter =           27 func =   -3156.9473808975085      step =    2.0000000000000000     
+ iter =           28 func =   -3156.9458334159599      step =   0.10000000000000001     
+ iter =           29 func =   -3156.9452223327962      step =   0.10000000000000001     
+ iter =           30 func =   -3156.9449443748122      step =   0.10000000000000001     
+ iter =           31 func =   -3156.9447884039678      step =   0.10000000000000001     
+ results for scenario = nocomp
+ converged,  loglikelihood =    -3156.9447884039678     
+ 1 alpha_c          0.061     0.015     3.963
+ 2 alpha_lm_con    -0.939     0.278    -3.373
+ 3 alpha_lm_age     0.309     0.041     7.526
+ 4 alpha_lm_hli     1.031     0.349     2.954
+ 5 alpha_lm_col     0.106     0.174     0.607
+ 6 alpha_lm_mal     0.454     0.204     2.231
+ 7 alpha_lm_job     0.047     0.203     0.231
+ 8 beta_c           0.048     0.013     3.673
+ 9 beta_lf_cons    -0.238     0.207    -1.150
+10 beta_lf_age      0.323     0.050     6.470
+11 beta_lf_hlim     0.600     0.291     2.061
+12 beta_lf_coll    -0.092     0.139    -0.662
+13 beta_lf_male     0.722     0.188     3.848
+14 beta_lf_job     -0.124     0.157    -0.792
+15 mu               0.006     0.285     0.021
+16 wageratio        0.511     0.267     1.915
+17 log_rho_m        0.025     0.010     2.423
+18 log_rho_f        0.021     0.011     1.906
+19 L_nm_nm          1.759     0.199     8.844
+20 L_nf_nm          1.125     0.158     7.118
+21 L_nf_nf          0.336     0.178     1.889
+
+. cd ..
+/Users/pcmichaud/Dropbox (CEDIA)/Projets/joint
+
+. 
+. 
+. capture log close

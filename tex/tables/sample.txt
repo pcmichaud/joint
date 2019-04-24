@@ -1,0 +1,118 @@
+------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/michaudp/Dropbox (CEDIA)/Projets/joint/tex/tables/sample.txt
+  log type:  text
+ opened on:  29 Aug 2018, 15:26:58
+
+. 
+. global scn "ref"
+
+. use "data/hrs_final_$scn.dta", clear
+
+. 
+. global vars "age_mod lim college likejob wage liv75r hlth62"
+
+. 
+. 
+. preserve 
+
+. keep r* 
+
+. renpfix r
+
+. gen male = 1
+
+. save temp/husbands.dta, replace
+file temp/husbands.dta saved
+
+. restore
+
+. 
+. preserve 
+
+. keep s* 
+
+. renpfix s
+
+. gen male = 0
+
+. save temp/wives.dta, replace
+file temp/wives.dta saved
+
+. use temp/husbands.dta, clear
+
+. append using temp/wives.dta
+(label YESNOW already defined)
+
+. 
+. label var age_mod "age"
+
+. label var lim "any health limitations"
+
+. label var college "college educated"
+
+. label var likejob "job satisfaction"
+
+. label var wage "hourly wage"
+
+. label var liv75r "prov lives to 75 (relative to life-table)"
+
+. label var hlth62 "probability has health limitations at age 62"
+
+. 
+. eststo wives: quietly estpost sum $vars if male == 0
+
+. eststo husbands: quietly estpost summarize ///
+>     $vars if male==1
+
+. esttab wives husbands using tex/tables/sample.tex, replace ///
+> mtitles( "wives" "husbands") nonum ///
+> cells("mean(pattern(1 1) fmt(2)) sd(pattern(1 1))") ///
+> label
+(output written to tex/tables/sample.tex)
+
+. restore
+
+. 
+. 
+. * stats for text around age difference
+. gen agediff = rage_mod - sage_mod
+
+. sum agediff, d
+
+                           agediff
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%          -13            -28
+ 5%           -6            -14
+10%           -3            -14       Obs                 604
+25%            0            -14       Sum of Wgt.         604
+
+50%            1                      Mean           1.831126
+                        Largest       Std. Dev.      4.722266
+75%            4             17
+90%            8             17       Variance       22.29979
+95%            9             20       Skewness      -.3115161
+99%           15             21       Kurtosis       7.018108
+
+. 
+. sum wageratio, d
+
+      ratio of husband's wage to wife's wage, min(w,5)
+-------------------------------------------------------------
+      Percentiles      Smallest
+ 1%    -1.800799      -2.302585
+ 5%    -1.208798      -2.302585
+10%    -.8802803      -2.302585       Obs                 604
+25%     -.435868      -2.302585       Sum of Wgt.         604
+
+50%            0                      Mean            .008488
+                        Largest       Std. Dev.      .7403826
+75%     .4859727       1.609438
+90%     .9149644       1.609438       Variance       .5481664
+95%     1.280934       1.609438       Skewness      -.1462138
+99%     1.609438       1.609438       Kurtosis       3.373618
+
+. 
+. 
+. capture log close
