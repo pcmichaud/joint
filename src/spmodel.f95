@@ -1946,7 +1946,6 @@ contains
 			do i = 1, n, 1
 				if (mask(i)) then
 					!write(*,*) age(i,1),age(i,2), id(i)
-         	write(*,*) id(i),1,jointret(i),expret(i,1),expret(i,2),posterior(i,:)
 					write(2,*) id(i),1,jointret(i),expret(i,1),expret(i,2),posterior(i,:)
 				else
 					write(2,*) id(i),0,-999,-999,-999,posterior(i,:)
