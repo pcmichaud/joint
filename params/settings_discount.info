@@ -18,7 +18,7 @@ drc, 0.08
 reprate, 0.6 
 ishufheter, F 
 ishufwages, F 
-iblockcomp, F 
+iblockcomp, T 
 ifixcorr, F 
 dfixrho, 0.5 
 inoestim, F 

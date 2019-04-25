@@ -1816,7 +1816,7 @@ contains
 											lf = Lmax - sum(Hf_sim(:,m,f,j))/dble(n)
 										end if
 										cons = Y_sim(i,m,f,j)
-										call getutility(cons, lm, lf, bm(1,1), buma, bm(3,1), bm(4,1), 0.0d0,bujm(i), v)
+										call getutility(cons, lm, lf, bm(1,1), buma, bm(3,1), bujm(i), 0.0d0,0.0d0,v) !, v)
 										vm = vm + pHL(i,hh)*(rho(1)**(aam-age(i,1)))*surv(1)*v
 				    				end do
 				    				! evaluate utility of wife
@@ -1838,7 +1838,7 @@ contains
 										end if
 										lf = Lmax - Hf_sim(i,m,f,j)
 										cons = Y_sim(i,m,f,j)
-										call getutility(cons, lf, lm, bf(1,1), bufa, bf(3,1), bf(4,1), 0.0d0,bujf(i), v)
+										call getutility(cons, lf, lm, bf(1,1), bufa, bf(3,1), bujf(i), 0.0d0,0.0d0,v) !bujf(i), v)
 										vf = vf + pHL(i,hh)*(rho(2)**(aaf-age(i,2)))*surv(2)*v
 				    				end do
 				    				! discount, weight and add to cumulative sum
