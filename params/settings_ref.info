@@ -11,7 +11,7 @@ ibargaininghetero, F
 icorr, T 
 iunitary, F 
 idiscount, F 
-ddiscount, 1.0 
+ddiscount, 0.95 
 idirect, F 
 arf, 0.06 
 drc, 0.08 

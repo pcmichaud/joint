@@ -13,7 +13,7 @@ class sp:
             'info': 'info_ref.dat',
             'includeratings': 'F',
             'icomplement': 'T',
-            'ihetero': 'F',
+            'ihetero': 'T',
             'ijointhetero': 'T',
             'ibargaininghetero': 'F',
             'icorr': 'T',
