@@ -686,7 +686,7 @@ contains
 				fixpar(pos+1) = ipar(pos+1)
 			end if
 			if (.not. icorr) then
-				fixpar(pos+1) = ipar(pos+1)
+				!fixpar(pos+1) = ipar(pos+1)
 			end if
 
 			!!!! LUC : Manual and inconsistent fix !!!!
@@ -710,7 +710,6 @@ contains
 				fixpar(pos) = 0.0d0
 			end if
 			pos = pos + 1
-
 
 			! Scale for the utility function
             ipar(pos) = 1.0d0
@@ -1692,14 +1691,14 @@ contains
 	    		call random_number(draw)
 	    		j = 1+floor(i*draw)
 	    		bum(i) = bum(j)
-					bujm(i) = bujm(j)
+					!bujm(i) = bujm(j)
 	    	end do
 
 	    	do i = n, 1, -1
 	    		call random_number(draw)
 	    		j = 1+floor(i*draw)
 	    		buf(i) = buf(j)
-					bujf(i) = bujf(j)
+					!bujf(i) = bujf(j)
 	    	end do
 	    end if
 
@@ -1812,11 +1811,13 @@ contains
 										end if
 										lm = Lmax - Hm_sim(i,m,f,j)
 										lf = Lmax - Hf_sim(i,m,f,j)
+										cons = Y_sim(i,m,f,j)
 										if (iblockcomp) then
 											lf = Lmax - sum(Hf_sim(:,m,f,j))/dble(n)
+											call getutility(cons, lm, lf, bm(1,1), buma, bm(3,1), sum(bujm(:))/dble(n), 0.0d0,0.0d0,v) !, v)
+										else
+											call getutility(cons, lm, lf, bm(1,1), buma, bm(3,1), bujm(i), 0.0d0,0.0d0,v) !, v)
 										end if
-										cons = Y_sim(i,m,f,j)
-										call getutility(cons, lm, lf, bm(1,1), buma, bm(3,1), bujm(i), 0.0d0,0.0d0,v) !, v)
 										vm = vm + pHL(i,hh)*(rho(1)**(aam-age(i,1)))*surv(1)*v
 				    				end do
 				    				! evaluate utility of wife
@@ -1833,12 +1834,14 @@ contains
 									    	bufa = bufa + bf(2,3)*(sHL(hh,2) - Xf(i,3))
 										end if
 										lm = Lmax - Hm_sim(i,m,f,j)
-										if (iblockcomp) then
-											lm = Lmax - sum(Hm_sim(:,m,f,j))/dble(n)
-										end if
 										lf = Lmax - Hf_sim(i,m,f,j)
 										cons = Y_sim(i,m,f,j)
 										call getutility(cons, lf, lm, bf(1,1), bufa, bf(3,1), bujf(i), 0.0d0,0.0d0,v) !bujf(i), v)
+										if (iblockcomp) then
+											lm = Lmax - sum(Hm_sim(:,m,f,j))/dble(n)
+											call getutility(cons, lf, lm, bf(1,1), bufa, bf(3,1), sum(bujf(:))/dble(n), 0.0d0,0.0d0,v) !bujf(i), v)
+
+										end if
 										vf = vf + pHL(i,hh)*(rho(2)**(aaf-age(i,2)))*surv(2)*v
 				    				end do
 				    				! discount, weight and add to cumulative sum

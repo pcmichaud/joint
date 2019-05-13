@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import subprocess
 from collections import OrderedDict
-class sp: 
+class sp:
     def __init__(self,scenario):
         self.scenario = scenario
         self.options = OrderedDict({
@@ -29,32 +29,32 @@ class sp:
             'iblockcomp': 'F',
             'ifixcorr': 'F',
             'dfixrho': 0.5,
-            'inoestim': 'F'            
-        })   
-        
+            'inoestim': 'F'
+        })
+
         print('Default options: ')
         settings = open('../params/settings_'+self.scenario+'.info','w')
         for key, value in self.options.items():
             print(key,' = ',value)
-            settings.write(key+', '+str(value)+' \n') 
+            settings.write(key+', '+str(value)+' \n')
         settings.close()
 
     def chgoption(self,item,value):
         if self.options[item]==value:
             print('value already set to ',value)
-        else :    
+        else :
             print('changed item ',item,' with value',self.options[item],' to ',value ,' ...')
             self.options[item] = value
             settings = open('../params/settings_'+self.scenario+'.info','w')
             for key, value in self.options.items():
-                settings.write(key+', '+str(value)+' \n') 
+                settings.write(key+', '+str(value)+' \n')
             settings.close()
-          
+
     def estimate(self):
         self.buff = subprocess.check_output(['./runestimation',self.scenario])
         self.write()
         self.getsim()
-          
+
     def write(self):
         f = open('../params/parms_'+self.scenario+'.csv')
         buff = f.read()
@@ -65,12 +65,12 @@ class sp:
         labels = [None] * npar
         par = [None] * npar
         se = [None] * npar
-        for i,line in enumerate(buff[2:-1]): 
+        for i,line in enumerate(buff[2:-1]):
             labels[i],par[i],se[i] = line.split()
             labels[i],par[i],se[i] = line.split()
         self.params = pd.DataFrame(data={'par': par,'se': se},index=labels)
         self.params['par'].astype('float',inplace=True)
-        self.params['se'].astype('float',inplace=True)        
+        self.params['se'].astype('float',inplace=True)
         self.loglike = loglike
         table = open('../tex/tables/estimates_'+self.scenario+'.tex','w')
         table.write('\\begin{tabular}{lcc} \n')
@@ -98,7 +98,7 @@ class sp:
                 beta_c = [float(par[i]),float(se[i])]
         table.write(' & '+'{:1.3f}'.format(alpha_c[0])+' & '+'{:1.3f}'.format(beta_c[0])+' \\\ \n')
         table.write(' & ('+'{:1.3f}'.format(alpha_c[1])+') & ('+'{:1.3f}'.format(beta_c[1])+') \\\ \n')
-        table.write('Discount factors & $\\rho^m$ & $\\rho^f$ \\\ \n')   
+        table.write('Discount factors & $\\rho^m$ & $\\rho^f$ \\\ \n')
         for i,l in enumerate(labels):
             if 'log_rho_m' in l:
                 rho_m = [np.exp(float(par[i])),np.exp(float(par[i]))*float(se[i])]
@@ -111,12 +111,12 @@ class sp:
                 mu = [float(par[i]),float(se[i])]
             if 'wageratio' in l:
                 wageratio = [float(par[i]),float(se[i])]
-        table.write('Weights & $\lambda$ &  \\\ \n')   
+        table.write('Weights & $\lambda$ &  \\\ \n')
         table.write('Constant & '+'{:1.3f}'.format(mu[0])+' &  \\\ \n')
         table.write(' & '+'{:1.3f}'.format(mu[1])+' &  \\\ \n')
         table.write('$\log(\\frac{w_m}{w_f})$ & '+'{:1.3f}'.format(wageratio[0])+' &  \\\ \n')
         table.write(' & '+'{:1.3f}'.format(wageratio[1])+' &  \\\ \n')
-        table.write('Heterogeneity & $\eta_i^m$ & $\\nu_i^f$ \\\ \n')   
+        table.write('Heterogeneity & $\eta_i^m$ & $\\nu_i^f$ \\\ \n')
         L = np.zeros((2,2))
         for i,l in enumerate(labels):
             if 'L_nm_nm' in l:
@@ -135,15 +135,15 @@ class sp:
         cov[0,0] = np.sqrt(cov[0,0])
         self.cor = cov
         table.write('Std.Dev & '+'{:1.3f}'.format(cov[0,0])+' & '+'{:1.3f}'.format(cov[1,1])+' \\\ \n')
-        table.write('Correlation & '+'{:1.3f}'.format(cov[1,0])+' &  \\\ \n')      
+        table.write('Correlation & '+'{:1.3f}'.format(cov[1,0])+' &  \\\ \n')
         table.write('\\hline \n')
         table.write('$\\log L$ & '+'{:4.1f}'.format(loglike) +' & \\\ \n')
         table.write('\\hline \hline \n')
         table.write('\\end{tabular} \n')
         table.close()
     def getsim(self):
-        vars = ['hhidpn','insim','jprob','rexpret_sim','sexpret_sim','leisure_m', 'leisure_f', 'leisure_joint_m', 'leisure_joint_f', 'uhbargain'] 
+        vars = ['hhidpn','insim','jprob','rexpret_sim','sexpret_sim','leisure_m', 'leisure_f', 'leisure_joint_m', 'leisure_joint_f', 'uhbargain']
         sim = pd.read_csv('../data/outcomes_'+self.scenario+'.dat',names=vars,sep='\s+')
-        self.sim = sim[sim.insim==1]        
+        self.sim = sim[sim.insim==1]
         hrs = pd.read_stata('../data/hrs_final_ref.dta')
         self.sim = self.sim.merge(hrs,on='hhidpn')

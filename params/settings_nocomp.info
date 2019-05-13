@@ -1,12 +1,12 @@
 isurvival, T 
-iload, T 
+iload, F 
 iestimate, T 
 data, hrs_final_ref.csv 
 info, info_ref.dat 
 includeratings, F 
 icomplement, F 
 ihetero, T 
-ijointhetero, T 
+ijointhetero, F 
 ibargaininghetero, F 
 icorr, T 
 iunitary, F 
