@@ -48,6 +48,7 @@ double precision, allocatable :: Y(:,:,:,:)			! household income in scenarios  (
 double precision, allocatable :: D(:, :, :)			! for uniform draws (n,nd,2)
 double precision, allocatable :: DJ(:, :, :)		! for uniform draws (n,nd,2), joint ret.
 double precision, allocatable :: DW(:,:)        ! for uniform draws, (n,nd), bargaining weight
+doubleprecision, allocatable  :: Ddisc(:,:,:)     ! for uniform draws, (n,nd,2), discount rate
 double precision, allocatable :: DH(:,:,:)        ! All halton draws
 character*20, allocatable :: shifters(:)                ! for variable labels of shifters
 double precision, allocatable :: L(:,:,:)
@@ -67,11 +68,11 @@ double precision arf, drc, reprate
 logical ishufheter, ishufwages, iblockcomp
 
 !!!! Luc !!!!!
-logical :: ifixcorr, inoestim, ijointhetero, ibargaininghetero
+logical :: ifixcorr,ifixdiscountcorr, inoestim, ijointhetero, ibargaininghetero, idiscounthetero
 logical, parameter:: ihalton = .True.
-integer, parameter:: nhdim = 5 !2 for leisure UH, 2 for Joint UH, 1 for bargaining
-double precision :: dfixrho, ddiscount
-integer iloccorr
+integer, parameter:: nhdim = 7 !2 for leisure UH, 2 for Joint UH, 1 for bargaining, 2 for discount rate
+double precision :: dfixrho, ddiscount, dfixdisccorr
+integer iloccorr, ilocjcorr, ilocdisccorr
 
 ! life table survival probabilities (age 1 to 100)
 
@@ -98,6 +99,7 @@ contains
 		read(1,*) buffer, ihetero
 		read(1,*) buffer, ijointhetero
 		read(1,*) buffer, ibargaininghetero
+		read(1,*) buffer, idiscounthetero
 		read(1,*) buffer, icorr
 		read(1,*) buffer, iunitary
 		read(1,*) buffer, idiscount
@@ -111,6 +113,8 @@ contains
 		read(1,*) buffer, iblockcomp
 		read(1,*) buffer, ifixcorr
 		read(1,*) buffer, dfixrho
+		read(1,*) buffer, ifixdiscountcorr
+		read(1,*) buffer, dfixdisccorr
 		read(1,*) buffer, inoestim
 		close(1)
 
@@ -126,7 +130,7 @@ contains
 		!	ndj = 100
 		!end if
 
-		if (.not. (ihetero .or. ijointhetero .or. ibargaininghetero)) then
+		if (.not. (ihetero .or. ijointhetero .or. ibargaininghetero .or. idiscounthetero)) then
 			nd = 1
 		else
 			nd = 100
@@ -201,6 +205,7 @@ contains
 		allocate(D(n,nd,2))
 		allocate(DJ(n,nd,2))
 		allocate(DW(n,nd))
+		allocate(Ddisc(n,nd,2))
 		allocate(DH(n,nd,nhdim))
 		allocate(pHL(n,4))
 		allocate(sHL(n,4))
@@ -315,7 +320,7 @@ contains
 		! Taking uniform draws for both dimensions
 
 		if(.not.ihalton) then
-				if(ihetero .or. ijointhetero .or. ibargaininghetero) then
+				if(ihetero .or. ijointhetero .or. ibargaininghetero .or. idiscounthetero) then
 				   call set_random_seed
 			  end if
 		else
@@ -425,6 +430,47 @@ contains
 					DW(:,:) = 0.0d0
 			end if
 
+			! LUC
+			! Heterogeneity in discount rate
+			!
+
+			if (idiscounthetero) then
+				!call set_random_seed
+				do i = 1, n, 1
+					do u = 1, nd, 1
+						if(.not.ihalton) then
+							 call random_number(draw)
+							 Ddisc(i,u,1) = quann(draw)
+							 call random_number(draw)
+							 Ddisc(i,u,2) = quann(draw)
+						else
+							 Ddisc(i,u,1)  = DH(i,u,6)
+							 Ddisc(i,u,2)  = DH(i,u,7)
+						end if
+
+						if (Ddisc(i,u,1).lt.-10.0d0) then
+							Ddisc(i,u,1) = -10.0d0
+						else if (Ddisc(i,u,1).gt.10.0d0) then
+							Ddisc(i,u,1) = 10.0d0
+						end if
+						if (nd.eq.1) then
+							Ddisc(i,u,1) = 0.0d0
+						end if
+
+						if (Ddisc(i,u,2).lt.-10.0d0) then
+							Ddisc(i,u,2) = -10.0d0
+						else if (Ddisc(i,u,2).gt.10.0d0) then
+							Ddisc(i,u,2) = 10.0d0
+						end if
+						if (nd.eq.1) then
+							Ddisc(i,u,2) = 0.0d0
+						end if
+		!			  print *, i, u,  D(i,u,:)
+					end do
+				end do
+			else
+				Ddisc(:,:,:) = 0.0d0
+			end if
 
 
 		! load life tables
@@ -693,7 +739,7 @@ contains
 			if (ifixcorr) then
           ipar(pos+1)   = dfixrho
 					fixpar(pos+1) = ipar(pos+1)
-					iloccorr      = pos + 1
+					ilocjcorr      = pos + 1
 			end if
 
 			ipar(pos+2) = 1.0d0	! L(nf,nf)
@@ -710,6 +756,38 @@ contains
 				fixpar(pos) = 0.0d0
 			end if
 			pos = pos + 1
+
+
+      !! LUC
+			! UH terms (choleski terms for heterogeneity in discount)
+			ipar(pos)   = 1.0d0	! L(nm,nm)
+			labpar(pos) = 'LDISC_nm_nm'
+			if (.not. idiscounthetero) then
+				fixpar(pos) = 0.0d0
+			end if
+			ipar(pos+1) = 0.0d0 	! L(nf,nm)
+			labpar(pos+1) = 'LDISC_nf_nm'
+			if (.not. idiscounthetero) then
+				fixpar(pos+1) = ipar(pos+1)
+			end if
+			if (.not. icorr) then
+				fixpar(pos+1) = ipar(pos+1)
+			end if
+
+			!!!! LUC : Manual and inconsistent fix !!!!
+			if (ifixdiscountcorr) then
+          ipar(pos+1)   = dfixdisccorr
+					fixpar(pos+1) = ipar(pos+1)
+					ilocdisccorr      = pos + 1
+			end if
+
+			ipar(pos+2) = 1.0d0	! L(nf,nf)
+			labpar(pos+2) = 'LDISC_nf_nf'
+			if (.not. idiscounthetero) then
+				fixpar(pos+2) = 0.0d0
+			end if
+			pos = pos + 3
+
 
 			! Scale for the utility function
             ipar(pos) = 1.0d0
@@ -777,9 +855,9 @@ contains
 
 	! MAPPING PARAMETER VECTOR TO INDIVIDUAL PARAMETERS
 	! parsing the parameter vector into useful parameter arrays for computations
-	subroutine maptopar(par,bm,bf,bz, rho, cutm, cutf, sigm, sigf, Lo, Lj, Lw, utilscale)
+	subroutine maptopar(par,bm,bf,bz, rho, cutm, cutf, sigm, sigf, Lo, Lj, Lw, Ldisc, utilscale)
 		double precision par(npar), bm(4,nxm), bf(4,nxf), bz(nz)
-		double precision rho(2), cutm(nm+1), cutf(nm+1), sigm, sigf, Lo(2,2), Lj(2,2), Lw, utilscale(3)
+		double precision rho(2), cutm(nm+1), cutf(nm+1), sigm, sigf, Lo(2,2), Lj(2,2), Lw, Ldisc(2,2), utilscale(3)
 		integer pos, i, m
 		pos = 1
 		! initialize parameter values
@@ -822,8 +900,8 @@ contains
 			end do
 
 			! DISCOUNT FACTORS
-			rho(1) = dexp(par(pos))
-			rho(2) = dexp(par(pos+1))
+			rho(1) = par(pos)   !dexp(par(pos))
+			rho(2) = par(pos+1) !dexp(par(pos+1))
 			pos = pos + 2
 			! THRESHOLDS HUSBAND (pad with -.Inf and +.Inf, here =1.0d6)
 			cutm(1) = -1.0d6
@@ -866,6 +944,14 @@ contains
 			! UH ibargaining
 			Lw = par(pos)
 			pos = pos + 1
+
+			! UH terms (choleski terms, joint leisure)
+			Ldisc(1,1) = par(pos)    ! L(nm,nm)
+			Ldisc(2,1) = par(pos+1)  ! L(nf,nm)
+			Ldisc(2,2) = par(pos+2)  ! L(nf,nf)
+			Ldisc(1,2) = 0.0d0       ! L(nm,nf)
+			pos = pos + 3
+
 
 			! Scale for the utility function
 			utilscale(1) = par(pos)
@@ -973,21 +1059,25 @@ contains
 		double precision fm(3), ff(3), w, lf,lm,cons,v,vm,vf,um,uf,vm1,vf1,vm2,vf2,vh1,vh2
 		double precision Lw
 		double precision ujm, ujf
+		double precision urhom, urhof
 		double precision  pf, ph, pu, pi, pm
 		! arrays for parameters
 		double precision bm(4,nxm), bf(4,nxf), bz(nz), bum, buf, buma, bufa
 		double precision rho(2),cutm(nm+1), cutf(nm+1), sigm, sigf, Lo(2,2), uscale(3)
-		double precision Lj(2,2)
+		double precision Lj(2,2), Ldisc(2,2)
+		double precision uhrho(2)
 
 		! get all parameters from freebeta array and fixpar array
 		call getpar(freebeta, beta)
 		! map parameters
-		call maptopar(beta, bm, bf, bz, rho, cutm, cutf, sigm, sigf, Lo, Lj,Lw,uscale)
+		call maptopar(beta, bm, bf, bz, rho, cutm, cutf, sigm, sigf, Lo, Lj,Lw, Ldisc, uscale)
 		! start loop over respondents
 
 		do i = 1, n, 1
+
+      !! Factor moved witin draws below
 			! compute discount factors (same across questions)
-			call factor(i,age(i,1), age(i,2) , who(i), rho, fm, ff, agem, agef)
+			!call factor(i,age(i,1), age(i,2) , who(i), rho, fm, ff, agem, agef)
 
 			! compute weight (same across questions)
 			! initialize weight
@@ -1023,6 +1113,28 @@ contains
 			! start looping over draws for UH
 			do u = 1, nd, 1
 
+      !! LUC Discount block brount here to allow UH
+
+			! New block for heterogeneity in discount rate
+			!LUC: if the coefficient is fixed. The cst computation should be opt. away
+			if(ifixdiscountcorr) then
+				Ldisc(2,1) = (dfixdisccorr/dsqrt(1-dfixdisccorr**2))*Ldisc(2,2)
+				!!! This is bad. Overwritting the fix par...)
+				fixpar(ilocdisccorr) = Ldisc(2,1)
+			end if
+
+			! update draws for UH
+			urhom = Ldisc(1,1)*Ddisc(i,u,1)
+			urhof = Ldisc(2,1)*Ddisc(i,u,1) + Ldisc(2,2)*Ddisc(i,u,2)
+
+			! compute discount factors (same across questions)
+      uhrho(1) = dexp(rho(1) + urhom)
+			uhrho(2) = dexp(rho(2) + urhof)
+
+			call factor(i,age(i,1), age(i,2) , who(i), uhrho, fm, ff, agem, agef)
+
+
+
 
 			!! LUC This block from above brought here to allow UH
 					w = Lw * DW(i,u)
@@ -1054,13 +1166,14 @@ contains
 				if(ifixcorr) then
 					Lj(2,1) = (dfixrho/dsqrt(1-dfixrho**2))*Lj(2,2)
 					!!! This is bad. Overwritting the fix par...)
-					fixpar(iloccorr) = Lj(2,1)
+					fixpar(ilocjcorr) = Lj(2,1)
 				end if
 
 				! update draws for UH
 				ujm = Lj(1,1)*DJ(i,u,1)
 				ujf = Lj(2,1)*DJ(i,u,1) + Lj(2,2)*DJ(i,u,2)
 				!aj = dexp()
+
 
 
 				! initialize probability p(i,u)
@@ -1574,22 +1687,42 @@ contains
 	    logical mask(n), enough
         ! integers
         double precision bm(4,nxm), bf(4,nxf), bz(nz), bum(n), buf(n), buma, bufa, um, uf
+				double precision burhom(n), burhof(n)
 				double precision bujm(n), bujf(n), buw(n)
         double precision rho(2),cutm(nm+1), cutf(nm+1), sigm, sigf, Lo(2,2), uscale(3)
-				double precision Lj(2,2), Lw
-        double precision VarCovType(2,2),VarCovTypeJ(2,2), lm, lf, v, vm, vf, cons
-        double precision val1, val2, posterior(n,5), Lbase(2), surv(2), w, totcprob
+        double precision uhrho(2)
+				double precision Lj(2,2), Lw, Ldisc(2,2)
+        double precision VarCovType(2,2),VarCovTypeJ(2,2),VarCovDisc(2,2), lm, lf, v, vm, vf, cons
+        double precision val1, val2, posterior(n,7), Lbase(2), surv(2), w, totcprob
         double precision expret(n,2), jointret(n), base, maxp, draw
         ! get all parameters from freebeta array and fixpar array
         call getpar(freepar, beta)
         ! map parameters
-        call maptopar(beta, bm, bf, bz, rho, cutm, cutf, sigm, sigf, Lo, Lj,Lw,uscale)
+        call maptopar(beta, bm, bf, bz, rho, cutm, cutf, sigm, sigf, Lo, Lj,Lw,Ldisc, uscale)
         ! start loop over respondents
         bm(2,5) = 0.0d0
         bf(2,5) = 0.0d0
 	    !Manipulating the choleski to get bac variance covariance
+			print *, ' '
+	    print *, 'Variance/covariance of discount rate'
+
+			VarCovDisc = matmul(Ldisc, transpose(Ldisc))
+
+			do i = 1,2
+				 write(*, '(3F10.3,3F10.3)') VarCovDisc(i,:)
+			end do
+
+
+      print *, ' '
+			print *, ' '
+	    print *, 'Correlation across discount rates'
+	    print *, VarCovDisc(2,1)/(sqrt(VarCovDisc(1,1))*sqrt(VarCovDisc(2,2)))
 	    print *, ' '
-	    print *, 'Variance/covariance of heterogeneity'
+
+
+
+			print *, ' '
+	    print *, 'Variance/covariance of leisure heterogeneity'
 
 			VarCovType = matmul(Lo, transpose(Lo))
 
@@ -1655,6 +1788,15 @@ contains
 				!assuming no covariates in this dimension
         bujm(i) = bm(4,1) + posterior(i,3)
 				bujf(i) = bf(4,1) + posterior(i,4)
+
+        !buw(i)  = buw(i) + posterior(i,5)
+
+				burhom(i) = rho(1) + posterior(i,6)
+	    	burhof(i) = rho(2) + posterior(i,7)
+
+				uhrho(1) = dexp(burhom(i))
+				uhrho(2) = dexp(burhof(i))
+
 
 	    	!write(*,*) posterior(i,:)
 	    	if ((bum(i) + 3.0d0*bm(2,2) + bujm(i)*dlog(Lmax)) .gt. 0.0d0) then
@@ -1729,7 +1871,8 @@ contains
 	    ! construct expected utilities (joint)
 	    do i = 1, n, 1
 	    	if (mask(i)) then
-				w = posterior(i,5) !0.0d0
+        buw(i) = posterior(i,5)
+				w = buw(i) !0.0d0
 				do j = 1, nz, 1
 					w = w + Z(i,j)*bz(j)
 				end do
@@ -1818,7 +1961,7 @@ contains
 										else
 											call getutility(cons, lm, lf, bm(1,1), buma, bm(3,1), bujm(i), 0.0d0,0.0d0,v) !, v)
 										end if
-										vm = vm + pHL(i,hh)*(rho(1)**(aam-age(i,1)))*surv(1)*v
+										vm = vm + pHL(i,hh)*(uhrho(1)**(aam-age(i,1)))*surv(1)*v
 				    				end do
 				    				! evaluate utility of wife
 				    				vf = 0.0d0
@@ -1842,7 +1985,7 @@ contains
 											call getutility(cons, lf, lm, bf(1,1), bufa, bf(3,1), sum(bujf(:))/dble(n), 0.0d0,0.0d0,v) !bujf(i), v)
 
 										end if
-										vf = vf + pHL(i,hh)*(rho(2)**(aaf-age(i,2)))*surv(2)*v
+										vf = vf + pHL(i,hh)*(uhrho(2)**(aaf-age(i,2)))*surv(2)*v
 				    				end do
 				    				! discount, weight and add to cumulative sum
 				    				value(i,m,f) = value(i,m,f) + (w*vm + (1.0d0 - w)*vf)
@@ -1960,28 +2103,30 @@ contains
 	end subroutine postestimation
 
 	subroutine getposterior(freebeta, posterior)
-		double precision freebeta(nfreepar), beta(npar), prob(n), posterior(n,5)
+		double precision freebeta(nfreepar), beta(npar), prob(n), posterior(n,7)
 		! integers
 		integer i,u,j, s, k, agem(3), agef(3),hh
 		! intermediate arrays double
 		double precision fm(3), ff(3), w, lf,lm,cons,v,vm,vf,um,uf,vm1,vf1,vm2,vf2,vh1,vh2
-		double precision ujm, ujf, Lw
-		double precision  pf, ph, pu, pi, pm, pim, pif, pijf, pijm, piw, uw
+		double precision ujm, ujf, Lw, Ldisc(2,2)
+		double precision  pf, ph, pu, pi, pm, pim, pif, pijf, pijm, piw,pidiscm, pidiscf, uw
 		! arrays for parameters
 		double precision bm(4,nxm), bf(4,nxf), bz(nz), bum, buf, buma, bufa
-		double precision rho(2),cutm(nm+1), cutf(nm+1), sigm, sigf, Lo(2,2),Lj(2,2),uscale(3)
+		double precision rho(2),uhrho(2), cutm(nm+1), cutf(nm+1), sigm, sigf, Lo(2,2),Lj(2,2),uscale(3)
+    double precision burhom, burhof
 
 		! get choice probabilities
 		call getprob(freebeta, prob)
 		! get all parameters from freebeta array and fixpar array
 		call getpar(freebeta, beta)
 		! map parameters
-		call maptopar(beta, bm, bf, bz, rho, cutm, cutf, sigm, sigf, Lo,Lj,Lw, uscale)
+		call maptopar(beta, bm, bf, bz, rho, cutm, cutf, sigm, sigf, Lo,Lj,Lw,Ldisc, uscale)
 		! start loop over respondents
 
 		do i = 1, n, 1
+      ! ALso moved within draws
 			! compute discount factors (same across questions)
-			call factor(i,age(i,1), age(i,2) , who(i), rho, fm, ff, agem, agef)
+			! call factor(i,age(i,1), age(i,2) , who(i), rho, fm, ff, agem, agef)
 
 			! compute weight (same across questions)
 			! initialize weight
@@ -2016,9 +2161,33 @@ contains
 			pijm = 0.0d0
 			pijf = 0.0d0
 			piw = 0.0d0
+			pidiscm = 0.0d0
+			pidiscf = 0.0d0
 
 			! start looping over draws for UH
 			do u = 1, nd, 1
+				! New block for heterogeneity in discount rate
+				!LUC: if the coefficient is fixed. The cst computation should be opt. away
+				if(ifixdiscountcorr) then
+					Ldisc(2,1) = (dfixdisccorr/dsqrt(1-dfixdisccorr**2))*Ldisc(2,2)
+					!!! This is bad. Overwritting the fix par...)
+					fixpar(ilocdisccorr) = Ldisc(2,1)
+				end if
+
+				! update draws for UH
+				burhom = Ldisc(1,1)*Ddisc(i,u,1)
+				burhof = Ldisc(2,1)*Ddisc(i,u,1) + Ldisc(2,2)*Ddisc(i,u,2)
+
+				! compute discount factors (same across questions)
+	      uhrho(1) = dexp(rho(1) + burhom)
+				uhrho(2) = dexp(rho(2) + burhof)
+
+				call factor(i,age(i,1), age(i,2) , who(i), uhrho, fm, ff, agem, agef)
+
+
+
+
+
 				!! LUC This block from above brought here to allow UH
 						uw = Lw * DW(i,u)
             w = uw
@@ -2060,7 +2229,7 @@ contains
 							! loop over three time intervals in scenario
 							do s = 1, 3, 1
 							    ! add current age to marginal utility
-	                            buma = bum + bm(2,2)*(dble(agem(s)-62)- Xm(i,2))
+	                buma = bum + bm(2,2)*(dble(agem(s)-62)- Xm(i,2))
 								! compute log own leisure
 								lm = Lmax - Hm(i,j,1,s)
 								! compute other spouse leisure (normalized between 0 and 1)
@@ -2233,6 +2402,10 @@ contains
        !!! Bargaining heterogeneity
 			 piw = piw + pu/prob(i)*uw
 
+       !! Discount heterogeneity
+       pidiscm = pidiscm + pu/prob(i)*burhom
+       pidiscf = pidiscf + pu/prob(i)*burhof
+
 			end do ! end loop over draws
 			! probability of respondent i (average over p(i,u))
 			posterior(i,1) = pim/dble(nd)
@@ -2240,6 +2413,8 @@ contains
 			posterior(i,3) = pijm/dble(nd)
 			posterior(i,4) = pijf/dble(nd)
 			posterior(i,5) = piw/dble(nd)
+			posterior(i,6) = pidiscm/dble(nd)
+			posterior(i,7) = pidiscf/dble(nd)
 
 			!write(*,*) pro
 

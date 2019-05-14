@@ -8,9 +8,9 @@ icomplement, T
 ihetero, T 
 ijointhetero, T 
 ibargaininghetero, F 
-idischetero, F 
+idischetero, T 
 icorr, T 
-iunitary, T 
+iunitary, F 
 idiscount, T 
 ddiscount, 0.95 
 idirect, F 

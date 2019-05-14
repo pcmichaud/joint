@@ -1,4 +1,4 @@
-isurvival, T 
+isurvival, F 
 iload, T 
 iestimate, T 
 data, hrs_final_ref.csv 
@@ -8,9 +8,8 @@ icomplement, T
 ihetero, T 
 ijointhetero, T 
 ibargaininghetero, F 
-idischetero, F 
 icorr, T 
-iunitary, T 
+iunitary, F 
 idiscount, T 
 ddiscount, 0.95 
 idirect, F 
@@ -22,6 +21,4 @@ ishufwages, F
 iblockcomp, F 
 ifixcorr, F 
 dfixrho, 0.5 
-ifixdisccorr, F 
-dfixdiscrho, 0.5 
 inoestim, F 

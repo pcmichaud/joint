@@ -8,10 +8,9 @@ icomplement, T
 ihetero, T 
 ijointhetero, T 
 ibargaininghetero, F 
-idischetero, F 
 icorr, T 
-iunitary, T 
-idiscount, T 
+iunitary, F 
+idiscount, F 
 ddiscount, 0.95 
 idirect, F 
 arf, 0.06 
@@ -22,6 +21,4 @@ ishufwages, F
 iblockcomp, F 
 ifixcorr, F 
 dfixrho, 0.5 
-ifixdisccorr, F 
-dfixdiscrho, 0.5 
 inoestim, F 
