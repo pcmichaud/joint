@@ -136,6 +136,26 @@ class sp:
         self.cor = cov
         table.write('Std.Dev & '+'{:1.3f}'.format(cov[0,0])+' & '+'{:1.3f}'.format(cov[1,1])+' \\\ \n')
         table.write('Correlation & '+'{:1.3f}'.format(cov[1,0])+' &  \\\ \n')
+        table.write('Heterogeneity & $\\zeta_i^m$ & $\\zeta_i^f$ \\\ \n')
+        L = np.zeros((2,2))
+        for i,l in enumerate(labels):
+            if 'LJ_nm_nm' in l:
+                lmm = [float(par[i]),float(se[i])]
+            if 'LJ_nf_nf' in l:
+                lff = [float(par[i]),float(se[i])]
+            if 'LJ_nf_nm' in l:
+                lmf = [float(par[i]),float(se[i])]
+        L[0,0] = lmm[0]
+        L[1,0] = lmf[0]
+        L[1,1] = lff[0]
+        cov = np.matmul(L,np.transpose(L))
+        cov[1,0] = cov[1,0]/np.sqrt(cov[0,0]*cov[1,1])
+        cov[0,1] = cov[1,0]
+        cov[1,1] = np.sqrt(cov[1,1])
+        cov[0,0] = np.sqrt(cov[0,0])
+        self.corzeta = cov
+        table.write('Std.Dev & '+'{:1.3f}'.format(cov[0,0])+' & '+'{:1.3f}'.format(cov[1,1])+' \\\ \n')
+        table.write('Correlation & '+'{:1.3f}'.format(cov[1,0])+' &  \\\ \n')
         table.write('\\hline \n')
         table.write('$\\log L$ & '+'{:4.1f}'.format(loglike) +' & \\\ \n')
         table.write('\\hline \hline \n')
