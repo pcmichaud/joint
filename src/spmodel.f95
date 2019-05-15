@@ -69,7 +69,7 @@ logical ishufheter, ishufwages, iblockcomp
 
 !!!! Luc !!!!!
 logical :: ifixcorr,ifixdiscountcorr, inoestim, ijointhetero, ibargaininghetero, idiscounthetero
-logical, parameter:: ihalton = .True.
+logical, parameter:: ihalton = .TRUE.
 integer, parameter:: nhdim = 7 !2 for leisure UH, 2 for Joint UH, 1 for bargaining, 2 for discount rate
 double precision :: dfixrho, ddiscount, dfixdisccorr
 integer iloccorr, ilocjcorr, ilocdisccorr
@@ -336,8 +336,8 @@ contains
 								 call random_number(draw)
 								 D(i,u,2) = quann(draw)
 							else
-								 D(i,u,1)  = DH(i,u,1)
-								 D(i,u,2)  = DH(i,u,2)
+								 D(i,u,1)  = quann(DH(i,u,1))
+								 D(i,u,2)  = quann(DH(i,u,2))
 							end if
 
 							if (D(i,u,1).lt.-10.0d0) then
@@ -376,8 +376,8 @@ contains
 								 call random_number(draw)
 								 DJ(i,u,2) = quann(draw)
 							else
-								 DJ(i,u,1)  = DH(i,u,3)
-								 DJ(i,u,2)  = DH(i,u,4)
+								 DJ(i,u,1)  = quann(DH(i,u,3))
+								 DJ(i,u,2)  = quann(DH(i,u,4))
 							end if
 
 							if (DJ(i,u,1).lt.-10.0d0) then
@@ -412,7 +412,7 @@ contains
 								 call random_number(draw)
 								 DW(i,u) = quann(draw)
 							else
-								 DW(i,u)  = DH(i,u,5)
+								 DW(i,u)  = quann(DH(i,u,5))
 							end if
 
 							if (DW(i,u).lt.-10.0d0) then
@@ -444,8 +444,8 @@ contains
 							 call random_number(draw)
 							 Ddisc(i,u,2) = quann(draw)
 						else
-							 Ddisc(i,u,1)  = DH(i,u,6)
-							 Ddisc(i,u,2)  = DH(i,u,7)
+							 Ddisc(i,u,1)  = quann(DH(i,u,6))
+							 Ddisc(i,u,2)  = quann(DH(i,u,7))
 						end if
 
 						if (Ddisc(i,u,1).lt.-10.0d0) then
