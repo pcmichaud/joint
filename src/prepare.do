@@ -461,6 +461,7 @@ sum ri_scn* si_scn*
 	rename s10educ seduc
 	gen scollege = seduc==5 
 
+		
 * j045 j046 job satisfaction (1 to 5, 5 very  disatisfied)
 	recode rjobsat (1/2=1) (else=0), gen(rlikejob)
 	recode sjobsat (1/2=1) (else=0), gen(slikejob)
@@ -493,6 +494,18 @@ sum ri_scn* si_scn*
 	recode hexpret (min/-5=-5) (-4/-2=-3) (-1/1=0) (2/4=3) (5/max=5), gen(hexpret_g)
 	replace hexpret_g = .n if rexpret==.n | sexpret==.n
 
+	
+	* As per referee request, counting missing wages 
+	gen rwmissing = missing(rwage)
+	gen swmissing = missing(swage)
+	summ rwmissing swmissing
+	
+	* As per referee request, adding info on part-timers
+	gen rparttime = rhours < 35
+    gen sparttime = shours < 35
+
+	
+	
 	reg rwage rage_mod rcollege rbad rearn h10atota
 	predict prwage
 	replace rwage = prwage if missing(rwage)
@@ -510,7 +523,7 @@ sum ri_scn* si_scn*
 	gen seducplus = scollege > rcollege
 	gen agediff   = rage_mod - sage_mod
 	
-	
+		
 * j048, j050 survival 75
 	rename r10liv75r rliv75r
 	rename s10liv75r sliv75r
@@ -547,7 +560,7 @@ global hours_f "sh_scn?_a6* sh_scn6a_a6* sh_scn6b_a6* sh_scn7a_a6* sh_scn7b_a6* 
 global income_m "ri_scn?_a6* ri_scn61_a6* ri_scn62_a6* ri_scn7*_a6* ri_scn8*_a6*"
 global income_f "si_scn?_a6* si_scn61_a6* si_scn62_a6* si_scn7*_a6* si_scn8*_a6*"
 global expect "rexpret sexpret"
-global leavebehind "rwage swage rhours shours "
+global leavebehind "rwage swage rhours shours rwmissing swmissing rparttime sparttime"
 global prob "rhlth62 shlth62 rliv75r sliv75r"
 **** rescale the income vars for scenarios (can add other income and wealth later)
 replace rrate_scn6 = 0
@@ -574,12 +587,40 @@ global income_h "hi_scn1_a62-hi_scn6_a68 hi_scn61_a62-hi_scn82_a68"
 
 di _N
 
-keep $id $taste_m $taste_f $weight $ratings $choice $age $who $hours_m $hours_f $income_h rsex $leavebehind $prob $expect
+
+keep $id $taste_m $taste_f $weight $ratings $choice $age $who $hours_m $hours_f $income_h rsex $leavebehind $prob $expect a008_11 hhid
 order $id $taste_m $taste_f $weight $ratings $choice $age $who $hours_m $hours_f $income_h rsex $leavebehind $prob $expect
 
 foreach var of varlist $id $taste_m $taste_f $weight $ratings $choice $age $who $hours_m $hours_f $income_h $prob $leavebehind  {
 	drop if missing(`var')
 }
+
+* Checking who is married at the end. 
+tab a008_11
+drop a008_11
+
+
+
+* re-creating couples within sample
+preserve
+sort hhid rsex
+bys hhid: gen nhh = _N
+keep if nhh == 2
+
+unab varlist: hchoice*
+
+foreach var in `varlist'{
+   local suffix = subinstr("`var'", "hchoice", "", 1)
+    bys hhid: gen same`suffix' = `var'[1] == `var'[2] 
+}
+
+egen totalagree = rsum(same*)
+
+tab totalagree
+
+summ same* if rsex
+restore
+drop hhid
 
 *drop if rage_mod > 61
 
@@ -648,6 +689,7 @@ save "data/hrs_final_$scn.dta", replace
 
 drop $expect
 
+
 * dimensions for fortran
 
 global nobs _N
@@ -678,6 +720,39 @@ file close vars
 
 * same file for output
 outsheet using "data/hrs_final_$scn.csv", comma replace  nolabel nonames
+
+
+** Getting some information on part-time vs full time preferences.
+tab hchoice_scn1_r rparttime if hwho & (hchoice_scn1_r != 9), col
+tab hchoice_scn1_s sparttime if !hwho & (hchoice_scn1_s != 9), col
+
+
+
+* Keeping only full-timers.
+preserve
+  keep if !rparttime & !sparttime
+
+  file open vars using "data/varlist_nopart.dat", write text replace
+  file write vars  "List of variables used in model $S_DATE $S_TIME for scenario $scn" _n
+  foreach var in $vars {
+    file write vars ("`var'")  _n
+  }
+  file close vars
+
+  capture file close info
+  file open info using "data/info_nopart.csv", write text replace
+  file write info "Information on sp HRS dataset produced $S_DATE $S_TIME for scenario no-part" _n
+  file write info ($nquestions) "	" ($nratings) "	" ($nchoice) " " ($nobs) " " ($k_taste_m) "	" ($k_taste_f) " " ($k_weight) " " ($nvar) _n
+  file close info
+
+  di _N
+  outsheet using "data/hrs_final_nopart.csv", comma replace  nolabel nonames
+restore
+
+
+
+
+
 
 capture erase temp/hrs_ordered.dta
 capture erase temp/hrs_unordered.dta

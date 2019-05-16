@@ -2,14 +2,13 @@ clear all
 capture log close
 set more off
 capture cd "~/cedia/Projets/joint"
-capture cd "~/dropbox/joint"
+*capture cd "~/dropbox/joint"
 log using tex/tables/sample.txt, text replace
 
 global scn "ref"
 use "data/hrs_final_$scn.dta", clear
 
-global vars "age_mod lim college likejob wage liv75r hlth62"
-
+global vars "age_mod lim college likejob wage liv75r hlth62 parttime wmissing"
 
 preserve 
 keep r* 
@@ -33,6 +32,8 @@ label var likejob "job satisfaction"
 label var wage "hourly wage"
 label var liv75r "prov lives to 75 (relative to life-table)"
 label var hlth62 "probability has health limitations at age 62"
+label var parttime "working part-time (less than 35 hours)"
+label var wmissing "missing wage imputed"
 
 eststo wives: quietly estpost sum $vars if male == 0
 eststo husbands: quietly estpost summarize ///
